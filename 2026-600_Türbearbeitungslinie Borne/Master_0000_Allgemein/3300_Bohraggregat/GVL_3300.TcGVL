@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <GVL Name="GVL_3300" Id="{aa431b92-1eee-4ce0-8ac7-88d2309c118d}">
+    <Declaration><![CDATA[
+VAR_GLOBAL
+    // Achsen ***************************************************	
+	X_Achse_steuern						: DUT_Achse_Steuern;	
+	X_Achse_status						: DUT_Achse_Status;	
+		                            	
+	Y_Achse_steuern						: DUT_Achse_Steuern;		
+	Y_Achse_status						: DUT_Achse_Status;		
+
+    // Frequenzumrichter ****************************************
+	Bohraggr_Schluessel_un_steuern		: DUT_SEW_FU_Steuern;	
+	Bohraggr_Schluessel_un_status		: DUT_SEW_FU_Status;
+
+    // Ventile **************************************************
+    Schluessel_un_Bohrhub          		: DUT_Ventil_sps;
+
+    // interne Variablen ****************************************
+    sk_Freigabe                         : BOOL;
+    sk                                  : INT;
+    transport_einfoerdern_bereit        : BOOL;
+    transport_ausfoerdern_bereit        : BOOL;
+
+    Tuer_Anwahl                         : BOOL;   // Signal Tür Anwahl, Tür soll geöffnet werden
+    Tuer_Freigabe                       : BOOL;   // Signal Tür Freigabe, Tür kann geöffnet werden
+END_VAR
+    ]]></Declaration>
+  </GVL>
+</TcPlcObject>

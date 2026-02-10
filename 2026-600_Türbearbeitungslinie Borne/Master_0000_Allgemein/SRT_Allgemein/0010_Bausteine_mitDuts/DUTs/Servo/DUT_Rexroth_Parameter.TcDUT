@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="DUT_Rexroth_Parameter" Id="{c86ae7f1-f068-4264-a5de-7b48ac91967d}">
+    <Declaration><![CDATA[TYPE DUT_Rexroth_Parameter :
+STRUCT
+	Beschleunigung	:LREAL;
+	Verzoegerung	:LREAL;
+	Ruck			:LREAL;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

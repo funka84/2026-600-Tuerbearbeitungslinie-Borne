@@ -1,0 +1,439 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_Nc_Kanal" Id="{c7979a66-3a90-4955-821f-788319dfe600}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Nc_Kanal
+(*
+	Ansteuerung eines NC-Kanals 
+	Autor O.E.
+	Erstellt 13.01.2022
+	Version 1.0 	
+*)
+VAR_INPUT
+	in_Kanal_Id						:UDINT;					(* NC Kanal Nummer *)
+	in_Gruppe_Id					:UDINT;					(* NC Gruppennummer *)
+	in_X_Id							:UDINT;					(* X-Achs Id *)
+	in_Y_Id							:UDINT;					(* Y-Achs Id *)
+	in_Z_Id							:UDINT;					(* Z-Achs Id *)
+	in_Pfad							:STRING[80];			(* Pfad wo das NC-Programm liegr *)
+	in_PName						:STRING[80];			(* Name des zubearbeitenden NC-Programms *)
+	in_Override						:DINT;					(* Gesamt Override der bearbeitung 0-100%*)
+	in_NcToPlc						:NCTOPLC_NCICHANNEL_REF;
+END_VAR
+
+VAR_OUTPUT
+	out_PlcToNc						:PLCTONC_NCICHANNEL_REF;
+	out_P_uebernommen				:BOOL;					(* vorgegebenes Programm übernommen soll=ist *)
+	out_FBErr						:BOOL;
+	out_FBErrId						:UDINT;
+END_VAR
+
+VAR_IN_OUT
+	inout_NcReset					:BOOL;				(* Kanal Reset *)
+	inout_NcGruppe_koppeln			:BOOL;				(* Achsen zu einer Gruppe zusammen fügen *)
+	inout_NcStart					:BOOL;				(* NC-Ablauf starten *)
+	inout_NcStopOverrideNull		:BOOL;				(* NC-Ablauf unterbrechen -Override=0 *)
+	inout_NcEinzelsatzStart			:BOOL;				(* NC-Ablauf im Einzelsatzbetrieb abarbeiten *)
+	inout_NcEinzelsatzWeiter		:BOOL;				(* nächster Satz *)
+	inout_NcStatus					:Dut_Nc_Kanal;
+	
+END_VAR
+
+VAR
+	                    	
+	AxTo3D			 				:CfgBuildExt3dGroup;
+	AxToPTP							:CfgReconfigGroup;
+	AxTo3DLoad						:BOOL;
+	AxToPTPLoad						:BOOL;                  		
+                            	
+	Einzel							:ItpsingleBlock;
+	EinzelChange					:BOOL;
+	EinzelStart						:R_Trig;
+	EinzelStop						:f_Trig;
+	ProgAnw							:ItpLoadProgEx;
+	ProgStart						:ItpStartStopEx;
+	ProgReset						:ItpResetEx;
+                    			
+	PLoad							:BOOL;
+	
+	FlPGrd							:R_TRIG;
+	FlPBearb						:R_TRIG;
+	Pfad_PNr 	 					:STRING[80];
+	FlPReset						:R_Trig;
+                    	    	
+	TStart							:TON;
+	PStart							:R_TRIG;
+                    				
+	OverInit						:BOOL;
+                   				
+	MFuncTime						:TON;
+    MFuncQuitt						:ItpResetFastMFuncEx;  
+	MFuncConfirm					:ItpConfirmHsk;
+	FlMFuncNoReq					:r_trig;
+
+	PName_akt:						STRING[80];
+	
+	PBearb:							BOOL;
+	Override						:DINT;
+	Start:							BOOL;
+	Stop:							BOOL;
+	Untbr:							BOOL;
+	Reset:							BOOL;
+
+	 
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[//***** Info zum NCI-Ablauf *************************************************************************************
+	//**********************************************************************************************************
+(*
+	1. Einzelachsen fehlerfrei in Grundposition
+	2. Gruppe bilden / Achsen koppeln			-> CfgBuildExt3dGroup
+	3. Interpreter Reset						-> ItpResetEx
+	4. Programm laden							-> ItpLoadProgEx
+	5. Einzelsatzbetrieb (optinal)				-> ItpSingleBlock
+	6. Programm starten							-> ItpStartStopEx
+	7. Warten auf M-Funktion und quittieren		-> PLCTONC_NCICHANNEL_REF.MFuncGranted
+		M-Funktion steht an							-> ItpIsHskMFunc
+		M_FunktionsNummer							-> ItpGetHskMFunc
+	8. Gruppe auflösen / Achsen entkoppeln		-> CfgReconfigGroup
+*)
+//***** Kanalreset *********************************************************************************************
+	//**********************************************************************************************************
+	Reset:= inout_NcReset;
+
+//***** Achsen Config ******************************************************************************************
+	//**********************************************************************************************************
+
+		IF inout_NcGruppe_koppeln
+		THEN
+			IF NOT inout_NcStatus.AxTo3DOk
+			AND NOT AxTo3D.bErr
+			THEN
+				AxTo3DLoad:= TRUE;
+				inout_NcStatus.AxToPTPOk:= FALSE;
+			END_IF;
+		ELSE
+			IF NOT inout_NcStatus.AxToPTPOk
+			AND NOT AxToPTP.bErr
+			THEN
+				AxToPTPLoad:= TRUE;
+				inout_NcStatus.AxTo3DOk:= FALSE;
+			END_IF;
+		END_IF;
+
+	// Achsen in 3D Gruppe uebergeben 
+	AxTo3D	(	nGroupId		:=in_Gruppe_Id,
+				nXAxisId		:=in_X_Id,
+				nYAxisId		:=in_Y_Id,
+				nZAxisId		:=in_Z_Id,
+				nQ1AxisId		:=0,
+				nQ2AxisId		:=0,
+				nQ3AxisId		:=0,
+				nQ4AxisId		:=0,
+				nQ5AxisId		:=0,
+				bExecute		:=AxTo3DLoad,
+				tTimeOuT		:=T#1S,				
+				bErr			=>,
+				nErrId			=>,);
+
+
+	IF AxTo3D.bBusy THEN
+		inout_NcStatus.AxTo3Dok	:= TRUE;
+		AxTo3DLoad			:= FALSE;
+	END_IF;
+
+	IF AxTo3D.bErr THEN
+		inout_NcStatus.AxTo3Dok	:= FALSE;
+	END_IF;
+
+	// Achsen zurueck in PTP 
+	AxToPTP(nGroupId		:=in_Gruppe_Id,
+			bExecute		:=AxToPTPLoad,
+			tTimeOuT		:=T#1S);
+
+	IF AxToPTP.bBusy THEN
+		inout_NcStatus.AxToPTPok	:= TRUE;
+		AxToPTPLoad			:= FALSE;
+	END_IF;
+
+	IF AxToPTP.bErr THEN
+		inout_NcStatus.AxToPTPok	:= FALSE;
+	END_IF;
+	
+//***** Aktuelles NC-Programm laden ***************************************************************************
+	//**********************************************************************************************************
+	PName_akt		:=DWORD_TO_STRING (in_NcToPlc.LoadedProg);
+	
+	// NC-Programm laden 
+	IF in_PName <> PName_akt
+		AND NOT Reset
+		AND NOT ProgAnw.bBusy 
+		AND in_PName <>''
+	THEN
+		PLoad:=TRUE;
+		ELSE
+			PLoad:=FALSE;
+	END_IF;
+
+	Pfad_PNr := CONCAT (in_Pfad, in_PName) ;
+	Pfad_PNr := CONCAT (Pfad_PNr,'.NC') ;
+
+	ProgAnw (sNciToPlc	:=in_NcToPlc,
+			sPrg		:=Pfad_PNr,
+			nLength		:=INT_TO_UDINT((LEN(Pfad_PNr))),
+			bExecute	:=PLoad,
+			tTimeOuT	:=T#10S,				
+			bErr		=>,
+			nErrId		=>);
+
+	IF ProgAnw.bBusy 
+	THEN
+		PLoad			:= FALSE;
+	END_IF;
+
+	// Ueberpruefung Grundstellung / Bearbeitungsprogramm geladen 
+	PBearb	:=(in_PName = PName_akt);
+	// Nach dem laden des Programmes muß ein Reset durchgefuehrt werden 
+	FlPBearb (CLK:=PBearb);
+
+	IF FlPGrd.Q
+	OR FlPBearb.Q
+	THEN
+		Reset:= TRUE;
+	END_IF;
+
+	out_P_uebernommen:= in_PName = PName_akt;
+//***** NC Err *************************************************************************************************
+	//**********************************************************************************************************
+	inout_NcStatus.Err	:=  in_NcToPlc.ItpState= Tc2_NCI.NCI_INTERPRETER_ABORTED
+					 OR in_NcToPlc.ErrorCode<> 0;
+
+//***** NC Aktiv ***********************************************************************************************
+	//**********************************************************************************************************
+	inout_NcStatus.Aktiv	:= in_NcToPlc.ItpState > Tc2_NCI.NCI_INTERPRETER_READY
+					AND NOT inout_NcStatus.Err;
+
+//***** NC Ready ***********************************************************************************************
+	//**********************************************************************************************************
+	IF in_NcToPlc.ItpState = Tc2_NCI.NCI_INTERPRETER_READY
+	THEN
+		inout_NcStatus.Ready:= TRUE;
+	END_IF
+
+	IF in_NcToPlc.ItpState = Tc2_NCI.NCI_INTERPRETER_IDLE
+		OR inout_NcStatus.Err
+		OR inout_NcStatus.Aktiv
+	THEN
+		inout_NcStatus.Ready:= FALSE;
+	END_IF
+//***** NC Run *************************************************************************************************
+	//**********************************************************************************************************
+	inout_NcStatus.Run	:= in_NcToPlc.ItpState = Tc2_NCI.NCI_INTERPRETER_RUNNING;
+				
+//***** Einzelsatzbetrieb **************************************************************************************
+	//**********************************************************************************************************
+	EinzelStart(clk:=inout_NcEinzelsatzStart);
+	EinzelStop(clk:=inout_NcEinzelsatzStart);
+	
+	IF EinzelStart.q 
+		AND NOT inout_NcStart
+		AND in_NcToPlc.ItpState = Tc2_NCI.NCI_INTERPRETER_READY
+	THEN
+		//  ItpSingleBlockOff   	:= 0 		-> Einzelsatz aus
+		//	ItpSingleBlockNck   	:= 1 		-> Einzelsatz im NC-Kern
+		//	ItpSingleBlockIntp  	:= 16#4000	-> Einzelsatz im Interpreter
+		Einzel.nMode:= ItpSingleBlockIntp  ;
+		EinzelChange:=TRUE;
+	END_IF
+
+	IF EinzelStop.Q
+	THEN 
+		Einzel.nMode:=ItpSingleBlockOff;
+		EinzelChange:=TRUE;
+	END_IF
+		
+	Einzel(sNciToPlc			:= in_NcToPlc,
+			bExecuteModeChange	:= EinzelChange,
+			bTriggerNext		:= inout_NcEinzelsatzWeiter);
+		
+	IF Einzel.bBusy
+	THEN
+		EinzelChange:=FALSE;
+	END_IF	
+//***** NC Start/Stop Programm *********************************************************************************
+	//**********************************************************************************************************
+	TStart.IN	:=inout_NcStart 
+					AND inout_NcStatus.AxTo3DOk
+					AND NOT EinzelChange;
+	TStart(PT	:=T#50ms);
+
+	PStart (CLK:=TStart.Q);
+
+	IF PStart.Q
+	THEN
+		Start:=TRUE;
+	END_IF
+
+	IF NOT  inout_NcStart
+		OR 	inout_NcStatus.Aktiv
+	THEN
+		Start:=FALSE;
+	END_IF 
+
+	IF NOT inout_NcGruppe_koppeln
+		AND in_NcToPlc.ItpState = Tc2_NCI.NCI_INTERPRETER_RUNNING
+	THEN
+		Stop:=TRUE;
+		Reset:=TRUE;
+	END_IF
+
+
+	IF in_NcToPlc.ItpState <> Tc2_NCI.NCI_INTERPRETER_RUNNING
+	THEN
+		Stop:=FALSE;
+	END_IF
+
+	ProgStart(sNciToPlc		:=in_NcToPlc,
+				bStart		:=Start,
+				bStop		:=Stop,
+				tTimeOut	:=T#1S,				
+				bErr		=>,
+				nErrId		=>);
+
+	IF ProgStart.bBusy
+	THEN
+		Start:= FALSE;
+		Stop:= FALSE;
+	END_IF;
+
+//***** NC Reset Programm **************************************************************************************
+	//**********************************************************************************************************
+	IF  in_NcToPlc.ItpState = Tc2_NCI.NCI_INTERPRETER_READY
+		AND in_NcToPlc.ErrorCode = 0
+	THEN
+		Reset:= FALSE;
+	END_IF;
+
+	ProgReset(nChnId	:=in_Kanal_Id,
+				nGrpId	:=in_Gruppe_Id,	
+				bExecute:=Reset,
+				tTimeOut:=T#1S,				
+				bErr		=>,
+				nErrId		=>);
+
+	Reset:= FALSE;
+
+//***** Kanal Override *****************************************************************************************
+	//**********************************************************************************************************
+	IF NOT OverInit
+	THEN
+		in_Override	:=1000000;	(* Init 100% *)
+		OverInit	:=TRUE;
+	ELSE
+		Override:=in_Override*10000;
+	END_IF;
+
+	out_PlcToNc.ChnAxesOvr 		:=DINT_TO_UDINT(Override);
+
+	Untbr					:=inout_NcStopOverrideNull;
+
+	IF Untbr
+	THEN
+		out_PlcToNc.ChnAxesOvr:=0; (* 0% *)
+	END_IF;
+
+//***** M-Befehle **********************************************************************************************
+	//**********************************************************************************************************
+	inout_NcStatus.MFuncReq:=ItpIsHskMFunc(in_NcToPlc);
+	inout_NcStatus.MFuncNr:=ItpGetHskMFunc(in_NcToPlc);
+	 
+ 
+	MFuncTime(IN:=(inout_NcStatus.MFuncReq), PT:=T#100MS);
+
+	IF MFuncTime.Q
+		AND inout_NcStatus.MFuncQuitt 
+		AND (inout_NcStatus.MFuncNr=inout_NcStatus.MFuncQuittNr)
+	THEN
+		out_PlcToNc.MFuncGranted:=1;
+		ELSE
+			out_PlcToNc.MFuncGranted:=0;			
+	END_IF
+
+	FlMFuncNoReq(clk:=NOT inout_NcStatus.MFuncReq);															
+	IF FlMFuncNoReq.Q
+	THEN  		
+		inout_NcStatus.MFuncQuitt:=FALSE;														
+	END_IF
+	
+//***** Fehler ausgeben ****************************************************************************************
+	//**********************************************************************************************************
+
+	IF ProgAnw.bErr
+	THEN
+		out_FBErr:=TRUE;
+		out_FBErrId:=ProgAnw.nErrId;
+	END_IF
+	
+	IF ProgStart.bErr
+	THEN
+		out_FBErr:=TRUE;
+		out_FBErrId:=ProgStart.nErrId;
+	END_IF
+
+	IF AxTo3D.bErr
+	THEN
+		out_FBErr:=TRUE;
+		out_FBErrId:=AxTo3D.nErrId;
+	END_IF
+
+	IF AxToPTP.bErr
+	THEN
+		out_FBErr:=TRUE;
+		out_FBErrId:=AxToPTP.nErrId;
+	END_IF
+
+	IF ProgReset.bErr
+	THEN
+		out_FBErr:=TRUE;
+		out_FBErrId:=ProgReset.nErrId;
+	END_IF
+	
+//*****************************************************************************************************
+	//**********************************************************************************************************
+	FlPReset(clk:=in_NcToPlc.ItpState = Tc2_NCI.NCI_INTERPRETER_READY);
+	IF FlPReset.Q
+		OR inout_NcReset
+	THEN
+		inout_NcGruppe_koppeln			:=
+		inout_NcStart					:=
+		inout_NcStopOverrideNull		:=
+		inout_NcEinzelsatzStart			:=
+		inout_NcEinzelsatzWeiter		:=
+		inout_NcStatus.MFuncQuitt		:=FALSE;
+		inout_NcStatus.MFuncQuittNr		:=0;
+	
+		IF NOT ProgAnw.bErr
+			AND NOT ProgStart.bErr
+			AND NOT AxTo3D.bErr
+			AND NOT AxToPTP.bErr
+			AND NOT ProgReset.bErr
+		THEN
+			out_FBErr					:=FALSE;
+			out_FBErrId					:=0;
+		END_IF
+
+			inout_NcReset				:=FALSE;		
+		
+	END_IF
+	
+
+
+
+
+
+
+
+	
+	]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

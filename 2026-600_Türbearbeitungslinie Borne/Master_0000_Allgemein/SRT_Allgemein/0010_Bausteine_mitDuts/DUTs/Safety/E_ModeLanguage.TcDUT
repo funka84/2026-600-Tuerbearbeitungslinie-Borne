@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="E_ModeLanguage" Id="{69005972-a676-4fe9-b262-de574ddbac92}">
+    <Declaration><![CDATA[TYPE E_ModeLanguage :
+(
+	Deutsch := 1,
+	English := 2
+);
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

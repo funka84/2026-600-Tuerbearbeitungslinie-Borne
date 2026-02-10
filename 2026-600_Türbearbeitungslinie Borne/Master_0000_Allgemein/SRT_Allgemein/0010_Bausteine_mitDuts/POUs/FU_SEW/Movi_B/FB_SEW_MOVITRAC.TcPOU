@@ -1,0 +1,301 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_SEW_MOVITRAC" Id="{1a13e325-f80f-44ff-98a6-4253efa70f64}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_SEW_MOVITRAC
+VAR_INPUT
+	in_PD					:DUT_SEW_FU_PD_IN;
+	in_Reglersperre			:BOOL;	(* 1= Regler sperren *)
+	in_Dreh_Tausch			:BOOL;	(* Drehrichtung tauschen *)
+	in_Rechts				:BOOL;	(* 1= Antrieb rechtslauf  (IN_hand=0) *)
+	in_Links				:BOOL;	(* 1= Antrieb linkslauf (IN_hand=0) *)
+	in_Reset				:BOOL;	(* 0->1 Fehler löschen *)
+	in_Hand					:BOOL;	(* Hand aktiv *)
+	in_Hand_rechts			:BOOL;	(* Softkey Motor Tippen + *)
+	in_Hand_links			:BOOL;	(* Softkey Motor Tippen - *)
+	in_Hand_V				:REAL;	(* Geschwindigkeit in m/min für Hand  *)
+	in_V					:REAL;	(* Geschwindigkeit in m/min für Auto *)
+	in_Rampe				:INT;	(* Rampe Hochlauf/Ablauf in ms *)
+	V_Faktor				:REAL;	(* Drehzahlbezug (z.B. bei 1500 sec-1  /  30m/min  =  Faktor 50) *)
+END_VAR
+VAR_OUTPUT
+	out_PD					:DUT_SEW_FU_PD_OUT;
+	out_Stoerung			:BOOL;	(* Umrichter meldet Störung *)
+	out_Nicht_Bereit		:BOOL;	(* Umrichter ist nicht betriebsbereit *)
+	out_Drehzahl_Ist		:REAL;	(* aktuelle Drehzahl *)
+	out_ist_90				:BOOL;	(* 90% der Soll Drehzahl erreicht *)
+	out_Fehlernummer		:BYTE;	(* Fehlernummer *)
+	out_Dreht				:BOOL;
+	//OUT_WARNUNG				:BOOL;
+END_VAR
+VAR_TEMP
+	reglersperre			:BOOL;	(* BIT 0: Reglersperre 0 = Freigabe 1 = Regler sperren, Bremse aktivieren *)
+	freigabe_stop			:BOOL;	(* BIT 1: Freigabe/Schnellstopp 0 = Schnellstopp 1 = Freigabe *)
+	freigabe_halt			:BOOL;	(* BIT 2: Freigabe/Halt 0 = Halt an Integratorrampe oder Prozess-Rampe 1 = Freigabe *)
+	reserve_3_1				:BOOL;	(* BIT 3: Reserviert (Reservierte Bits sind generell auf Null zu setzen!) *)
+	reserve_4_1				:BOOL;	(* BIT 4: Reserviert (Reservierte Bits sind generell auf Null zu setzen!) *)
+	reserve_5_1				:BOOL;	(* BIT 5: Reserviert (Reservierte Bits sind generell auf Null zu setzen!) *)
+	reset					:BOOL;	(* Bit 6: Reset 0 = nicht aktiv 0 -> 1 = anstehende Störung zurücksetzen *)
+	reserve_7_1				:BOOL;	(* BIT 7: Reserviert (Reservierte Bits sind generell auf Null zu setzen!) *)
+	drehrichtung_motorpoti	:BOOL;	(* BIT 8: Drehrichtung für Motorpoti 0 = Drehrichtung RECHTS 1 = Drehrichtung LINKS *)
+	motorpoti_auf			:BOOL;	(* BIT 9 und 10: Motorpoti Hochlauf,Motorpoti Tieflauf 0 0 = keine Änderung *)
+	motorpoti_ab			:BOOL;	(*  1 0 = ab 0 1 = auf 1 1 = keine Änderung *)
+	n11_n21					:BOOL;	(* BIT 11 und 12:Anwahl der internen Festsollwerte0 0 = Drehzahl-Sollwert über Prozess-Ausgangsdatenwort 2 *)
+	n12_n22					:BOOL;	(* 0 1 = interner Sollwert n11 (n21) *)
+	sollwert_umschaltung	:BOOL;	(* BIT 13: Festsollwert-Umschaltung 0 = Festsollwerte des aktivn Parameter über Bit 11/12 anwählbar 1 = Festsollwerte des anderen Parameter anwählbar *)
+	reserve_14				:BOOL;	(* BIT 14: Reserviert (Reservierte Bits sind generell auf Null zu setzen!) *)
+	reserve_15				:BOOL;	(* BIT 14: Reserviert (Reservierte Bits sind generell auf Null zu setzen!) *)
+	DREHZAHL				:REAL;
+	RECHTSLAUF				:BOOL;
+	LINKSLAUF				:BOOL;
+	TEMP_V					:REAL;
+	TEMP_IST_DREHZAHL_DINT	:DINT;
+	TEMP_DREHZAHL			:REAL;
+	TEMP_DREHZAHL_SOLL		:REAL;
+	endstufe_freigeben		:BOOL;	(* BIT 0: Endstufe freigegeben 0 = Endstufe ist gesperrt (hochohmig) 1 = Endstufe ist freigegeben *)
+	umrichter_bb			:BOOL;	(* BIT 1: Umrichter betriebsbereit 0 = Umrichter nicht betriebsbereit (z. B. Fehler) 1 = Umrichter betriebsbereit *)
+	pa_daten_freigeben		:BOOL;	(* BIT 2: PA-Daten freigegeben 0 = PA-Daten gesperrt 1 = PA-Daten freigegeben *)
+	reserve_3				:BOOL;	(*  Reserve Bit ist immer auf null zusetzen *)
+	reserve_4				:BOOL;	(*  Reserve Bit ist immer auf null zusetzen *)
+	stoerung				:BOOL;	(*  BIT 5: Störung/Warnung 0 = keine Störung/Warnung 1 = Störung/Warnung liegt an *)
+	reserver_6				:BOOL;	(*  Reserve Bit ist immer auf null zusetzen *)
+	fehlernummer			:BYTE;	(*  Byte 2: Gerätezustand/ Fehlernummer *)
+	steuerbyte_1			:BYTE;
+	steuerbyte_2			:BYTE;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+//Statuswort auslesen*****************************************************************************************
+	endstufe_freigeben 	:= BIT_OF_dWORD(in:= in_PD.PD_1_STATUSWORT, N:= 0);
+	umrichter_bb 		:= BIT_OF_dWORD(in:= in_PD.PD_1_Statuswort, N:= 1);
+	pa_daten_freigeben	:= BIT_OF_DWORD(in:= in_PD.PD_1_Statuswort, N:= 2);
+	reserve_3			:= BIT_OF_DWORD(in:= in_PD.PD_1_Statuswort, N:= 3);
+	reserve_4			:= BIT_OF_DWORD(in:= in_PD.PD_1_Statuswort, N:= 4);
+	stoerung			:= BIT_OF_DWORD(in:= in_PD.PD_1_Statuswort, N:= 5);
+	reserver_6 			:= BIT_OF_DWORD(in:= in_PD.PD_1_Statuswort, N:= 6);
+	fehlernummer		:= BYTE_OF_DWORD(in:= in_PD.PD_1_Statuswort, N:= 1);
+(*Statuswort  --------------------------------------------------------------------
+	BIT 0: Endstufe freigegeben
+	0 = Endstufe ist gesperrt (hochohmig)
+	1 = Endstufe ist freigegeben
+	--------------------------------------------------------------------------------
+	BIT 1: Umrichter betriebsbereit
+	0 = Umrichter nicht betriebsbereit (z. B. Fehler)
+	1 = Umrichter betriebsbereit
+	--------------------------------------------------------------------------------
+	BIT 2: PA-Daten freigegeben
+	0 = PA-Daten gesperrt
+	1 = PA-Daten freigegeben
+	--------------------------------------------------------------------------------
+	BIT 5: Störung/Warnung
+	0 = keine Störung/Warnung
+	1 = Störung/Warnung liegt an
+	--------------------------------------------------------------------------------
+	BYTE 2: Gerätezustand/ Fehlernummer
+	--------------------------------------------------------------------------------*)
+
+(*Fehlermeldung auswerten und rangieren : Ist das Fehlerbit gesetzt, so wird die Fehlernummer ausgegeben.
+  Liegt kein Fehler vor, so wird eine Null ausgegeben.*)	
+ 	IF stoerung 
+	THEN  
+		OUT_FEHLERNUMMER :=fehlernummer;
+	END_IF
+	
+	IF NOT stoerung 
+	THEN
+		OUT_FEHLERNUMMER :=0;
+	END_IF
+
+//Setzten des Bits FU-Betriebbereit********************************************
+	IF umrichter_bb 
+	THEN 
+		OUT_NICHT_BEREIT := FALSE;
+		ELSE
+			OUT_NICHT_BEREIT :=TRUE;
+	END_IF
+
+//Setzen des Bits FU-Störung********************************************
+	IF stoerung 
+		//AND NOT umrichter_bb
+	THEN 
+		OUT_STOERUNG := TRUE;
+		ELSE 
+			OUT_STOERUNG := FALSE;
+	END_IF
+//Setzen das Bit Warnung*************************************************
+	//IF umrichter_bb
+	//	 AND stoerung
+	//THEN 
+	//	OUT_Warnung :=TRUE;
+	// 	ELSE 
+	//		OUT_warnung:=FALSE;
+ 	//END_IF
+//Ausgabe ISt-Drehzahl***************************************************
+	TEMP_IST_DREHZAHL_DINT :=INT_TO_DINT(WORD_TO_INT(in_PD.PD_2_IST_DREHZAHL));
+	DREHZAHL := DINT_TO_REAL(TEMP_IST_DREHZAHL_DINT);	
+	
+	IF IN_DREH_TAUSCH
+	THEN
+		OUT_DREHZAHL_IST := (DREHZAHL*0.2)*(-1);
+		ELSE
+			OUT_DREHZAHL_IST := DREHZAHL*0.2;
+	END_IF
+	
+
+//Rechtslauf Hand-Automatik (mit Drehrichtungstausch)******************************************
+	IF ((NOT IN_DREH_TAUSCH  
+			AND	((IN_HAND_RECHTS AND IN_HAND)
+				OR(IN_RECHTs AND NOT IN_HAND )))
+ 		 OR ( IN_DREH_TAUSCH
+			AND((IN_HAND_LINKS AND IN_HAND)
+				OR(IN_LINKS AND NOT IN_HAND ))))
+	 THEN 
+		rechtslauf:= TRUE;
+	 	ELSE 
+			rechtslauf:= FALSE;
+	 END_IF
+
+//Linkslauf Hand-Automatik (mit Drehrichtungstausch)****************************************
+
+
+	IF ((NOT IN_DREH_TAUSCH  
+			AND ((IN_HAND_LINKS AND IN_HAND)
+				OR(IN_LINKS AND NOT IN_HAND )))
+  		OR ( IN_DREH_TAUSCH
+			AND ((IN_HAND_RECHTS AND IN_HAND)
+					OR(IN_RECHTS AND NOT IN_HAND )))) 
+  	THEN 
+		linkslauf:= TRUE;
+		ELSE 
+			linkslauf:= FALSE;
+	END_IF
+
+//Geschwindigkeit umkopieren************************************************************
+	IF IN_HAND 
+	THEN 
+		temp_v := IN_HAND_v;
+		ELSE 
+			temp_v := IN_v;
+	END_IF
+//Drehzahl ermitteln*************************************************************************
+	temp_drehzahl_soll:= v_faktor*temp_v;
+
+	IF temp_drehzahl_soll >= 6553.0
+		THEN temp_drehzahl_soll:=6553.0;
+	END_IF
+
+	out_ist_90:=ABS(OUT_DREHZAHL_IST) >ABS((temp_drehzahl_soll/100*90));	
+	out_Dreht:=ABS(OUT_DREHZAHL_IST)>1;
+//Vorgabe Soll-Drehzahl***********************************************************************
+	IF linkslauf
+	THEN 
+		out_PD.PD_2_solldrehzahl :=DWORD_TO_WORD (REAL_TO_DWORD (temp_drehzahl := ((temp_drehzahl_soll/0.2)*-1)));
+		ELSE 
+			 out_PD.PD_2_solldrehzahl :=DWORD_TO_WORD (REAL_TO_DWORD (temp_drehzahl := (temp_drehzahl_soll/0.2)));
+	END_IF
+
+//Vorgabe Soll-Rampe***************************************************************************
+//	out_PD.PD_3_rampe :=INT_TO_WORD(IN_RAMPE);
+
+//Reglersperre setzen**************************************************************************
+	reglersperre:=IN_Reglersperre;
+	freigabe_stop:=NOT IN_Reglersperre;
+
+//Antrieb starten ,stoppen mit Rampe************************************************************
+	IF rechtslauf 
+		OR linkslauf
+	THEN 
+		freigabe_halt := TRUE;
+	END_IF
+
+//Fehler /Störung löschen*************************************************************************
+	IF IN_RESET 
+	THEN 
+		reset:= TRUE;
+		ELSE 
+			reset:= FALSE;
+	END_IF
+
+//Steuerwort schreiben
+	steuerbyte_1	:= BYTE_OF_BIT(
+	B0:= reglersperre, 
+	B1:= freigabe_stop , 
+	B2:= freigabe_halt, 
+	B3:= reserve_3_1, 
+	B4:= reserve_4_1, 
+	B5:= reserve_5_1, 
+	B6:= reset, 
+	B7:= reserve_7_1);
+	
+	steuerbyte_2 :=BYTE_OF_BIT(
+	B0:= drehrichtung_motorpoti , 
+	B1:= motorpoti_auf, 
+	B2:= motorpoti_ab, 
+	B3:= n11_n21, 
+	B4:= n12_n22	 , 
+	B5:= sollwert_umschaltung, 
+	B6:= reserve_14  , 
+	B7:= reserve_15);
+    out_PD.PD_1_Steuerwort :=WORD_OF_BYTE(B1:= steuerbyte_2 , B0:=steuerbyte_1 );
+	
+(* Steuerwort --------------------------------------------------------------------
+	BIT 0: Reglersperre
+	0 = Freigabe
+	1 = Regler sperren, Bremse aktivieren
+	--------------------------------------------------------------------------------
+	BIT 1: Freigabe/Schnellstopp
+	0 = Schnellstopp
+	1 = Freigabe
+	--------------------------------------------------------------------------------
+	BIT 2: Freigabe/Halt
+	0 = Halt an Integratorrampe oder Prozess-Rampe
+	1 = Freigabe
+	--------------------------------------------------------------------------------
+	BIT 3: Reserviert (Reservierte Bits sind generell auf Null zu setzen!)
+	--------------------------------------------------------------------------------
+	BIT 4: Reserviert (Reservierte Bits sind generell auf Null zu setzen!)
+	--------------------------------------------------------------------------------
+	BIT 5: Reserviert (Reservierte Bits sind generell auf Null zu setzen!)
+	--------------------------------------------------------------------------------
+	BIT 6: Reset
+	0 = nicht aktiv
+	0 -> 1 = anstehende Störung zurücksetzen
+	--------------------------------------------------------------------------------
+	BIT 7: Reserviert (Reservierte Bits sind generell auf Null zu setzen!)
+	--------------------------------------------------------------------------------
+	BIT 8: Drehrichtung für Motorpoti
+	0 = Drehrichtung RECHTS
+	1 = Drehrichtung LINKS
+	--------------------------------------------------------------------------------
+	BIT 10 und 9: Motorpoti Hochlauf,Motorpoti Tieflauf
+	0 0 = keine Änderung
+	1 0 = ab
+	0 1 = auf
+	1 1 = keine Änderung
+	--------------------------------------------------------------------------------
+	BIT 12 und 11:Anwahl der internen Festsollwerte
+	n11...n13 bzw. n21...n23
+	0 0 = Drehzahl-Sollwert über Prozess-Ausgangsdatenwort 2
+	0 1 = interner Sollwert n11 (n21)
+	1 0 = interner Sollwert n12 (n22)
+	1 1 = interner Sollwert n13 (n23)
+	--------------------------------------------------------------------------------
+	BIT 13: Festsollwert-Umschaltung
+	0 = Festsollwerte des aktivn Parametersatzes über Bit 11/12 anwählbar
+	1 = Festsollwerte des anderen Parametersatzes über Bit 11/12 anwählbar
+	--------------------------------------------------------------------------------
+	BIT 14: Reserviert (Reservierte Bits sind generell auf Null zu setzen!)
+	--------------------------------------------------------------------------------
+	BIT 15: Reserviert (Reservierte Bits sind generell auf Null zu setzen!*)
+
+
+
+
+
+
+
+
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

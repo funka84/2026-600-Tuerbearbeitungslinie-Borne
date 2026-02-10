@@ -1,0 +1,1427 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_Achse_NC_PTP_Master_Slave_v2" Id="{5952f4b3-531b-4b54-9840-912c645af488}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Achse_NC_PTP_Master_Slave_v2
+(*
+	Ansteuerung einer Achse über die NC (PTP)
+	Autor O.E.
+	Erstellt xx.xx.2017
+	Version 1.0 	
+	
+	Update 01.09.2022
+	Version 2.0 - zusätzlche InOut-Schnittstelle um direkt mit dem Regler zu komunizieren
+				- das Referenziere/Absolutmaßsetzen wird im Regler gemacht
+                   da das Homing bei Beckhoff (Nullpunktverschiebung) nur temporär ist	
+				- Bremsentest im programm ergänzt
+	
+	Update 14.06.2024
+	Version 3.0	- Auslesen der Software Endlagen aus der NC und langsames tippen vor den Endlagen
+				- in_Reglersperre = Vorschubfreigabe MC-Power
+				- in_Freigabe = Wenn false, dann wird die Achsbewegung gestoppt (Positionieren und Tippen) MC_Halt
+				- Augabe der aktuellen Zielposition, Abhängig davon, ob die Achse in Bewegung ist, oder steht 
+			
+	Update 02.12.2024
+	Version Master_Slave
+				- Erweiterung des Achsbausteim um eine MasterSlave ansteuertung von bis zu 3 Slave achsen
+	
+	Update 02.07.2025
+	Erweiterung einer Längenkorrektur
+			
+*)
+
+VAR_INPUT
+	in_max_Velo				: REAL;						(*	maximale Geschwindigkeit - Anwendereinheit z.B. xx mm/s *)
+	in_Reglersperre			: BOOL;						(*  Software-Freigabe für die Achse  *)
+	in_Freigabe				: BOOL;						(*  Freigabe JogMode und Positionieren *)
+	in_Reset				: BOOL;						(*  Achs Reset  *)
+	in_Hand					: BOOL;						(*  Handbetrieb  *)
+	in_Auto					: BOOL;						(*  Automatikbetrieb  *)
+	in_Auto_Override		: INT;						(*  in %  *)	
+	in_I_Slave_1			: LREAL;					(* Getriebefaktor Slave 1 zum Master *)
+	in_I_Slave_2			: LREAL;					(* Getriebefaktor Slave 2 zum Master *)
+	in_I_Slave_3			: LREAL;					(* Getriebefaktor Slave 3 zum Master *)
+	in_Auto_speed			: LREAL;
+	in_Parameter			: DUT_Rexroth_Parameter;
+END_VAR
+VAR_OUTPUT
+	out_Achs_Status				: ST_AxisStatus;		(* 	aktueller Achsstatus *)
+	out_Achs_Error				: BOOL;					(*  Achs Fehler *)
+	out_Achs_ErrorID			: DINT;					(*  Achs Fehler ID *) 
+	out_Achs_ErrorID_2			: DINT;					(*  Achs Fehler ID *) 
+	out_Achs_ErrorID_3			: DINT;					(*  Achs Fehler ID *) 
+	out_Achs_ErrorID_4			: DINT;					(*  Achs Fehler ID *) 
+	out_FB_Error				: BOOL;					(*  FB Fehler - intern *)
+	out_FB_ErrorID				: DWORD;				(*  FB Fehler ID - intern *) 
+	out_FB_ErrorID_2			: DWORD;				(*  FB Fehler ID - intern *) 
+	out_FB_ErrorID_3			: DWORD;				(*  FB Fehler ID - intern *) 
+	out_FB_ErrorID_4			: DWORD;				(*  FB Fehler ID - intern *) 
+	out_Achsen_gekoppelt		: BOOL;	
+	out_velo_erreicht			: BOOL;
+	
+END_VAR
+VAR_IN_OUT
+	inout_NC_Master			: AXIS_REF;					(*  Schnittstelle zwischen der SPS und der NC  *)												
+	inout_NC_slave_1		: AXIS_REF;					(*  Schnittstelle zwischen der SPS und der NC  *)												
+	inout_NC_slave_2		: AXIS_REF;					(*  Schnittstelle zwischen der SPS und der NC  *)												
+	inout_NC_slave_3		: AXIS_REF;					(*  Schnittstelle zwischen der SPS und der NC  *)												
+	inout_rexroth			: DUT_PD_InOut_Achsen;		(*  Schnittstelle zwischen der SPS und dem Regler  *)	
+	inout_rexroth_1			: DUT_PD_InOut_Achsen;		(*  Schnittstelle zwischen der SPS und dem Regler  *)	
+	inout_rexroth_2			: DUT_PD_InOut_Achsen;		(*  Schnittstelle zwischen der SPS und dem Regler  *)	
+	inout_rexroth_3			: DUT_PD_InOut_Achsen;		(*  Schnittstelle zwischen der SPS und dem Regler  *)												
+	inout_service			: DUT_Achse_Service;		(*  Eingangs-Variablen für den Servicebetrieb	 *)
+	inout_service_1			: DUT_Achse_Service;		(*  Eingangs-Variablen für den Servicebetrieb	 *)
+	inout_service_2			: DUT_Achse_Service;		(*  Eingangs-Variablen für den Servicebetrieb	 *)
+	inout_service_3			: DUT_Achse_Service;		(*  Eingangs-Variablen für den Servicebetrieb	 *)
+	inout_Auto_Velo_start	: BOOL;						(*  Achse start Endlosfahrt *)
+	inout_Auto_stop			: BOOL;						(*  Achse stopp Positionieren *)
+	inout_master_slave_ein	: BOOL;
+	inout_master_slave_aus	: BOOL;
+	inout_laengenabgleich 	: DUT_Geschwindigkeitsabgleich;
+	
+END_VAR
+
+VAR
+	FB_ReadErrorID			: MC_ReadAxisError;			(*  FehlerID der Achse auslesen  *)
+	FB_ReadErrorID_2		: MC_ReadAxisError;			(*  FehlerID der Achse auslesen  *)
+	FB_ReadErrorID_3		: MC_ReadAxisError;			(*  FehlerID der Achse auslesen  *)
+	FB_ReadErrorID_4		: MC_ReadAxisError;			(*  FehlerID der Achse auslesen  *)
+	
+	FB_ReadStatus			: MC_ReadStatus;
+	FB_ReadStatus_2			: MC_ReadStatus;
+	FB_ReadStatus_3			: MC_ReadStatus;
+	FB_ReadStatus_4			: MC_ReadStatus;
+	
+	FB_POWER				: MC_POWER;					(*  Leistung ein-/ausschalten  *)
+	FB_POWER_2				: MC_POWER;					(*  Leistung ein-/ausschalten Slave 1 *)
+	FB_POWER_3				: MC_POWER;					(*  Leistung ein-/ausschalten Slave 2  *)
+	FB_POWER_4				: MC_POWER;					(*  Leistung ein-/ausschalten Slave 3  *)
+	
+	FB_RESET				: MC_RESET;					(*  Achse resetten *)
+	FB_RESET_2				: MC_RESET;					(*  Achse resetten Slave 1 *) 
+	FB_RESET_3				: MC_RESET;					(*  Achse resetten Slave 2  *)
+	FB_RESET_4				: MC_RESET;					(*  Achse resetten Slave 3  *)
+
+	FB_Stop					: MC_Stop;					(*  Achse anhalten  *)
+	FB_Stop_2				: MC_Stop;					(*  Achse anhalten  *)
+	FB_Stop_3				: MC_Stop;					(*  Achse anhalten  *)
+	FB_Stop_4				: MC_Stop;					(*  Achse anhalten  *)
+	
+	FB_Jog					: MC_Jog;					(*  Achse tippen  *)
+	FB_Move_velo			: MC_MoveVelocity;			(*  Achse positionieren  *)
+
+	FB_Read_Parameter		: MC_ReadParameterSet;
+	
+	FB_GearIn_1_2			: MC_GearIn;
+	FB_GearIn_1_3			: MC_GearIn;
+	FB_GearIn_1_4			: MC_GearIn;
+	FB_GearOut_1_2			: MC_GearOut;
+	FB_GearOut_1_3			: MC_GearOut;
+	FB_GearOut_1_4			: MC_GearOut;
+
+	
+	verz_reset				: ton;
+
+	test					: BOOL;
+	ton_reset				:TON;
+	
+
+	tempNotMoving1: BOOL;
+	tempNotMoving2: BOOL;
+	tempNotMoving3: BOOL;
+	tempNotMoving4: BOOL;
+	
+	temp_options:ST_MoveOptions;
+	
+	SK_Abgleich				: UINT;
+	bRefStart_NC			: BOOL;
+	bRefStart_UR			: BOOL;
+	bPosStart				: BOOL;
+	bParaWriteStart			: BOOL;
+	bParaReadStart			: BOOL;
+	rKorrekturfaktor_neu	: LREAL;
+	rKorrekturfaktor_alt	: LREAL;
+	rModulowert_neu			: LREAL;
+	rModulowert_alt			: LREAL;
+	
+	master_pos						:MC_MoveModulo;								
+	master_ref						:MC_Home;
+	master_paramLesen_Scaling		:MC_ReadParameter;	
+	master_paramLesen_Modulo		:MC_ReadParameter;				
+	master_setEncoderScale			:MC_SetEncoderScalingFactor;
+	master_paramSchreiben_Modulo	:MC_WriteParameter;
+	
+	
+	slave_1_pos				:MC_MoveModulo;								
+	slave_1_ref				:MC_Home;
+	slave_1_paramLesen_Scaling		:MC_ReadParameter;
+	slave_1_paramLesen_Modulo		:MC_ReadParameter;
+	slave_1_paramSchreiben_Modulo	:MC_WriteParameter;			
+	slave_1_setEncoderScale	:MC_SetEncoderScalingFactor;
+	
+	
+	
+	slave_2_pos				:MC_MoveModulo;								
+	slave_2_ref				:MC_Home;
+	slave_2_paramLesen_Scaling		:MC_ReadParameter;	
+	slave_2_paramLesen_Modulo		:MC_ReadParameter;	
+	slave_2_paramSchreiben_Modulo	:MC_WriteParameter;			
+	slave_2_setEncoderScale	:MC_SetEncoderScalingFactor;
+	
+	slave_3_pos						:MC_MoveModulo;								
+	slave_3_ref						:MC_Home;
+	slave_3_paramLesen_Scaling		:MC_ReadParameter;	
+	slave_3_paramLesen_Modulo		:MC_ReadParameter;	
+	slave_3_paramSchreiben_Modulo	:MC_WriteParameter;	
+	slave_3_setEncoderScale			:MC_SetEncoderScalingFactor;
+	
+
+	
+	Master_referenziert			:FB_inRange;
+	Slave_1_referenziert		:FB_inRange;
+	Slave_2_referenziert		:FB_inRange;
+	Slave_3_referenziert		:FB_inRange;
+	
+	 Master_inPos			:FB_inRange;
+	Slave_1_inPos		:FB_inRange;
+	Slave_2_inPos		:FB_inRange;
+	Slave_3_inPos		:FB_inRange;
+	
+	 Master_referenziert_Servo		:FB_inRange;
+	Slave_1_referenziert_Servo		:FB_inRange;
+	Slave_2_referenziert_Servo		:FB_inRange;
+	Slave_3_referenziert_Servo		:FB_inRange;
+	
+	Master_referenziert_Servo_1		:FB_inRange;
+	Slave_1_referenziert_Servo_1	:FB_inRange;
+	Slave_2_referenziert_Servo_1	:FB_inRange;
+	Slave_3_referenziert_Servo_1	:FB_inRange;
+
+
+	master_ref_NC_fertig: BOOL;
+	Slave_1_ref_NC_fertig: BOOL;
+	Slave_2_ref_NC_fertig: BOOL;
+	Slave_3_ref_NC_fertig: BOOL;
+	Master_pos_fertig: BOOL;
+	Slave_1_pos_fertig: BOOL;
+	Slave_2_pos_fertig: BOOL;
+	Slave_3_pos_fertig: BOOL;
+	Slave_3_read_fertig: BOOL;
+	Slave_2_read_fertig: BOOL;
+	Slave_1_read_fertig: BOOL;
+	Master_read_fertig: BOOL;
+	Slave_1_write_fertig: BOOL;
+	Slave_2_write_fertig: BOOL;
+	Master_write_fertig: BOOL;
+	Slave_3_write_fertig: BOOL;
+	
+	ton_Status			:TON;
+	bPosAktiv: BOOL;
+	r_sollwert			:REAL;
+	bRefStart_Servo: BOOL;
+	master_ref_Servo_fertig: BOOL;
+	Slave_1_ref_Servo_fertig: BOOL;
+	Slave_2_ref_Servo_fertig: BOOL;
+	Slave_3_ref_Servo_fertig: BOOL;
+	 
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// ***** Achs Status aktualisieren *******************************************************************************************
+	//************************************************************************************************************************
+	//inout_NC();
+	//inout_NC_slave_1();
+	//inout_NC_slave_2();
+	//inout_NC_slave_3();
+	
+	out_Achs_Status	:= FB_ReadStatus.Status;
+	
+	Ablauf_Transportabgleich();
+	
+	out_Achs_Error	:= FB_ReadErrorID.AxisErrorID > 0
+						OR FB_ReadErrorID_2.AxisErrorID > 0
+						OR FB_ReadErrorID_3.AxisErrorID > 0
+						OR FB_ReadErrorID_4.AxisErrorID > 0;
+
+
+	axisisnotmoving( nStateDWord := inout_NC_Master.NcToPLC.StateDWord,
+					AxisIsNotMoving=>tempNotMoving1);	
+	axisisnotmoving( nStateDWord := inout_NC_slave_1.NcToPLC.StateDWord,
+					AxisIsNotMoving=>tempNotMoving2);	
+	axisisnotmoving( nStateDWord := inout_NC_slave_2.NcToPLC.StateDWord,
+					AxisIsNotMoving=>tempNotMoving3);	
+	axisisnotmoving( nStateDWord := inout_NC_slave_3.NcToPLC.StateDWord,
+					AxisIsNotMoving=>tempNotMoving4);	
+			
+
+	out_velo_erreicht:= NOT FB_ReadStatus.StandStill
+						AND NOT tempNotMoving1
+						AND NOT tempNotMoving2
+						AND NOT tempNotMoving3
+						AND NOT tempNotMoving4;			
+
+	
+				
+(*************************************************************************************************)
+(*Achsen Koppeln *)
+	IF inout_master_slave_ein
+		AND NOT FB_Move_velo.execute
+		AND NOT FB_Move_velo.busy
+		AND NOT FB_Stop.execute
+		AND NOT FB_Stop.Done
+		AND NOT FB_Stop.busy
+		AND NOT FB_GearIn_1_2.execute
+		AND NOT FB_GearIn_1_2.busy
+		AND NOT FB_Stop_2.execute
+		AND NOT FB_Stop_2.Done
+		AND NOT FB_Stop_2.busy
+		AND NOT FB_GearIn_1_3.execute
+		AND NOT FB_GearIn_1_3.busy
+		AND NOT FB_Stop_3.execute
+		AND NOT FB_Stop_3.Done
+		AND NOT FB_Stop_3.busy
+		AND NOT FB_GearIn_1_4.execute
+		AND NOT FB_GearIn_1_4.busy
+		AND NOT FB_Stop_4.execute
+		AND NOT FB_Stop_4.Done
+		AND NOT FB_Stop_4.busy
+	THEN
+		FB_GearIn_1_2.Execute:=TRUE;
+		FB_GearIn_1_3.Execute:=TRUE;
+		FB_GearIn_1_4.Execute:=TRUE;
+	END_IF
+	
+	IF FB_GearIn_1_2.InGear
+		AND FB_GearIn_1_3.InGear
+		AND FB_GearIn_1_4.InGear
+		OR (   FB_GearIn_1_2.Error
+			OR FB_GearIn_1_3.Error
+			OR FB_GearIn_1_4.Error
+			OR FB_GearIn_1_2.CommandAborted			
+			OR FB_GearIn_1_3.CommandAborted			
+			OR FB_GearIn_1_4.CommandAborted)	
+	THEN
+		FB_GearIN_1_2.Execute:=FALSE;
+		FB_GearIN_1_3.Execute:=FALSE;
+		FB_GearIN_1_4.Execute:=FALSE;
+		inout_master_slave_ein:=FALSE;
+	END_IF
+	
+(*Achsen Entkoppeln *)
+	IF inout_master_slave_aus
+		OR (   FB_GearIn_1_2.Error
+			OR FB_GearIn_1_3.Error
+			OR FB_GearIn_1_4.Error
+			OR FB_GearIn_1_2.CommandAborted			
+			OR FB_GearIn_1_3.CommandAborted			
+			OR FB_GearIn_1_4.CommandAborted)
+	THEN
+		FB_GearOut_1_2.Execute:=TRUE;
+		FB_GearOut_1_3.Execute:=TRUE;
+		FB_GearOut_1_4.Execute:=TRUE;
+	END_IF
+	
+	IF FB_GearOut_1_2.Done 
+		AND FB_GearOut_1_3.Done
+		AND FB_GearOut_1_4.Done
+		OR (   FB_GearOut_1_2.Error
+			OR FB_GearOut_1_3.Error
+			OR FB_GearOut_1_4.Error)			
+	THEN
+		FB_GearOut_1_2.Execute:=FALSE;
+		FB_GearOut_1_3.Execute:=FALSE;
+		FB_GearOut_1_4.Execute:=FALSE;
+		inout_master_slave_aus:=FALSE;
+	END_IF
+	
+	out_Achsen_gekoppelt:=inout_NC_Master.NcToPlc.CoupleState=1
+							AND inout_NC_Slave_1.NcToPlc.CoupleState=3
+							AND inout_NC_Slave_2.NcToPlc.CoupleState=3
+							AND inout_NC_Slave_3.NcToPlc.CoupleState=3;
+	
+// Freigabe positionieren ****************************************************************************************************
+	//************************************************************************************************************************
+	IF NOT in_Freigabe
+	THEN
+		inout_Auto_velo_start 			:= FALSE;
+		FB_Move_velo.Execute			:= FALSE;
+	END_IF	
+	
+// ***** Hand Betriebsart /Geschwindigkeit zurücksetzen***********************************************************************
+	//************************************************************************************************************************
+	IF NOT in_Hand
+	THEN
+		inout_service.betriebsart	:= 0;
+		inout_service.override		:= 0;
+	END_IF
+
+// ***** Sollposition / Geschwindigkeit umkopieren ***************************************************************************
+	//************************************************************************************************************************
+	IF in_hand
+	THEN
+		FB_Power.Override		:= INT_TO_LREAL(inout_service.override);
+		FB_Move_Velo.Velocity	:= in_max_velo;
+		FB_Jog.Velocity			:= in_max_velo;
+	ELSE
+		FB_Power.Override		:= INT_TO_LREAL(in_Auto_Override);
+		FB_Move_Velo.Velocity	:= in_Auto_speed * 1000 / 60;
+		FB_Jog.Velocity			:= 0.0;
+	END_IF
+	
+	
+// ***** Reset ***************************************************************************************************************
+	//************************************************************************************************************************
+	inout_rexroth.S0145_steuerword.0:=in_Reset;		// S-0-0099 - C0500 Reset Zustandsklasse 1 l
+	inout_rexroth_1.S0145_steuerword.0:=in_Reset;	// S-0-0099 - C0500 Reset Zustandsklasse 1 l
+	inout_rexroth_2.S0145_steuerword.0:=in_Reset;	// S-0-0099 - C0500 Reset Zustandsklasse 1 l
+	inout_rexroth_3.S0145_steuerword.0:=in_Reset;	// S-0-0099 - C0500 Reset Zustandsklasse 1 l
+
+	IF in_Reset
+		AND (out_FB_Error
+		OR out_Achs_Error) 
+		OR ( in_Hand
+				AND inout_service.betriebsart=0
+				AND inout_service.minus_stop ) 
+	THEN
+		FB_Reset.Execute	:= TRUE; //inout_NC.NcToPlc.CoupleState <> 3; // Achse ist kein Slave
+		FB_Reset_2.Execute	:= TRUE; 
+		FB_Reset_3.Execute	:= TRUE; 
+		FB_Reset_4.Execute	:= TRUE; 
+		FB_Stop.Execute		:= FALSE;
+		FB_Stop_2.Execute	:= FALSE;
+		FB_Stop_3.Execute	:= FALSE;
+		FB_Stop_4.Execute	:= FALSE;
+		FB_Move_velo.Execute:= FALSE;
+		out_FB_Error		:= FALSE;
+		out_FB_ErrorID		:= 0;
+	END_IF
+
+	verz_reset(	in:= FB_Reset.Execute,
+				pt:= T#200MS);
+	IF verz_reset.Q
+	THEN
+		FB_Reset.Execute := FALSE;
+		FB_Reset_2.Execute := FALSE;
+		FB_Reset_3.Execute := FALSE;
+		FB_Reset_4.Execute := FALSE;
+	END_IF
+
+// ***** Achse stoppen *******************************************************************************************************
+	//************************************************************************************************************************
+	IF (in_Hand
+			AND inout_service.minus_stop
+			AND inout_service.betriebsart <> 1)
+		OR inout_Auto_stop
+		OR (NOT in_Freigabe
+			AND inout_NC_Master.Status.Moving
+			AND inout_NC_Master.NcToPlc.CoupleState <> 3) // Achse ist keine Slave Achse
+		OR FB_Move_Velo.CommandAborted
+		OR FB_Move_Velo.Error
+		OR out_Achs_Error
+	//	OR out_Achsen_gekoppelt 
+	THEN
+		FB_STOP.Execute				:= TRUE;
+		FB_STOP_2.Execute			:= TRUE;
+		FB_STOP_3.Execute			:= TRUE;
+		FB_STOP_4.Execute			:= TRUE;
+		FB_Move_Velo.Execute		:= FALSE;
+		inout_service.plus_start 	:= FALSE;	
+	END_IF                             
+                                       
+	IF (FB_STOP.Execute                
+		AND FB_STOP.Done)              
+	THEN                               
+		FB_STOP.Execute				:= FALSE;
+	END_IF
+	
+	IF (FB_STOP_2.Execute                
+		AND FB_STOP_2.Done)              
+	THEN                               
+		FB_STOP_2.Execute				:= FALSE;
+	END_IF
+	
+	IF (FB_STOP_3.Execute                
+		AND FB_STOP_3.Done)              
+	THEN                               
+		FB_STOP_3.Execute				:= FALSE;
+	END_IF
+	
+	IF (FB_STOP_4.Execute                
+		AND FB_STOP_4.Done)              
+	THEN                               
+		FB_STOP_4.Execute				:= FALSE;
+	END_IF
+	
+	IF NOT FB_STOP.Execute	
+		AND NOT FB_STOP_2.Execute	
+		AND NOT FB_STOP_3.Execute	
+		AND NOT FB_STOP_4.Execute	
+	THEN
+		inout_service.minus_stop  	:= FALSE;
+		inout_Auto_stop				:= FALSE;	
+	END_IF
+
+// ***** Achse Starten *******************************************************************************************************
+	//************************************************************************************************************************
+	IF (in_auto
+			AND inout_Auto_Velo_start)
+		AND NOT FB_Stop.Done
+		AND NOT FB_Stop.busy
+		AND NOT FB_Stop_2.Done
+		AND NOT FB_Stop_2.busy
+		AND NOT FB_Stop_3.Done
+		AND NOT FB_Stop_3.busy
+		AND NOT FB_Stop_4.Done
+		AND NOT FB_Stop_4.busy
+		AND NOT out_Achs_Error // optimierung 01.10.2020
+		AND in_Freigabe
+	THEN
+		FB_Move_Velo.Execute:=TRUE;	
+	END_IF
+
+	IF (FB_Move_Velo.Execute
+		AND FB_Move_Velo.busy)
+		OR out_Achs_Error
+		OR (NOT inout_auto_velo_start AND IN_AUTO)
+	THEN
+		FB_Move_Velo.Execute				:=FALSE;
+		inout_Auto_velo_start			:=FALSE;
+		inout_Auto_stop				:=TRUE;
+	END_IF
+
+// ***** Handbetrieb - Achse tippen ******************************************************************************************
+	//************************************************************************************************************************
+	IF in_Hand
+		AND inout_service.betriebsart=1
+		AND out_Achsen_gekoppelt
+		AND NOT FB_Jog.CommandAborted
+		AND NOT FB_Jog.Error
+		AND in_Freigabe
+	THEN
+		FB_Jog.JogForward	:= inout_service.plus_start ;
+		FB_Jog.JogBackwards	:= inout_service.minus_stop;
+		ELSE
+			FB_Jog.JogForward	:= FALSE;
+			FB_Jog.JogBackwards	:= FALSE;
+	END_IF
+	
+// ***** Aufruf der FB´s  ****************************************************************************************************
+	//************************************************************************************************************************
+	 ACT_Achse_NC_PTP();	
+				
+// ***** FB Fehler auswerten und ausgeben ************************************************************************************
+	//************************************************************************************************************************
+	IF FB_Jog.Error
+		AND FB_Jog.ErrorID > 0
+	THEN
+		out_FB_Error	:= TRUE;
+		out_FB_ErrorID	:= FB_Jog.ErrorID;
+				
+	ELSIF FB_Stop.Error
+		AND FB_Stop.ErrorID>0
+	THEN	
+		FB_Stop.Execute	:= FALSE;
+		out_FB_Error	:= TRUE;
+		out_FB_ErrorID	:= FB_Stop.ErrorID;
+		
+	ELSIF FB_Stop_2.Error
+		AND FB_Stop_2.ErrorID>0
+	THEN	
+		FB_Stop_2.Execute	:= FALSE;
+		out_FB_Error	:= TRUE;
+		out_FB_ErrorID	:= FB_Stop_2.ErrorID;
+		
+	ELSIF FB_Stop_3.Error
+		AND FB_Stop_3.ErrorID>0
+	THEN	
+		FB_Stop_3.Execute	:= FALSE;
+		out_FB_Error	:= TRUE;
+		out_FB_ErrorID	:= FB_Stop_3.ErrorID;
+		
+	ELSIF FB_Stop_4.Error
+		AND FB_Stop_4.ErrorID>0
+	THEN	
+		FB_Stop_4.Execute	:= FALSE;
+		out_FB_Error	:= TRUE;
+		out_FB_ErrorID	:= FB_Stop_4.ErrorID;
+		
+	ELSIF FB_Reset.Error
+		AND FB_Reset.ErrorID>0
+	THEN
+		FB_Reset.Execute	:= FALSE;
+		out_FB_Error		:= TRUE;
+		out_FB_ErrorID		:= FB_Reset.ErrorID;
+		
+	ELSIF FB_Reset_2.Error
+		AND FB_Reset_2.ErrorID>0
+	THEN
+		FB_Reset_2.Execute	:= FALSE;
+		out_FB_Error		:= TRUE;
+		out_FB_ErrorID		:= FB_Reset_2.ErrorID;
+		
+	ELSIF FB_Reset_3.Error
+		AND FB_Reset_3.ErrorID>0
+	THEN
+		FB_Reset_3.Execute	:= FALSE;
+		out_FB_Error		:= TRUE;
+		out_FB_ErrorID		:= FB_Reset_3.ErrorID;
+		
+	ELSIF FB_Reset_4.Error
+		AND FB_Reset_4.ErrorID>0
+	THEN
+		FB_Reset_4.Execute	:= FALSE;
+		out_FB_Error		:= TRUE;
+		out_FB_ErrorID		:= FB_Reset_4.ErrorID;
+		
+	ELSIF FB_GearIn_1_2.Error
+		AND FB_GearIn_1_2.ErrorID>0
+	THEN	
+		FB_GearIn_1_2.Execute	:= FALSE;
+		out_FB_Error			:= TRUE;
+		out_FB_ErrorID			:= FB_GearIn_1_2.ErrorID;
+		
+	ELSIF FB_GearIn_1_3.Error
+		AND FB_GearIn_1_3.ErrorID>0
+	THEN	
+		FB_GearIn_1_3.Execute	:= FALSE;
+		out_FB_Error			:= TRUE;
+		out_FB_ErrorID			:= FB_GearIn_1_3.ErrorID;
+		
+	ELSIF FB_GearIn_1_4.Error
+		AND FB_GearIn_1_4.ErrorID>0
+	THEN	
+		FB_GearIn_1_4.Execute	:= FALSE;
+		out_FB_Error			:= TRUE;
+		out_FB_ErrorID			:= FB_GearIn_1_4.ErrorID;
+		
+	ELSIF FB_GearOut_1_2.Error
+		AND FB_GearOut_1_2.ErrorID>0
+	THEN	
+		FB_GearOut_1_2.Execute	:= FALSE;
+		out_FB_Error			:= TRUE;
+		out_FB_ErrorID			:= FB_GearOut_1_2.ErrorID;
+		
+	ELSIF FB_GearOut_1_3.Error
+		AND FB_GearOut_1_3.ErrorID>0
+	THEN	
+		FB_GearOut_1_3.Execute	:= FALSE;
+		out_FB_Error			:= TRUE;
+		out_FB_ErrorID			:= FB_GearOut_1_3.ErrorID;
+		
+	ELSIF FB_GearOut_1_4.Error
+		AND FB_GearOut_1_4.ErrorID>0
+	THEN	
+		FB_GearOut_1_4.Execute	:= FALSE;
+		out_FB_Error			:= TRUE;
+		out_FB_ErrorID			:= FB_GearOut_1_4.ErrorID;	
+		
+		
+	END_IF			
+
+// ***** Servicetasten zurück setzen ************************************************************************************
+	//************************************************************************************************************************
+	IF inout_service.betriebsart <> 1
+	THEN
+		inout_service.plus_start := FALSE;				
+		inout_service.minus_stop := FALSE;				
+	END_IF
+	
+	IF NOT in_Hand
+	THEN
+		inout_service.betriebsart := 0;
+	END_IF				
+	
+	inout_Auto_velo_start 	:= FALSE;	
+	inout_Auto_stop			:= FALSE;			
+					
+					
+					]]></ST>
+    </Implementation>
+    <Folder Name="Transportabgleich" Id="{aca372b2-34f0-47bf-b7e3-7a93021e8a2e}" />
+    <Action Name="Ablauf_Transportabgleich" Id="{97a02389-7c3b-4cf7-a132-bdcc76c25cdd}" FolderPath="Transportabgleich\">
+      <Implementation>
+        <ST><![CDATA[Status_Transportabgleich();
+ton_Status(PT:=T#2S);
+ton_reset(PT:=T#20S);
+
+
+
+					
+CASE SK_Abgleich OF
+0:// Variablen auf 0 setzen	
+	bRefStart_NC		:=FALSE;
+	bRefStart_UR		:=FALSE;
+	bPosStart			:=FALSE;
+	bParaReadStart		:=FALSE;
+	bParaWriteStart		:=FALSE;
+	bPosAktiv			:=FALSE;
+		master_ref_Servo_fertig:=FALSE;
+		Slave_1_ref_Servo_fertig:=FALSE;
+		Slave_2_ref_Servo_fertig:=FALSE;
+		Slave_3_ref_Servo_fertig:=FALSE;
+		bRefStart_Servo := FALSE;
+		master_ref_Servo_fertig:=FALSE;
+		Slave_1_ref_Servo_fertig:=FALSE;
+		Slave_2_ref_Servo_fertig:=FALSE;
+		Slave_3_ref_Servo_fertig:=FALSE;
+		bRefStart_Servo := FALSE;
+	
+	IF inout_laengenabgleich.bStart_Abgleich
+	THEN
+		IF 	NOT bRefStart_NC
+			AND NOT bRefStart_UR
+			AND NOT bPosStart
+			AND NOT bParaWriteStart
+			AND NOT bParaReadStart
+			AND inout_laengenabgleich.iTransportriemenID <> 0
+		THEN
+			inout_laengenabgleich.iStatusButton:=1;
+			SK_Abgleich:=10;
+		END_IF
+	END_IF
+
+10:// Servo referenzieren
+	
+	bRefStart_Servo := TRUE;
+
+	IF 		(inout_laengenabgleich.iTransportriemenID = 1 AND  master_ref_Servo_fertig)
+		OR 	(inout_laengenabgleich.iTransportriemenID = 2 AND Slave_1_ref_Servo_fertig)
+		OR 	(inout_laengenabgleich.iTransportriemenID = 3 AND Slave_2_ref_Servo_fertig)
+		OR 	(inout_laengenabgleich.iTransportriemenID = 4 AND Slave_3_ref_Servo_fertig)
+	THEN
+		bRefStart_Servo:=FALSE;
+		SK_Abgleich		:= 20;
+	END_IF;
+
+	
+20:// NC referenzieren
+
+	bRefStart_NC :=TRUE;
+	
+	IF 		(inout_laengenabgleich.iTransportriemenID = 1 AND master_ref_NC_fertig)
+		OR 	(inout_laengenabgleich.iTransportriemenID = 2 AND Slave_1_ref_NC_fertig)
+		OR 	(inout_laengenabgleich.iTransportriemenID = 3 AND Slave_2_ref_NC_fertig)
+		OR 	(inout_laengenabgleich.iTransportriemenID = 4 AND Slave_3_ref_NC_fertig)
+		
+	THEN
+		bRefStart_NC:=FALSE;
+		SK_Abgleich:=30;
+	ELSIF 	(inout_laengenabgleich.iTransportriemenID = 1 AND master_ref.Error)
+		OR	(inout_laengenabgleich.iTransportriemenID = 2 AND Slave_1_ref.Error)
+		OR	(inout_laengenabgleich.iTransportriemenID = 3 AND Slave_2_ref.Error)
+		OR	(inout_laengenabgleich.iTransportriemenID = 4 AND Slave_3_ref.Error)
+	THEN
+		bRefStart_NC:=FALSE;
+		SK_Abgleich:=99;	
+	END_IF
+	
+
+
+30:// Auf Position fahren
+	//ton_reset.IN :=TRUE;
+
+	IF 	NOT bPosAktiv
+		AND NOT master_pos.Active
+		AND NOT Slave_1_pos.Active
+		AND NOT Slave_2_pos.Active
+		AND NOT Slave_3_pos.Active
+	THEN
+	
+			bPosStart := TRUE;
+	ELSE
+			bPosStart := FALSE;
+	END_IF
+	
+	
+	IF   master_pos.Active
+		OR  Slave_1_pos.Active
+		OR  Slave_2_pos.Active
+		OR  Slave_3_pos.Active
+	THEN
+		bPosAktiv:=TRUE;
+	END_IF
+	
+	IF 		(inout_laengenabgleich.iTransportriemenID = 1 AND master_pos_fertig)
+		OR 	(inout_laengenabgleich.iTransportriemenID = 2 AND Slave_1_pos_fertig)
+		OR 	(inout_laengenabgleich.iTransportriemenID = 3 AND Slave_2_pos_fertig)
+		OR 	(inout_laengenabgleich.iTransportriemenID = 4 AND Slave_3_pos_fertig)
+	THEN
+ 		bPosStart 		:= FALSE;
+		bPosAktiv 		:= FALSE;
+		ton_reset.IN 	:=FALSE;
+		SK_Abgleich		:=40;
+	ELSIF
+		ton_reset.Q 
+	THEN
+		ton_reset.IN 	:=FALSE;
+		SK_Abgleich		:=99;
+	END_IF
+
+40:// Aktuellen Parameter aus NC auslesen
+	bParaReadStart :=TRUE;
+	
+	IF 		(inout_laengenabgleich.iTransportriemenID = 1 AND master_read_fertig)
+		OR 	(inout_laengenabgleich.iTransportriemenID = 2 AND Slave_1_read_fertig)
+		OR 	(inout_laengenabgleich.iTransportriemenID = 3 AND Slave_2_read_fertig)
+		OR 	(inout_laengenabgleich.iTransportriemenID = 4 AND Slave_3_read_fertig)
+	THEN
+		inout_laengenabgleich.iStatusButton:=2;
+		bParaReadStart := FALSE;
+		SK_Abgleich		:=50;
+	ELSIF 	(inout_laengenabgleich.iTransportriemenID = 1 AND  master_paramLesen_Scaling.Error)
+		OR	(inout_laengenabgleich.iTransportriemenID = 2 AND slave_1_paramLesen_Scaling.Error)
+		OR	(inout_laengenabgleich.iTransportriemenID = 3 AND slave_2_paramLesen_Scaling.Error)
+		OR	(inout_laengenabgleich.iTransportriemenID = 4 AND slave_3_paramLesen_Scaling.Error)
+	THEN
+		bParaReadStart:=FALSE;
+		SK_Abgleich:=99;
+	END_IF
+	
+	 
+	
+50:// Manipulationsfaktor berechenen
+// Wenn zu weit dann Vorschubkonstante größer
+// Wenn zu kurz dann Vorschubkonstante kleiner
+inout_laengenabgleich.bEingabe_Quitt := inout_laengenabgleich.rGemesseneLaenge > 0 ;
+
+IF  inout_laengenabgleich.rGemesseneLaenge <> 0
+	AND r_sollwert  <> 0
+THEN
+	rKorrekturfaktor_neu:=  (inout_laengenabgleich.rGemesseneLaenge / r_sollwert) * rKorrekturfaktor_alt;
+	rModulowert_neu		:=  (inout_laengenabgleich.rGemesseneLaenge / r_sollwert) * rModulowert_alt;
+	
+	IF inout_laengenabgleich.bEingabe_Quitt
+	THEN
+		inout_laengenabgleich.bEingabe_Quitt:=FALSE;
+		SK_Abgleich		:=60;
+	END_IF	
+END_IF
+
+60:// NC Parameter beschreiben
+bParaWriteStart:=TRUE;
+
+IF 	 		(inout_laengenabgleich.iTransportriemenID = 1 AND master_write_fertig)
+		OR 	(inout_laengenabgleich.iTransportriemenID = 2 AND Slave_1_write_fertig)
+		OR 	(inout_laengenabgleich.iTransportriemenID = 3 AND Slave_2_write_fertig)
+		OR 	(inout_laengenabgleich.iTransportriemenID = 4 AND Slave_3_write_fertig)
+THEN
+	bParaWriteStart :=FALSE;
+	SK_Abgleich:=100;	
+ELSIF 	(	(inout_laengenabgleich.iTransportriemenID = 1 AND master_setEncoderScale.Error)
+		OR	(inout_laengenabgleich.iTransportriemenID = 2 AND slave_1_setEncoderScale.Error)
+		OR	(inout_laengenabgleich.iTransportriemenID = 3 AND slave_2_setEncoderScale.Error)
+		OR	(inout_laengenabgleich.iTransportriemenID = 4 AND slave_3_setEncoderScale.Error))
+		
+	THEN
+		bParaWriteStart:=FALSE;
+		SK_Abgleich:=99;
+END_IF
+
+99:// Fehlgeschlagen
+ton_Status.IN:=TRUE;
+inout_laengenabgleich.iStatusButton:=3;
+
+IF ton_Status.Q
+THEN
+	inout_laengenabgleich.iStatusButton:=0;
+	inout_laengenabgleich.rGemesseneLaenge:=0;
+	inout_laengenabgleich.bStart_Abgleich:=FALSE;
+	ton_Status.IN:=FALSE;
+	SK_Abgleich:=0;
+END_IF
+100:// Erfolgreich
+ton_Status.IN:=TRUE;
+inout_laengenabgleich.iStatusButton:=2;
+
+IF ton_Status.Q
+THEN
+	inout_laengenabgleich.iStatusButton:=0;
+	inout_laengenabgleich.rGemesseneLaenge:=0;
+	inout_laengenabgleich.bStart_Abgleich:=FALSE;
+	ton_Status.IN:=FALSE;
+	SK_Abgleich:=0;
+END_IF
+END_CASE
+
+
+	
+
+
+Aufruf_MC_Bausteine();
+]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="ACT_Achse_NC_PTP" Id="{c1b82e2e-b36a-4cc3-be79-bc3ec51218e5}">
+      <Implementation>
+        <ST><![CDATA[	
+	FB_ReadErrorID(	Axis:=inout_NC_Master,
+					Enable:=TRUE,
+					AxisErrorID=>);
+
+	FB_ReadErrorID(	Axis:=inout_NC_slave_1,
+					Enable:=TRUE,
+					AxisErrorID=>);
+
+	FB_ReadErrorID(	Axis:=inout_NC_slave_2,
+					Enable:=TRUE,
+					AxisErrorID=>);
+
+	FB_ReadErrorID(	Axis:=inout_NC_slave_3,
+					Enable:=TRUE,
+					AxisErrorID=>);
+
+	out_achs_ErrorID	:= DWORD_TO_DINT(FB_ReadErrorID.AxisErrorID);	
+	out_achs_ErrorID_2	:= DWORD_TO_DINT(FB_ReadErrorID_2.AxisErrorID);	
+	out_achs_ErrorID_3	:= DWORD_TO_DINT(FB_ReadErrorID_3.AxisErrorID);	
+	out_achs_ErrorID_4	:= DWORD_TO_DINT(FB_ReadErrorID_4.AxisErrorID);	
+									
+	FB_ReadStatus(	Axis:=inout_NC_Master,
+					Enable:=TRUE);
+
+	FB_ReadStatus_2(	Axis:=inout_NC_slave_1,
+					Enable:=TRUE);
+
+	FB_ReadStatus_3(	Axis:=inout_NC_slave_2,
+					Enable:=TRUE);
+
+	FB_ReadStatus_4(	Axis:=inout_NC_slave_3,
+					Enable:=TRUE);
+
+				
+	FB_Power(	Axis:=inout_NC_Master,
+				Enable:=in_Reglersperre AND NOT bParaWriteStart AND NOT bRefStart_Servo,
+				Enable_Positive:=in_Reglersperre,
+				Enable_Negative:=in_Reglersperre ,
+				Override:=,
+				BufferMode:= MC_Aborting ,
+				Options:=	);
+				
+	FB_Power_2(	Axis:=inout_NC_Slave_1,
+				Enable:=in_Reglersperre AND NOT bParaWriteStart AND NOT bRefStart_Servo ,
+				Enable_Positive:=in_Reglersperre,
+				Enable_Negative:=in_Reglersperre ,
+				Override:=,
+				BufferMode:= MC_Aborting ,
+				Options:=	);
+				
+	FB_Power_3(	Axis:=inout_NC_Slave_2,
+				Enable:=in_Reglersperre AND NOT bParaWriteStart AND NOT bRefStart_Servo ,
+				Enable_Positive:=in_Reglersperre,
+				Enable_Negative:=in_Reglersperre ,
+				Override:=,
+				BufferMode:= MC_Aborting ,
+				Options:=	);
+				
+	FB_Power_4(	Axis:=inout_NC_Slave_3,
+				Enable:=in_Reglersperre AND NOT bParaWriteStart AND NOT bRefStart_Servo
+ ,
+				Enable_Positive:=in_Reglersperre,
+				Enable_Negative:=in_Reglersperre ,
+				Override:=,
+				BufferMode:= MC_Aborting ,
+				Options:=	);
+				
+	FB_Reset(	Axis:=inout_NC_Master,
+				Execute:=	);
+	FB_Reset_2(	Axis:=inout_NC_Slave_1,
+				Execute:=	);
+	FB_Reset_3(	Axis:=inout_NC_Slave_2,
+				Execute:=	);
+	FB_Reset_4(	Axis:=inout_NC_Slave_3,
+				Execute:=	);
+				
+	FB_Stop(	Axis:=inout_NC_Master,
+				Execute:=,
+				Deceleration:=0,				(* Bei einem Wert von 0 wirkt die mit dem letzten Move-Kommando parametrierte Verzögerung *)
+				Jerk:=0,						(* Bei einem Wert von 0 wirkt der mit dem letzten Move-Kommando parametrierte Ruck *)		
+				//BufferMode:= MC_Aborting,
+				CommandAborted  => test);		 // Wichtig !!!!				
+	FB_Stop_2(	Axis:=inout_NC_Slave_1,
+				Execute:=,
+				Deceleration:=0,				(* Bei einem Wert von 0 wirkt die mit dem letzten Move-Kommando parametrierte Verzögerung *)
+				Jerk:=0,						(* Bei einem Wert von 0 wirkt der mit dem letzten Move-Kommando parametrierte Ruck *)		
+				//BufferMode:= MC_Aborting,
+				CommandAborted  => test);		 // Wichtig !!!!				
+	FB_Stop_3(	Axis:=inout_NC_Slave_2,
+				Execute:=,
+				Deceleration:=0,				(* Bei einem Wert von 0 wirkt die mit dem letzten Move-Kommando parametrierte Verzögerung *)
+				Jerk:=0,						(* Bei einem Wert von 0 wirkt der mit dem letzten Move-Kommando parametrierte Ruck *)		
+				//BufferMode:= MC_Aborting,
+				CommandAborted  => test);		 // Wichtig !!!!				
+	FB_Stop_4(	Axis:=inout_NC_Slave_3,
+				Execute:=,
+				Deceleration:=0,				(* Bei einem Wert von 0 wirkt die mit dem letzten Move-Kommando parametrierte Verzögerung *)
+				Jerk:=0,						(* Bei einem Wert von 0 wirkt der mit dem letzten Move-Kommando parametrierte Ruck *)		
+				//BufferMode:= MC_Aborting,
+				CommandAborted  => test);		 // Wichtig !!!!				
+																		
+	temp_options.EnableBlendingPosition:=TRUE;
+	
+	FB_Move_Velo(	Axis:= inout_NC_Master,
+					Execute:=,
+					Velocity:=,
+					direction:=MC_Positive_Direction,
+					Acceleration:=0,				(* Beschleunigung, bei einem Wert von 0 wirkt die Standardbeschleunigung aus der Achskonfiguration im System Manager *)
+					Deceleration:=0,				(* Verzögerung, bei einem Wert von 0 wirkt die Standardverzögerung aus der Achskonfiguration im System Manager *)
+					Jerk:=0, 						(* Ruck, bei einem Wert von 0 wirkt der Standardruck aus der Achskonfiguration im System Manager *)
+					BufferMode:= MC_Blendinglow,
+					Options:=temp_options ,
+					InVelocity=>);		
+									
+	FB_Jog(		Axis:=inout_NC_Master,
+				JogForward:=,
+				JogBackwards:=,
+				Mode:= MC_JOGMODE_STANDARD_SLOW, //MC_JOGMODE_CONTINOUS,
+				Position:=,						(* nicht in diesem Mode notwendig *)
+				Velocity:=,
+				Acceleration:=0,				(* Beschleunigung, bei einem Wert von 0 wirkt die Standardbeschleunigung aus der Achskonfiguration im System Manager *)
+				Deceleration:=0,				(* Verzögerung, bei einem Wert von 0 wirkt die Standardverzögerung aus der Achskonfiguration im System Manager *)
+				Jerk:=0 );						(* Ruck, bei einem Wert von 0 wirkt der Standardruck aus der Achskonfiguration im System Manager *)
+	
+
+
+
+
+	FB_GearIn_1_2.RatioNumerator:=in_I_Slave_1;				(* Getriebefaktor Zähler *)
+	FB_GearIn_1_2.RatioDenominator:=1;						(* Getriebefaktor Nenner *)				
+
+	FB_GearIn_1_3.RatioNumerator:=in_I_Slave_2;				(* Getriebefaktor Zähler *)
+	FB_GearIn_1_3.RatioDenominator:=1;						(* Getriebefaktor Nenner *)				
+
+	FB_GearIn_1_4.RatioNumerator:=in_I_Slave_3;				(* Getriebefaktor Zähler *)
+	FB_GearIn_1_4.RatioDenominator:=1;						(* Getriebefaktor Nenner *)				
+
+
+	FB_GearIn_1_2(
+				Master:=inout_NC_Master	,			(* Achsdatenstruktur des Masters *)
+				Slave:=inout_NC_Slave_1,	(* Achsdatenstruktur des Slaves *)
+				Execute:=,						(* Mit einer steigenden Flanke am Eingang Execute wird das Kommando ausgeführt *)
+				//RatioNumerator:=in_I_Slave_1,				(* Getriebefaktor Zähler *)
+				//RatioDenominator:=1,				(* Getriebefaktor Nenner *)				
+				InGear=>,						(* Wird TRUE, wenn die Kopplung erfolgreich durchgeführt wurde *)
+				Busy=>,							(* Der Busy-Ausgang wird TRUE, sobald das Kommando mit Execute gestartet wird und bleibt TRUE, solange der Befehl abgearbeitet wird. 
+                                                   Wenn Busy wieder FALSE wird, so ist der Funktionsbaustein bereit für einen neuen Auftrag. Gleichzeitig ist einer der Ausgänge InGear, 
+                                                   CommandAborted oder Error gesetz *)
+				Active=>,						(* Active zeigt an, dass das Kommando ausgeführt wird. (zur Zeit ist Active=Busy *)
+				CommandAborted=>,				(* Wird TRUE, wenn das Kommando nicht vollständig ausgeführt werden konnte. 
+                                                   Die Achse kann während des Koppelvorgangs entkoppelt worden sein (gleichzeitige Kommandoausführung) *)
+				Error=>,						(* Wird im Fehlerfall TRUE *)
+				ErrorID=>						(* Liefert bei einem gesetzten Error-Ausgang die Fehlernummer. *)
+				);
+	
+	FB_GearOut_1_2(
+				Slave:=inout_NC_Slave_1,	(* Achsdatenstruktur des Slaves *)
+				Execute:=,						(* Mit einer steigenden Flanke am Eingang Execute wird das Kommando ausgeführt *)
+				Options:=,						(* Zur Zeit nicht implementiert *)
+				Done=>,							(* Wird TRUE, wenn die Achse erfolgreich abgekoppelt wurde *)
+				Busy=>,							(* Der Busy-Ausgang wird TRUE, sobald das Kommando mit Execute gestartet wird und bleibt TRUE, solange der Befehl abgearbeitet wird. 
+                                                   Wenn Busy wieder FALSE wird, so ist der Funktionsbaustein bereit für einen neuen Auftrag. Gleichzeitig ist einer der Ausgänge Done 
+												   oder Error gesetz *)
+				Error=>,						(* Wird im Fehlerfall TRUE *)
+				ErrorID=>						(* Liefert bei einem gesetzten Error-Ausgang die Fehlernummer. *)
+				);
+
+	FB_GearIn_1_3(	Master:=inout_NC_Master,			
+					Slave:=inout_NC_Slave_2);
+	
+	FB_GearOut_1_3(	Slave:=inout_NC_Slave_2);                              
+	                                            
+	FB_GearIn_1_4(	Master:=inout_NC_Master,			
+					Slave:=inout_NC_Slave_3);                                                         
+	                                            
+	FB_GearOut_1_4(	Slave:=inout_NC_Slave_3);  
+]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="Aufruf_MC_Bausteine" Id="{b96b862b-be7f-4794-98f6-ee1f456bddc8}" FolderPath="Transportabgleich\">
+      <Implementation>
+        <ST><![CDATA[master_pos.Options.IgnorePositionMonitoring	:=TRUE;
+Slave_1_pos.Options.IgnorePositionMonitoring := TRUE;
+Slave_2_pos.Options.IgnorePositionMonitoring := TRUE;
+Slave_3_pos.Options.IgnorePositionMonitoring := TRUE;
+
+
+
+
+
+CASE inout_laengenabgleich.iTransportriemenID OF 
+1: // Transportriemen untebau	
+	r_sollwert:=inout_laengenabgleich.rSolllaenge_Master;
+
+	inout_rexroth.S0052_ref_pos:=0;
+	
+	inout_rexroth.S0145_steuerword.1	:= NOT FB_Power.Enable
+						AND ( bRefStart_Servo);
+
+
+	master_pos			(	Axis			:= inout_NC_Master,
+							Execute			:= bPosStart,
+							Position 		:= r_sollwert,
+							Velocity 		:= inout_laengenabgleich.rSollspeed *1000 / 60 ,
+							Acceleration	:= in_Parameter.Beschleunigung,
+							Deceleration	:= in_Parameter.Verzoegerung,
+							Jerk			:= in_Parameter.Ruck,
+							Direction		:= MC_Positive_Direction ,
+							BufferMode		:= MC_Aborting);
+							
+	master_ref(				Axis			:= inout_NC_Master,							
+							Execute			:= bRefStart_NC,
+							Position 		:= 0,
+							HomingMode		:= MC_Direct);
+	
+
+	master_paramLesen_Scaling (		Axis			:= inout_NC_Master,
+							Enable			:= bParaReadStart,
+							ParameterNumber	:= MC_AxisParameter.AxisEncoderScalingNumerator,
+							ReadMode		:= E_ReadMode.READMODE_ONCE,
+							Value			=> rKorrekturfaktor_alt);
+							
+ 	master_paramLesen_Modulo (		Axis			:= inout_NC_Master,
+							Enable			:= bParaReadStart,
+							ParameterNumber	:= MC_AxisParameter.AxisEncoderModuloValue,
+							ReadMode		:= E_ReadMode.READMODE_ONCE,
+							Value			=> rModulowert_alt);							
+
+	IF NOT FB_power.Enable
+	THEN
+		master_setEncoderScale	(	Axis			:= inout_NC_Master,
+									Execute			:= bParaWriteStart,
+									ScalingFactor	:=rKorrekturfaktor_neu	,
+									Mode			:=ENCODERSCALINGMODE_ABSOLUTE);
+									
+		master_paramSchreiben_Modulo(	Axis:=inout_NC_Master ,
+										Execute:=bParaReadStart , 
+										ParameterNumber:=MC_AxisParameter.AxisEncoderModuloValue , 
+										Value:= rModulowert_neu); 		
+	END_IF
+	
+2: // Transportriemen Abfall	
+	r_sollwert:=inout_laengenabgleich.rSolllaenge_Slave_1;
+
+	inout_rexroth_1.S0052_ref_pos:=0;
+	
+	inout_rexroth_1.S0145_steuerword.1	:= NOT FB_Power_2.Enable
+						AND ( bRefStart_Servo);
+
+	slave_1_pos			(	Axis			:= inout_NC_Slave_1,
+							Execute			:= bPosStart,
+							Position 		:= r_sollwert,
+							Velocity 		:= inout_laengenabgleich.rSollspeed*1000 / 60 ,
+							Acceleration	:= in_Parameter.Beschleunigung,
+							Deceleration	:= in_Parameter.Verzoegerung,
+							Jerk			:= in_Parameter.Ruck,
+							Direction		:= MC_Positive_Direction ,
+							BufferMode		:= MC_Aborting);
+							
+	Slave_1_ref(			Axis			:= inout_NC_Slave_1,							
+							Execute			:= bRefStart_NC,
+							Position 		:= 0,
+							HomingMode		:= MC_Direct);
+	
+
+	slave_1_paramLesen_Scaling (	Axis			:= inout_NC_Slave_1,
+							Enable			:= bParaReadStart,
+							ParameterNumber	:= MC_AxisParameter.AxisEncoderScalingNumerator,
+							ReadMode		:= E_ReadMode.READMODE_ONCE,
+							Value			=> rKorrekturfaktor_alt);
+							
+	slave_1_paramLesen_Modulo (		Axis			:= inout_NC_Slave_1,
+							Enable			:= bParaReadStart,
+							ParameterNumber	:= MC_AxisParameter.AxisEncoderModuloValue,
+							ReadMode		:= E_ReadMode.READMODE_ONCE,
+							Value			=> rModulowert_alt);							
+
+	IF NOT FB_power_2.Enable
+	THEN
+		slave_1_setEncoderScale	(	Axis			:= inout_NC_Slave_1,
+									Execute			:= bParaWriteStart,
+									ScalingFactor	:=rKorrekturfaktor_neu	,
+									Mode			:=ENCODERSCALINGMODE_ABSOLUTE);
+		slave_1_paramSchreiben_Modulo(	Axis:=inout_NC_Slave_1 ,
+										Execute:=bParaReadStart , 
+										ParameterNumber:=MC_AxisParameter.AxisEncoderModuloValue , 
+										Value:= rModulowert_neu); 								
+									
+	END_IF
+
+3: // Transportriemen Nullkante	
+	r_sollwert:=inout_laengenabgleich.rSolllaenge_Slave_2;
+
+	inout_rexroth_2.S0052_ref_pos:=0;
+	
+	inout_rexroth_2.S0145_steuerword.1	:= NOT FB_Power_3.Enable
+						AND ( bRefStart_Servo);
+
+	slave_2_pos			(	Axis			:= inout_NC_Slave_2,
+							Execute			:= bPosStart,
+							Position 		:= r_sollwert,
+							Velocity 		:= inout_laengenabgleich.rSollspeed*1000 / 60 ,
+							Acceleration	:= in_Parameter.Beschleunigung,
+							Deceleration	:= in_Parameter.Verzoegerung,
+							Jerk			:= in_Parameter.Ruck,
+							Direction		:= MC_Positive_Direction ,
+							BufferMode		:= MC_Aborting);
+							
+	Slave_2_ref(			Axis			:= inout_NC_Slave_2,							
+							Execute			:= bRefStart_NC,
+							Position 		:= 0,
+							HomingMode		:= MC_Direct);
+	
+
+	slave_2_paramLesen_Scaling (	Axis			:= inout_NC_Slave_2,
+							Enable			:= bParaReadStart,
+							ParameterNumber	:= MC_AxisParameter.AxisEncoderScalingNumerator,
+							ReadMode		:= E_ReadMode.READMODE_ONCE,
+							Value			=> rKorrekturfaktor_alt);
+	slave_2_paramLesen_Modulo (		Axis			:= inout_NC_Slave_2,
+							Enable			:= bParaReadStart,
+							ParameterNumber	:= MC_AxisParameter.AxisEncoderModuloValue,
+							ReadMode		:= E_ReadMode.READMODE_ONCE,
+							Value			=> rModulowert_alt);						
+
+	IF NOT FB_power_2.Enable
+	THEN
+		slave_2_setEncoderScale	(	Axis			:= inout_NC_Slave_2,
+									Execute			:= bParaWriteStart,
+									ScalingFactor	:= rKorrekturfaktor_neu	,
+									Mode			:=ENCODERSCALINGMODE_ABSOLUTE);
+		slave_2_paramSchreiben_Modulo(	Axis:=inout_NC_Slave_2 ,
+										Execute:=bParaReadStart , 
+										ParameterNumber:=MC_AxisParameter.AxisEncoderModuloValue , 
+										Value:= rModulowert_neu);							
+	END_IF
+
+4: // Transportriemen Losseite	
+r_sollwert:=inout_laengenabgleich.rSolllaenge_Slave_3;
+
+
+	inout_rexroth_3.S0052_ref_pos:=0;
+	
+	inout_rexroth_3.S0145_steuerword.1	:= NOT FB_Power_4.Enable;
+
+
+	
+	slave_3_pos			(	Axis			:= inout_NC_Slave_3,
+							Execute			:= bPosStart,
+							Position 		:= r_sollwert,
+							Velocity 		:= inout_laengenabgleich.rSollspeed*1000 / 60 ,
+							Acceleration	:= in_Parameter.Beschleunigung,
+							Deceleration	:= in_Parameter.Verzoegerung,
+							Jerk			:= in_Parameter.Ruck,
+							Direction		:= MC_Positive_Direction ,
+							BufferMode		:= MC_Aborting);
+							
+	Slave_3_ref(			Axis			:= inout_NC_Slave_3,							
+							Execute			:= bRefStart_NC,
+							Position 		:= 0,
+							HomingMode		:= MC_Direct);
+	
+
+	slave_3_paramLesen_Scaling (	Axis			:= inout_NC_Slave_3,
+							Enable			:= bParaReadStart,
+							ParameterNumber	:= MC_AxisParameter.AxisEncoderScalingNumerator,
+							ReadMode		:= E_ReadMode.READMODE_ONCE,
+							Value			=> rKorrekturfaktor_alt);
+							
+	slave_1_paramLesen_Modulo (		Axis			:= inout_NC_Slave_3,
+							Enable			:= bParaReadStart,
+							ParameterNumber	:= MC_AxisParameter.AxisEncoderModuloValue,
+							ReadMode		:= E_ReadMode.READMODE_ONCE,
+							Value			=> rModulowert_alt);						
+
+	IF NOT FB_power_3.Enable
+	THEN
+		slave_3_setEncoderScale	(	Axis			:= inout_NC_Slave_3,
+									Execute			:= bParaWriteStart,
+									ScalingFactor	:= rKorrekturfaktor_neu	,
+									Mode			:=ENCODERSCALINGMODE_ABSOLUTE);
+									
+		slave_3_paramSchreiben_Modulo(	Axis:=inout_NC_Slave_3 ,
+										Execute:=bParaReadStart , 
+										ParameterNumber:=MC_AxisParameter.AxisEncoderModuloValue , 
+										Value:= rModulowert_neu);							
+	END_IF	
+		
+END_CASE]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="Status_Transportabgleich" Id="{fe78819d-2d9b-426d-b3a2-cba1f6ee7149}" FolderPath="Transportabgleich\">
+      <Implementation>
+        <ST><![CDATA[//---inRange auf Null, ob refernziert wurde
+
+Master_referenziert	(	in_istPos := inout_NC_Master.NcToPlc.ActPos,
+						in_sollPos:= 0,
+						in_Fenster:= 0.05);
+Master_inPos		(	in_istPos := GVL_2200.actPosTransportUnterbau,
+						in_sollPos:= inout_laengenabgleich.rSolllaenge_Master,
+						in_Fenster:= 0.05);					
+
+Slave_1_referenziert(	in_istPos := inout_NC_Slave_1.NcToPlc.ActPos,
+						in_sollPos:= 0,
+						in_Fenster:= 0.05);
+						
+Slave_2_referenziert(	in_istPos := inout_NC_Slave_2.NcToPlc.ActPos,
+						in_sollPos:= 0,
+						in_Fenster:= 0.05);
+						
+Slave_3_referenziert(	in_istPos := inout_NC_Slave_3.NcToPlc.ActPos,
+						in_sollPos:= 0,
+						in_Fenster:= 0.05);	
+
+
+Master_referenziert_Servo	(	in_istPos := GVL_2200.actPosTransportUnterbau,
+						in_sollPos:= 0,
+						in_Fenster:= 0.05);
+Master_referenziert_Servo_1	(	in_istPos := GVL_2200.actPosTransportUnterbau,
+						in_sollPos:= 7999.95,
+						in_Fenster:= 0.05);					
+ 
+IF Master_referenziert_Servo.out_imBereich
+	OR Master_referenziert_Servo_1.out_imBereich
+	AND SK_Abgleich = 10
+THEN
+	master_ref_Servo_fertig:=TRUE;
+ELSE
+	master_ref_Servo_fertig:=FALSE;
+END_IF
+
+Slave_1_referenziert_Servo	(	in_istPos := GVL_2200.actPosTransportAbfall,
+						in_sollPos:= 0,
+						in_Fenster:= 0.05);
+Slave_1_referenziert_Servo_1	(	in_istPos := GVL_2200.actPosTransportAbfall,
+						in_sollPos:= 2999.95,
+						in_Fenster:= 0.05);					
+ 
+IF Slave_1_referenziert_Servo.out_imBereich
+	OR Slave_1_referenziert_Servo_1.out_imBereich
+	AND SK_Abgleich = 10
+THEN
+	Slave_1_ref_Servo_fertig:=TRUE;
+ELSE
+	Slave_1_ref_Servo_fertig:=FALSE;
+END_IF
+
+Slave_2_referenziert_Servo	(	in_istPos := GVL_2200.actPosTransportNullkante,
+						in_sollPos:= 0,
+						in_Fenster:= 0.05);
+Slave_2_referenziert_Servo_1	(	in_istPos := GVL_2200.actPosTransportNullkante,
+						in_sollPos:= 7999.95,
+						in_Fenster:= 0.05);					
+ 
+IF Slave_2_referenziert_Servo.out_imBereich
+	OR Slave_2_referenziert_Servo_1.out_imBereich
+	AND SK_Abgleich = 10
+THEN
+	Slave_2_ref_Servo_fertig:=TRUE;
+ELSE
+	Slave_2_ref_Servo_fertig:=FALSE;
+END_IF
+
+Slave_3_referenziert_Servo	(	in_istPos := GVL_2200.actPosTransportLossseite,
+						in_sollPos:= 0,
+						in_Fenster:= 0.05);
+Slave_3_referenziert_Servo_1	(	in_istPos := GVL_2200.actPosTransportLossseite,
+						in_sollPos:= 7999.95,
+						in_Fenster:= 0.05);					
+ 
+IF Slave_3_referenziert_Servo.out_imBereich
+	OR Slave_3_referenziert_Servo_1.out_imBereich
+	AND SK_Abgleich = 10
+THEN
+	Slave_3_ref_Servo_fertig:=TRUE;
+ELSE
+	Slave_3_ref_Servo_fertig:=FALSE;
+END_IF
+			
+						
+//---Überprüfen ob Referenzierung NC fertig												
+master_ref_NC_fertig	:= 			inout_laengenabgleich.iTransportriemenID = 1
+								AND Master_referenziert.out_imBereich
+								AND NOT master_ref.Busy
+								AND NOT master_ref.Error
+								AND master_ref.Done	;
+								
+Slave_1_ref_NC_fertig	:= 			inout_laengenabgleich.iTransportriemenID = 2
+								AND Slave_1_referenziert.out_imBereich
+								AND NOT Slave_1_ref.Busy
+								AND NOT Slave_1_ref.Error
+								AND Slave_1_ref.Done;
+
+Slave_2_ref_NC_fertig	:= 			inout_laengenabgleich.iTransportriemenID = 3
+								AND Slave_2_referenziert.out_imBereich
+								AND NOT Slave_2_ref.Busy
+								AND NOT Slave_2_ref.Error
+								AND Slave_2_ref.Done;
+
+Slave_3_ref_NC_fertig	:= 			inout_laengenabgleich.iTransportriemenID = 4
+								AND Slave_3_referenziert.out_imBereich
+								AND NOT Slave_3_ref.Busy
+								AND NOT Slave_3_ref.Error
+								AND Slave_3_ref.Done;									
+
+//---Überprüfen ob Positionierung fertig						
+Master_pos_fertig	:=			inout_laengenabgleich.iTransportriemenID = 1
+								AND NOT master_pos.Busy
+								AND NOT master_pos.Error
+								AND Master_inPos.out_imBereich	;	
+								
+Slave_1_pos_fertig	:= 			inout_laengenabgleich.iTransportriemenID = 2
+								AND NOT Slave_1_pos.Busy
+								AND NOT Slave_1_pos.Error
+								AND Slave_1_pos.Done;
+
+Slave_2_pos_fertig	:= 			inout_laengenabgleich.iTransportriemenID = 3
+								AND NOT Slave_2_pos.Busy
+								AND NOT Slave_2_pos.Error
+								AND Slave_2_pos.Done;
+
+Slave_3_pos_fertig	:= 			inout_laengenabgleich.iTransportriemenID = 4					
+								AND NOT Slave_3_pos.Busy
+								AND NOT Slave_3_pos.Error
+								AND Slave_3_pos.Done;	
+
+//---Überprüfen ob Parameter lesen fertig						
+Master_read_fertig	:=			inout_laengenabgleich.iTransportriemenID = 1
+								AND NOT master_paramLesen_Scaling.Busy
+								AND NOT master_paramLesen_Scaling.Error
+								AND master_paramLesen_Scaling.Valid	;	
+								
+Slave_1_read_fertig	:= 			inout_laengenabgleich.iTransportriemenID = 2
+								AND NOT slave_1_paramLesen_Scaling.Busy
+								AND NOT slave_1_paramLesen_Scaling.Error
+								AND slave_1_paramLesen_Scaling.Valid	;	
+
+Slave_2_read_fertig	:= 			inout_laengenabgleich.iTransportriemenID = 3
+								AND NOT slave_2_paramLesen_Scaling.Busy
+								AND NOT slave_2_paramLesen_Scaling.Error
+								AND slave_2_paramLesen_Scaling.Valid	;
+
+Slave_3_read_fertig	:= 			inout_laengenabgleich.iTransportriemenID = 4					
+								AND NOT slave_3_paramLesen_Scaling.Busy
+								AND NOT slave_3_paramLesen_Scaling.Error
+								AND slave_3_paramLesen_Scaling.Valid	;
+
+
+//---Überprüfen ob Parameter schreiben fertig						
+Master_write_fertig	:=			inout_laengenabgleich.iTransportriemenID = 1
+								AND NOT master_setEncoderScale.Busy
+								AND NOT master_setEncoderScale.Error
+								AND master_setEncoderScale.Done	;	
+								
+Slave_1_write_fertig	:= 			inout_laengenabgleich.iTransportriemenID = 2
+								AND NOT slave_1_setEncoderScale.Busy
+								AND NOT slave_1_setEncoderScale.Error
+								AND slave_1_setEncoderScale.Done	;	
+
+Slave_2_write_fertig	:= 			inout_laengenabgleich.iTransportriemenID = 3
+								AND NOT slave_2_setEncoderScale.Busy
+								AND NOT slave_2_setEncoderScale.Error
+								AND slave_2_setEncoderScale.Done	;
+
+Slave_3_write_fertig	:= 			inout_laengenabgleich.iTransportriemenID = 4					
+								AND NOT slave_3_setEncoderScale.Busy
+								AND NOT slave_3_setEncoderScale.Error
+								AND slave_3_setEncoderScale.Done	;							]]></ST>
+      </Implementation>
+    </Action>
+  </POU>
+</TcPlcObject>

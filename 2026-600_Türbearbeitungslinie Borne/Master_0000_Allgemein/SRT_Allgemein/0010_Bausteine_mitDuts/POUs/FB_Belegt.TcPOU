@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_Belegt" Id="{d92cd0c9-6191-4e21-9d9c-d85faaae037c}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Belegt 
+VAR_INPUT
+	in_Sensor			:BOOL;	
+	in_zeit_ein			:TIME;	(* Zeitverzögert EIN - Sensor entprellen *)
+	in_zeit_aus			:TIME;	(* Zeitverzögert AUS - Sensor entprellen *)
+END_VAR
+VAR_OUTPUT
+	Q 					:BOOL;	(* Belegtmeldung - Eingang entprellt *)
+	Qin					:BOOL;	(* orginal Signal ohne Zeiten*)	
+	nFlanke				:BOOL;	(* Wird true bei negativer Flanke*)
+	pFlanke				:BOOL;	(* Wird true bei positiver Flanke*)
+END_VAR
+VAR
+	ein					:ton;
+	aus					:tof;
+	
+	rTrig_pFlanke		:R_Trig;
+	fTrig_nFlanke		:F_Trig;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[//Belegtmeldung verzögert ein
+ein(IN:=in_Sensor,
+	PT:=in_zeit_ein);
+	
+//Belegtmeldung verzögert aus
+aus(IN:=ein.Q,
+	PT:=in_zeit_aus);
+
+//Positive Flanke
+rTrig_pFlanke(CLK:=ein.Q);
+
+//Negative Flanke
+fTrig_nFlanke(CLK:=aus.Q);
+
+//Ausgänge zuweisen	
+Q :=aus.Q;
+
+pFlanke		:=rTrig_pFlanke.Q;
+nFlanke		:=fTrig_nFlanke.Q;
+Qin			:=in_Sensor;]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

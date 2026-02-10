@@ -1,0 +1,202 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Hardware_3400" Id="{4fdac358-3f6f-45ef-b68c-90c0091e78c6}" SpecialFunc="None">
+    <Declaration><![CDATA[
+PROGRAM Hardware_3400
+VAR
+    // Servos *********************************************************************
+	fbX_Achse										: FB_Achse_NC_PTP_Beckhoff; 
+	fbY_Achse										: FB_Achse_NC_PTP_Beckhoff; 
+
+    // Frequenzumrichter **********************************************************
+	fbBohraggr_Schluessel_ob						: FB_SEW_MOVITRAC_C_CoE;
+
+    // Sensorik *******************************************************************
+    fbStillBohraggr_Schluessel_ob          			: FB_Belegt;
+
+    // Ventile ********************************************************************
+    fbSchluessel_ob_Bohrhub                			: FB_Ventil_V2;
+
+    // ***** Hilfsmerker***********************************************************
+    (*
+        Ventile sind über den DUT_Ventil_para vorparametriert
+                ueberwachung_vor_aktiv    : BOOL := TRUE;   // 0 = Endlagenüberwachung vor deaktiviert
+                ueberwachung_zur_aktiv    : BOOL := TRUE;   // 0 = Endlagenüberwachung zurück deaktiviert
+                ausgang_vor_halten        : BOOL := FALSE;  // 1 = Ausgang immer Ein, sonst 0 in Endlage/1 nicht in Endlage
+                ausgang_zur_halten        : BOOL := FALSE;  // 1 = Ausgang immer Ein, sonst 0 in Endlage/1 nicht in Endlage
+                entprellen_vor_aktiv      : BOOL := TRUE;   // 0 = Endlage sofort überwachen wenn einmal erreicht
+                entprellen_zur_aktiv      : BOOL := TRUE;   // 0 = Endlage sofort überwachen wenn einmal erreicht
+                ueberwachungszeit_vor     : TIME := T#10S;  // Überwachungszeit in ms (0-30000ms)
+                ueberwachungszeit_zur     : TIME := T#10S;  // Überwachungszeit in ms (0-30000ms)
+                entprellungszeit_vor      : TIME := T#50MS; // Entprellungszeit in ms (0-10000ms)
+                entprellungszeit_zur      : TIME := T#50MS; // Entprellungszeit in ms (0-10000ms)
+
+        falls etwas anderes gewünscht ist, kann man gezielt für das Ventil die Parameter anpassen
+        Beispiel:   ***.para.ausgang_vor_halten := TRUE;
+                    ***.para.entprellungszeit_vor := T#100MS;
+    *)
+END_VAR
+    ]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+// Aktionen aufrufen
+//_________________________________________________
+	A_Sensorik();
+	A_Umrichter();
+	A_Ventile();
+	A_Servo();
+		  ]]></ST>
+    </Implementation>
+    <Action Name="A_Sensorik" Id="{f48301a5-8ac6-4220-996a-e13786f2a59c}">
+      <Implementation>
+        <ST><![CDATA[					
+// ***** Sensorik entprellen *********************************************************
+	//********************************************************************************
+fbStillBohraggr_Schluessel_ob	(	in_Sensor:=,
+									in_zeit_aus:=T#100MS,
+									in_zeit_aus:=T#100MS,
+									Q=>);
+									]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="A_Servo" Id="{46edbf66-4e41-41c8-beee-c3232318d0f7}">
+      <Implementation>
+        <ST><![CDATA[					
+// ***** Servoregler *****************************************************************
+	//********************************************************************************
+	GVL_3400.X_Achse_steuern.Reglersperre	:= FALSE;
+	GVL_3400.X_Achse_steuern.Freigabe 		:= FALSE;
+	
+	fbX_Achse(
+	in_Reglersperre				:= GVL_3400.X_Achse_steuern.Reglersperre, 
+	in_Freigabe					:= GVL_3400.X_Achse_steuern.Freigabe,
+	in_Reset					:= GVL_Visu_3400.SteuerStatus.reset   
+								OR GVL_0000.stoerung_quitt,                      
+	in_Hand						:= GVL_Visu_3400.SteuerStatus.hand,              
+	in_Auto						:= GVL_Visu_3400.SteuerStatus.auto,                 
+	in_Auto_Override			:= GVL_Visu_0000.override,    
+	in_Auto_pos					:= , 
+	in_PosFenster				:= 0.05, 
+	in_Ref_pos					:= 0.0, 
+	in_HomingOption				:= , 
+	in_EndlageRef				:= , 
+	in_DirRef					:= , 
+	in_PosEa					:= ,                                       
+	out_ist_pos					=> GVL_3400.X_Achse_status.ist_pos, 
+	out_in_pos					=> GVL_3400.X_Achse_status.in_pos,   
+	out_ziel_pos				=> GVL_3400.X_Achse_status.ziel_pos, 
+	out_nicht_ref				=> GVL_3400.X_Achse_status.nicht_ref,      
+	out_bremse					=> GVL_3400.X_Achse_status.bremse,           
+	out_Achs_Status				=> GVL_3400.X_Achse_status.Achs_Status,  
+	inout_NC					:= EAs_3400.ea_X_Achse, 
+	inout_service				:= GVL_Visu_3400.X_Achse, 
+	inout_Ref_start				:= GVL_3400.X_Achse_steuern.Ref_start, 
+	inout_Auto_start			:= GVL_3400.X_Achse_steuern.Auto_start, 
+	inout_Auto_stop				:= GVL_3400.X_Achse_steuern.Auto_stop);
+	
+	GVL_Meldungen.Diagnose_3000.Nr_034	:= fbX_Achse.out_Achs_ErrorID;	
+	GVL_Meldungen.Meldungen_3000.Nr_034 := fbX_Achse.out_Achs_Error OR fbX_Achse.out_FB_Error OR fbX_Achse.out_Achs_ErrorID <> 0;		
+	GVL_Meldungen.Meldungen_3000.Nr_035 := FALSE;
+	GVL_Meldungen.Meldungen_3000.Nr_036 := FALSE;
+	//********************************************************************************
+					
+					
+	GVL_3400.Y_Achse_steuern.Reglersperre	:= FALSE;
+	GVL_3400.Y_Achse_steuern.Freigabe 		:= FALSE;
+	
+	fbY_Achse(
+	in_Reglersperre				:= GVL_3400.Y_Achse_steuern.Reglersperre, 
+	in_Freigabe					:= GVL_3400.Y_Achse_steuern.Freigabe,
+	in_Reset					:= GVL_Visu_3400.SteuerStatus.reset   
+								OR GVL_0000.stoerung_quitt,                      
+	in_Hand						:= GVL_Visu_3400.SteuerStatus.hand,              
+	in_Auto						:= GVL_Visu_3400.SteuerStatus.auto,                 
+	in_Auto_Override			:= GVL_Visu_0000.override,    
+	in_Auto_pos					:= , 
+	in_PosFenster				:= 0.05, 
+	in_Ref_pos					:= 0.0, 
+	in_HomingOption				:= , 
+	in_EndlageRef				:= , 
+	in_DirRef					:= , 
+	in_PosEa					:= ,                                       
+	out_ist_pos					=> GVL_3400.Y_Achse_status.ist_pos, 
+	out_in_pos					=> GVL_3400.Y_Achse_status.in_pos,   
+	out_ziel_pos				=> GVL_3400.Y_Achse_status.ziel_pos, 
+	out_nicht_ref				=> GVL_3400.Y_Achse_status.nicht_ref,      
+	out_bremse					=> GVL_3400.Y_Achse_status.bremse,           
+	out_Achs_Status				=> GVL_3400.Y_Achse_status.Achs_Status,  
+	inout_NC					:= EAs_3400.ea_Y_Achse, 
+	inout_service				:= GVL_Visu_3400.Y_Achse, 
+	inout_Ref_start				:= GVL_3400.Y_Achse_steuern.Ref_start, 
+	inout_Auto_start			:= GVL_3400.Y_Achse_steuern.Auto_start, 
+	inout_Auto_stop				:= GVL_3400.Y_Achse_steuern.Auto_stop);
+	
+	GVL_Meldungen.Diagnose_3000.Nr_037	:= fbY_Achse.out_Achs_ErrorID;	
+	GVL_Meldungen.Meldungen_3000.Nr_037 := fbY_Achse.out_Achs_Error OR fbY_Achse.out_FB_Error OR fbY_Achse.out_Achs_ErrorID <> 0;		
+	GVL_Meldungen.Meldungen_3000.Nr_038 := FALSE;
+	GVL_Meldungen.Meldungen_3000.Nr_039 := FALSE;
+]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="A_Umrichter" Id="{515b772d-5eb5-4b4c-a9d2-44cfac5e4cf7}">
+      <Implementation>
+        <ST><![CDATA[	
+// ***** Frequenzumrichter ******************************************************
+// ******************************************************************************
+				
+	GVL_Visu_3400.Bohraggr_Schluessel_ob	.Para.Speed_Hand		:= 0;
+	GVL_Visu_3400.Bohraggr_Schluessel_ob	.Para.Beschleunigung 	:= 0;
+	GVL_Visu_3400.Bohraggr_Schluessel_ob	.Para.Verzoegerung 		:= 0;
+	GVL_Visu_3400.Bohraggr_Schluessel_ob	.Para.Einheit			:= 1;
+
+	fbBohraggr_Schluessel_ob	(	PD_IN	:=EAs_3400.e_Bohraggr_Schluessel_ob	,
+			IN_ReglerSperre			:=,
+			IN_SteuerStatus			:=GVL_Visu_3400.SteuerStatus,
+			IN_Ethercat_Adresse		:=,
+			IN_Ethercat_Name		:='',
+			IN_QUITTIEREN			:= GVL_0000.stoerung_quitt,
+			IN_OVERRIDE				:= GVL_Visu_0000.override,
+			PD_OUT					=> EAs_3400.a_Bohraggr_Schluessel_ob	,
+			OUT_Stoerung			=> GVL_Meldungen.Meldungen_3000.Nr_007,
+			OUT_Fehlernummer		=> GVL_Meldungen.Diagnose_3000.Nr_007,
+			OUT_Status				=> GVL_3400.Bohraggr_Schluessel_ob_status,
+			inout_visu				:= GVL_Visu_3400.Bohraggr_Schluessel_ob	,
+			inout_steuern			:= GVL_3400.Bohraggr_Schluessel_ob_steuern);
+	
+			GVL_3400.Bohraggr_Schluessel_ob_steuern.vor := FALSE;
+			GVL_3400.Bohraggr_Schluessel_ob_steuern.zur := FALSE;
+			GVL_3400.Bohraggr_Schluessel_ob_steuern.speed := 0;
+	]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="A_Ventile" Id="{cd4c4460-6019-4cae-ac91-57691ac47451}">
+      <Implementation>
+        <ST><![CDATA[	
+// ***** Ventile *********************************************************************
+	//********************************************************************************	
+	
+	GVL_Visu_3400.Schluessel_ob_Bohrhub.para.ausgang_vor_halten:=TRUE;	
+	GVL_Visu_3400.Schluessel_ob_Bohrhub.para.ausgang_zur_halten:=TRUE;	
+	GVL_Visu_3400.Schluessel_ob_Bohrhub.para.ueberwachung_vor_aktiv:=TRUE;	
+	GVL_Visu_3400.Schluessel_ob_Bohrhub.para.ueberwachung_zur_aktiv:=TRUE;	
+	GVL_Visu_3400.Schluessel_ob_Bohrhub.para.entprellungszeit_vor:=T#50S;	
+	GVL_Visu_3400.Schluessel_ob_Bohrhub.para.entprellungszeit_zur:=T#50MS;	
+	fbSchluessel_ob_Bohrhub (	in_endlage_vor:= EAs_3400.e_FR_3400_Druecker_Schluesselloch_oben_Bohraggregat_7_Bohrhub_ist_oben,
+								in_endlage_zur:= EAs_3400.e_FR_3400_Druecker_Schluesselloch_oben_Bohraggregat_7_Bohrhub_ist_unten,
+								in_hand:=GVL_Visu_3400.SteuerStatus.hand,
+								in_auto:=GVL_Visu_3400.SteuerStatus.auto,
+								in_quit:=GVL_Visu_3400.SteuerStatus.reset 
+								OR GVL_0000.stoerung_quitt,
+								out_vor=>EAs_3400.a_FR_3400_Druecker_Schluesselloch_oben_Bohraggregat_7_Bohrhub_heben,
+								out_zur=>EAs_3400.a_FR_3400_Druecker_Schluesselloch_oben_Bohraggregat_7_Bohrhub_senken,
+								out_stoerung_vor=> GVL_Meldungen.Meldungen_3000.Nr_070,
+								out_stoerung_zur=> GVL_Meldungen.Meldungen_3000.Nr_071,
+								out_stoerung_vorzur=> GVL_Meldungen.Meldungen_3000.Nr_072,
+								inout_ansteuerung:=GVL_3400.Schluessel_ob_Bohrhub ,
+								inout_visu:=GVL_Visu_3400.Schluessel_ob_Bohrhub );
+								
+	]]></ST>
+      </Implementation>
+    </Action>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,164 @@
+<?xml version="1.0"?>
+<TcSmItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2012/07/TcSmProject" TcSmVersion="1.0" TcVersion="3.1.4026.20" ClassName="CFlbTermDef" SubType="9099">
+	<DataTypes>
+		<DataType>
+			<Name GUID="{18071995-0000-0000-0000-002000000008}" IecBaseType="true" AutoDeleteType="true" HideSubItems="true">ARRAY [0..0] OF BYTE</Name>
+			<BitSize>8</BitSize>
+			<BaseType GUID="{18071995-0000-0000-0000-000000000001}">BYTE</BaseType>
+			<ArrayInfo>
+				<LBound>0</LBound>
+				<Elements>1</Elements>
+			</ArrayInfo>
+		</DataType>
+	</DataTypes>
+	<ImageDatas>
+		<ImageData Id="1000">424dd6020000000000003600000028000000100000000e0000000100180000000000a002000000000000000000000000000000000000ffffffffffffffffffffffff070700070700070707000000000000000000000000000000ffffffffffffffffffffffffffffffffffffffffffffffff0000000000ff0000ff0000004cb1224cb1224cb122000000ffffffffffffffffffffffffffffffffffffffffffffffff0000000000ff0000ff0000004cb1224cb1224cb122000000ffffffffffffffffffffffffffffffffffffffffffffffff0000000000ff0000ff0000004cb1224cb1224cb122000000ffffffffffffffffffffffffffffffffffffffffffffffff0000000000ff0000ff0000004cb1224cb1224cb122000000ffffffffffffffffffffffffffffffffffffffffffffffff0000000000ff0000ff000000306f154cb1224cb122000000ffffffffffffffffffffffffffffffffffffffffffffffff0000000000ff0000ff0c0c000a0a071de6b54cb122000000ffffffffffffffffffffffffffffffffffffffffffffffff0000000000ff0000ff0b0bd00000000c0c0c4cb122000000ffffffffffffffffffffffffffffffffffffffffffffffff0000000000ff0000ff0000ff18189a0000004cb122000000ffffffffffffffffffffffffffffffffffffffffffffffff0000000000ff0000ff0000ff0000ff0707074cb122000000ffffffffffffffffffffffffffffffffffffffffffffffff0000000000ff0000ff0000ff0000ff0707074cb122000000ffffffffffffffffffffffffffffffffffffffffffffffff0000000000ff0000ff0000ff0000ff0707074cb122000000ffffffffffffffffffffffffffffffffffffffffffffffff0000000000ff0000ff0000ff0000ff0707074cb122000000ffffffffffffffffffffffffffffffffffffffffffffffff000000070700070700070700070700070707000000000000ffffffffffffffffffffffff</ImageData>
+		<ImageData Id="1001">424dd6020000000000003600000028000000100000000e0000000100180000000000a002000000000000000000000000000000000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000000000000000000000000000000000000000000ffffffffffffffffffffffffffffffffffffffffffffffffffffff000000000000241ced241ced241ced000000000000000000ffffffffffffffffffffffffffffffffffffffffffffffff000000241ced241ced000000241ced241ced000000241ced000000ffffffffffffffffffffffffffffffffffffffffff000000241ced000000000000000000241ced000000241ced241ced000000ffffffffffffffffffffffffffffffffffff000000241ced241ced000000241ced241ced000000241ced241ced241ced000000ffffffffffffffffffffffffffffff000000000000241ced241ced241ced000000000000241ced241ced241ced241ced000000ffffffffffffffffffffffff000000000000000000000000000000000000000000000000241ced241ced241ced000000ffffffffffffffffffffffffffffff000000000000241ced241ced241ced241ced000000000000241ced241ced000000ffffffffffffffffffffffffffffffffffff000000000000241ced241ced241ced241ced000000000000241ced000000ffffffffffffffffffffffffffffffffffffffffff000000000000000000241ced241ced241ced000000000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000000000000000000000000000000000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff</ImageData>
+		<ImageData Id="1002">424de6000000000000007600000028000000100000000e000000010004000000000070000000000000000000000000000000000000000000000000008000008000000080800080000000800080008080000080808000c0c0c0000000ff0000ff000000ffff00ff000000ff00ff00ffff0000ffffff00ffffffff8ffffffffffffff77ffffffffffffff7787fffffffff8ffffff7fffffff7ffffffff7ffffff8ff7777ff8fffff88ff8888ff88ffff88ff8888ff88fffff8ff7777ff7ffffff7ffffffff7fffffff7ffffff8fffffffff7877ffffffffffffff77fffffffffffffffffffffff</ImageData>
+		<ImageData Id="1003">424dd6020000000000003600000028000000100000000e0000000100180000000000a002000000000000000000000000000000000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000000000000000000000000000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00000000f2ff00f2ff00f2ff00f2ff00f2ff000000ffffffffffffffffffffffffffffffffffffffffffffffff00000000f2ff00f2ff00f2ff00f2ff00f2ff00f2ff00f2ff000000ffffffffffffffffffffffffffffffffffff00000000f2ff00f2ff00f2ff241ced241ced241ced00f2ff00f2ff00f2ff000000ffffffffffffffffffffffffffffff00000000f2ff00f2ff241ced241ced241ced241ced241ced00f2ff00f2ff000000ffffffffffffffffffffffffffffff00000000f2ff00f2ff241ced241ced241ced241ced241ced00f2ff00f2ff000000ffffffffffffffffffffffffffffff00000000f2ff00f2ff00f2ff241ced241ced241ced00f2ff00f2ff00f2ff000000ffffffffffffffffffffffffffffffffffff00000000f2ff00f2ff00f2ff00f2ff00f2ff00f2ff00f2ff000000ffffffffffffffffffffffffffffffffffffffffffffffff00000000f2ff00f2ff00f2ff00f2ff00f2ff000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000000000000000000000000000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff</ImageData>
+	</ImageDatas>
+	<Box Id="31" BoxType="9099" BoxFlags="#x00000020">
+		<Name>__FILENAME__</Name>
+		<ImageId>1000</ImageId>
+		<EtherCAT SlaveType="2" PdiType="#x0e08" MboxDataLinkLayer="true" StateMBoxPolling="true" CfgModeSafeOp="true" UnsupportedFrmw="true" CycleMBoxPollingTime="0" CoeType="15" FoeType="1" VendorId="#x00000059" ProductCode="#x0000000b" RevisionNo="#x00000002" InfoDataAddr="true" InfoDataSoeDS401="true" InfoDataDcTimes="true" WdDivider0400="25000" WdTime0410="0" DdTime0420="100" EnableWdDivider0400="true" EnableWdTime0410="true" EnableWdTime0420="true" TimeoutStateChange1="2000" TimeoutStateChange2="9000" TimeoutMailbox2="2000" DownloadSlotCfg="true" PortPhys="17" IdentificationAdo="308" SlotPdoIncrement="16" SlotIndexIncrement="2048" Type="MOVI-C MOVIDRIVE CiA402" Desc="MOVI-C MOVIDRIVE CiA402">
+			<SyncMan>001000042600010001000000000100040004001026010000</SyncMan>
+			<SyncMan>001400042200010002000000000100040004001422010000</SyncMan>
+			<SyncMan>00181c006400010003000000000000000000001864010000</SyncMan>
+			<SyncMan>001c14002000010004000000000000000000001c20010000</SyncMan>
+			<Fmmu>0000000000000000001800020100000001000000000000000000000000000000</Fmmu>
+			<Fmmu>0000000000000000001c00010100000002000000000000000000000000000000</Fmmu>
+			<Fmmu>00000000000000000d0800010100000003000000000000000000000000000000</Fmmu>
+			<DcData>0003000000000000000000000000000001000000000000000000000000000000</DcData>
+			<DcMode>446353796e6300000000000000000000444320666f722073796e6368726f6e697a6174696f6e00000000000000000000000000000000000000000000000000030100000000000000000000000000000000000000000000000000000000000000</DcMode>
+			<DcMode>44634f66660000000000000000000000444320756e757365640000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000</DcMode>
+			<Pdo Name="Inputs" Index="#x1a00" Flags="#x0281" SyncMan="3">
+				<Entry Name="Modes of operation display" Index="#x6061" Flags="#x00001000">
+					<Type>SINT</Type>
+				</Entry>
+				<Entry>
+					<Type GUID="{18071995-0000-0000-0000-002000000008}">ARRAY [0..0] OF BYTE</Type>
+				</Entry>
+				<Entry Name="Status word" Index="#x6041" Flags="#x00001000">
+					<Type>UINT</Type>
+				</Entry>
+				<Entry Name="Position actual value" Index="#x6064" Flags="#x00001000">
+					<Type>DINT</Type>
+				</Entry>
+				<Entry Name="Torque actual value" Index="#x6077" Flags="#x00001000">
+					<Type>INT</Type>
+				</Entry>
+			</Pdo>
+			<Pdo Name="Outputs" Index="#x1600" InOut="1" Flags="#x0281" SyncMan="2">
+				<Entry Name="Modes of operation" Index="#x6060" Flags="#x00001000">
+					<Type>SINT</Type>
+				</Entry>
+				<Entry>
+					<Type GUID="{18071995-0000-0000-0000-002000000008}">ARRAY [0..0] OF BYTE</Type>
+				</Entry>
+				<Entry Name="Control word" Index="#x6040" Flags="#x00001000">
+					<Type>UINT</Type>
+				</Entry>
+				<Entry Name="Target position" Index="#x607a" Flags="#x00001000">
+					<Type>DINT</Type>
+				</Entry>
+				<Entry Name="Target velocity" Index="#x60ff" Flags="#x00001000">
+					<Type>DINT</Type>
+				</Entry>
+				<Entry Name="Target torque" Index="#x6071" Flags="#x00001000">
+					<Type>INT</Type>
+				</Entry>
+			</Pdo>
+			<Pdo Name="Inputs" Index="#x1a20" Flags="#x0281" SyncMan="3">
+				<Entry Name="Modes of operation display" Index="#x7061" Flags="#x00001000">
+					<Type>SINT</Type>
+				</Entry>
+				<Entry>
+					<Type GUID="{18071995-0000-0000-0000-002000000008}">ARRAY [0..0] OF BYTE</Type>
+				</Entry>
+				<Entry Name="Status word" Index="#x7041" Flags="#x00001000">
+					<Type>UINT</Type>
+				</Entry>
+				<Entry Name="Position actual value" Index="#x7064" Flags="#x00001000">
+					<Type>DINT</Type>
+				</Entry>
+				<Entry Name="Torque actual value" Index="#x7077" Flags="#x00001000">
+					<Type>INT</Type>
+				</Entry>
+			</Pdo>
+			<Pdo Name="Outputs" Index="#x1620" InOut="1" Flags="#x0281" SyncMan="2">
+				<Entry Name="Modes of operation" Index="#x7060" Flags="#x00001000">
+					<Type>SINT</Type>
+				</Entry>
+				<Entry>
+					<Type GUID="{18071995-0000-0000-0000-002000000008}">ARRAY [0..0] OF BYTE</Type>
+				</Entry>
+				<Entry Name="Control word" Index="#x7040" Flags="#x00001000">
+					<Type>UINT</Type>
+				</Entry>
+				<Entry Name="Target position" Index="#x707a" Flags="#x00001000">
+					<Type>DINT</Type>
+				</Entry>
+				<Entry Name="Target velocity" Index="#x70ff" Flags="#x00001000">
+					<Type>DINT</Type>
+				</Entry>
+				<Entry Name="Target torque" Index="#x7071" Flags="#x00001000">
+					<Type>INT</Type>
+				</Entry>
+			</Pdo>
+			<Slot Name="Axis 1" ImageId="1001">
+				<SlotData>0000010001000000100000000008000000000000000000000000000000000000</SlotData>
+				<ModuleIdent>67239937</ModuleIdent>
+				<ModuleIdent>67239938</ModuleIdent>
+				<ModuleIdent>67239939</ModuleIdent>
+				<ModuleIdent>67239940</ModuleIdent>
+				<Module Id="#x03090013" Type="Switching modes of operation" Class="">
+					<Name>=3300+FS2-11M1 (X-Achse)</Name>
+					<ImageId>1002</ImageId>
+					<ModuleData>5900000001000204000000000000000000000000000000000000000000000000</ModuleData>
+					<PdoIndex>6656</PdoIndex>
+					<PdoIndex>5632</PdoIndex>
+					<CoeProfile ProfileNo="#x00000192"/>
+				</Module>
+			</Slot>
+			<Slot Name="DriveSafety Axis 1 " ImageId="1003">
+				<SlotData>0000010001000000100000001000000000000000000000000000000000000000</SlotData>
+				<ModuleIdent>0</ModuleIdent>
+				<ModuleIdent>67240065</ModuleIdent>
+				<ModuleIdent>67240066</ModuleIdent>
+				<Module Id="#x03090023" Type="FSoE empty" Class="">
+					<Name>Module 2 (FSoE empty)</Name>
+					<ImageId>1003</ImageId>
+					<ModuleData>5900000000000000000000000000000000000000000000000000000000000000</ModuleData>
+					<CoeProfile ProfileNo="#x00000000"/>
+				</Module>
+			</Slot>
+			<Slot Name="Axis 2" ImageId="1001">
+				<SlotData>0000000001000000100000000008000000000000000000000000000000000000</SlotData>
+				<ModuleIdent>67239937</ModuleIdent>
+				<ModuleIdent>67239938</ModuleIdent>
+				<ModuleIdent>67239939</ModuleIdent>
+				<ModuleIdent>67239940</ModuleIdent>
+				<Module Id="#x0309001a" Type="Switching modes of operation" Class="">
+					<Name>=3300+FS2-12M1 (Y-Achse)</Name>
+					<ImageId>1002</ImageId>
+					<ModuleData>5900000001000204000000000000000000000000000000000000000000000000</ModuleData>
+					<PdoIndex>6688</PdoIndex>
+					<PdoIndex>5664</PdoIndex>
+					<CoeProfile ProfileNo="#x00000192"/>
+				</Module>
+			</Slot>
+			<Slot Name="DriveSafety Axis 2 " ImageId="1003">
+				<SlotData>0000000001000000100000001000000000000000000000000000000000000000</SlotData>
+				<ModuleIdent>0</ModuleIdent>
+				<ModuleIdent>67240065</ModuleIdent>
+				<ModuleIdent>67240066</ModuleIdent>
+				<Module Id="#x03090025" Type="FSoE empty" Class="">
+					<Name>Module 4 (FSoE empty)</Name>
+					<ImageId>1003</ImageId>
+					<ModuleData>5900000000000000000000000000000000000000000000000000000000000000</ModuleData>
+					<CoeProfile ProfileNo="#x00000000"/>
+				</Module>
+			</Slot>
+		</EtherCAT>
+	</Box>
+</TcSmItem>

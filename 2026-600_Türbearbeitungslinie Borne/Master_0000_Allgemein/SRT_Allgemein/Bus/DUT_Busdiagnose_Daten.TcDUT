@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="DUT_Busdiagnose_Daten" Id="{5c8672bb-fb87-4c1d-9019-20e1eb8f27df}">
+    <Declaration><![CDATA[TYPE DUT_Busdiagnose_Daten :
+STRUCT
+	deviceState :BYTE; //Busdiagnose
+	linkState:BYTE;//Busdiagnose
+	adresse:WORD;//Busdiagnose
+	TypName:STRING;//Busdiagnose
+	Name:STRING;//Busdiagnose
+	Typ:DWORD;//Busdiagnose
+	productCode:UDINT;//Busdiagnose
+	revisionNo:UDINT;//Busdiagnose
+	serialnNo:UDINT;//Busdiagnose
+	PortA:UINT;//Busdiagnose
+	PortB:UINT;//Busdiagnose
+	PortC:UINT;//Busdiagnose
+	PortD:UINT;//Busdiagnose
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

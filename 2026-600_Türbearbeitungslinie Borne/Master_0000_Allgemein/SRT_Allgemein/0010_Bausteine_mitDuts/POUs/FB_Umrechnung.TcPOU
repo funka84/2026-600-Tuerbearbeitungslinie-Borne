@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_Umrechnung" Id="{d6c7c412-5554-4b44-8cf2-188f8caa9d74}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Umrechnung
+VAR_INPUT
+	in_EncPos				: UDINT;
+	in_Umrechnungsfaktor	: LREAL;
+	in_OffsetIstPos			: LREAL;
+END_VAR
+VAR_OUTPUT
+	out_IstPos				: LREAL;
+END_VAR
+VAR
+	temp_Pos				: LREAL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+temp_Pos := in_EncPos;
+
+IF in_Umrechnungsfaktor <> 0 THEN
+	temp_Pos := temp_Pos / in_Umrechnungsfaktor;
+END_IF
+
+out_IstPos := temp_Pos + in_OffsetIstPos;]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

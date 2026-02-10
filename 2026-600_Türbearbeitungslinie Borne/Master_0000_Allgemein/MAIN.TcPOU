@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="MAIN" Id="{1a837ec8-344a-4e6e-aee1-7648291fe771}" SpecialFunc="None">
+    <Declaration><![CDATA[
+PROGRAM MAIN
+VAR
+    // keine lokalen Variablen notwendig
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+// ----------------------------------------------------------
+// Hardware-Aufrufe
+// ----------------------------------------------------------
+Hardware_0000();
+Hardware_1000();
+Hardware_3100();
+Hardware_3200();
+Hardware_3300();
+Hardware_3400();
+Hardware_3510();
+Hardware_3520();
+Hardware_3530();
+Hardware_3540();
+
+// ----------------------------------------------------------
+// Ablauf-Aufrufe
+// ----------------------------------------------------------
+Ablauf_0000();
+Ablauf_1000();
+Ablauf_3100();
+Ablauf_3200();
+Ablauf_3300();
+Ablauf_3400();
+Ablauf_3510();
+Ablauf_3520();
+Ablauf_3530();
+Ablauf_3540();
+
+      ]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

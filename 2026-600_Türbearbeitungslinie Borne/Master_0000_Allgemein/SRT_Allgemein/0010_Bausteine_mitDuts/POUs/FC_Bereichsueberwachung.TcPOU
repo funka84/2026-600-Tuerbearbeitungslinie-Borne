@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FC_Bereichsueberwachung" Id="{6d9a65ee-fd5e-46b6-aac7-e1d6fcc63fc4}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION FC_Bereichsueberwachung : BOOL
+VAR_INPUT
+	/// Sollwert 
+	in_sollwert: REAL;
+	/// Istwert 
+	in_istwert: REAL;
+	/// Offset Obergrenze 
+	in_offset_oben: REAL;
+	/// Offset Untergrenze 
+	in_offset_unten: REAL;
+	/// Freigabe zum Überwachen 
+	in_freigabe: BOOL;
+END_VAR
+VAR
+	temp_oben_real: REAL;
+	temp_unten_real: REAL;
+	temp_grenze_oben: BOOL;
+	temp_grenze_unten: BOOL;
+END_VAR
+
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[	(* Obergrenze überschritten ? *)
+	temp_oben_real := in_sollwert +in_offset_oben;
+	temp_grenze_oben := in_istwert > temp_oben_real;
+
+	(* Untergrenze unterschritten ? *)
+	temp_unten_real := in_sollwert - in_offset_unten;
+	temp_grenze_unten := in_istwert < temp_unten_real;
+
+	(* Wert liegt im zulässigen Bereich *)
+	FC_Bereichsueberwachung := in_freigabe
+								AND NOT temp_grenze_unten
+								AND NOT temp_grenze_oben;]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

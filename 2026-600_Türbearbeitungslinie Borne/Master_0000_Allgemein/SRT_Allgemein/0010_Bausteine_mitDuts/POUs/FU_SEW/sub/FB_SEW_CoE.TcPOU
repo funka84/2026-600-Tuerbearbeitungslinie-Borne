@@ -1,0 +1,461 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_SEW_CoE" Id="{68a057b5-ebd1-4372-8ad6-6c37d266e3c1}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_SEW_CoE
+VAR_INPUT
+	I_bStartRead				:BOOL;				(*	Lesen aus Fu *)
+	I_bReset					:BOOL;
+	I_bStartWriteFromMem		:BOOL;				(*	Schreiben aus Memory in den  Fu *)
+	I_bStartWriteFromCSV		:BOOL;				(*	Schreiben aus CSV in den  Fu *)
+
+		
+	I_sBMK		  			:STRING(22) ;					(* Name des Umrichter BMK, wird gleichzeitig uch als Dateinameverwendet	*)
+
+	
+	I_nEcSlaveAddr			:UINT;				(*	EtherCAT Adresse des Slaves *)
+END_VAR
+VAR_OUTPUT
+	Q_bWriteDone			:BOOL;				(*	Galden in FU	*)
+	Q_bMemDone			:BOOL;				(*	Erfolgreich in Memory gespeichert *)
+	Q_bCSVDone			:BOOL;				(*	Erfolgreich in CSV gespeichert *)
+	Q_bBusy					:BOOL;				(*	Aktion Aktiv	*)
+	Q_bError					:BOOL;				(*	Error *)
+	Q_sState					:STRING;			(*	Statustext *)
+END_VAR
+VAR
+	(*===========================================*)
+	(* CoE Bausteine *)
+	(*===========================================*)
+	fbCoeDataRead		:fb_CoeDataRead;
+	fbCoeDataWrite		:fb_CoeDataWrite;
+	(*===========================================*)
+	(* Aktionen *)
+	(*===========================================*)
+	(* Lesen	*)
+	bParamAusFULesen		:BOOL;
+	(* Schreiben aus MEM*)
+	bParamInFUSchreiben		:BOOL;
+	(* Schreiben aus CSV *)
+	bParamAusCSVLesen		:BOOL;
+	(*===========================================*)
+	(* Merker	*)
+	(*===========================================*)
+	iStepParameter		:INT;
+	sStepParameter		:STRING;
+	(* Fehler *)
+	bParamError				:BOOL;
+	(* Geladen in Speicher *)
+	bParamGeladenInMem	:BOOL;
+	(* Geladen in FU *)
+	bParamGeladenInFu		:BOOL;
+	(* Geladen in CSV *)
+	bParamGeladenInCSV		:BOOL;
+	(* Geladen aus CSV *)
+	bParamGeladenAusCSV	:BOOL;
+	(*CSV*)
+	fbParameterCSV			:fb_Parameter_CSV;
+	(* *)
+	j						:INT;
+	
+	I_nECNetID				:T_AmsNetId:=GVL_1000.Master_AmsNetId;			(*	Net id des EC- Masters	*)
+	I_nTcAMSNetID			:T_AmsNetId:=GVL_1000.TC_AmsNetId;			(*	Net id des TwincatSystems	*)
+	I_sFilePath				:STRING;
+	tempiParam: INT;
+	pFL_StartLesen: R_TRIG;
+	pFL_StartSchreiben: R_TRIG;
+	pFl_reset:r_trig;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[I_sFilePath:='C:\SRT\Antriebe\SEW\CSV\';
+(*	*)
+Ablauf();
+(*	*)
+Output();
+
+(*	Zuweisung *)
+bParamAusFULesen :=		I_bStartRead;
+bParamInFUSchreiben :=	I_bStartWriteFromMem;
+bParamAusCSVLesen :=	I_bStartWriteFromCSV;]]></ST>
+    </Implementation>
+    <Action Name="Ablauf" Id="{50b11b0e-949d-4d95-aedf-c88bf4a26adb}">
+      <Implementation>
+        <ST><![CDATA[(* Flankenmerker	*)
+pFL_StartLesen		(CLK:=bParamAusFULesen);
+pFL_StartSchreiben	(CLK:=bParamAusCSVLesen);
+pFl_Reset			(clk:=I_bReset);
+
+(* Parameter 	*)
+Parameter();
+
+(* CoE Read	*)
+fbCoeDataRead(
+	I_sNetID:=		I_nECNetID,
+	I_nSlave:=		I_nEcSlaveAddr );
+
+(* CoE Write	*)
+fbCoeDataWrite(
+	I_sNetID:=		I_nECNetID ,
+	I_nSlave:=		I_nEcSlaveAddr );
+
+(* CSVSchreiben *)
+fbParameterCSV(
+	I_sNetId:=			I_nTcAMSNetID ,
+	I_sFileName:= 		CONCAT(I_sBMK,'_MC07b'),
+	I_sPath:= 			I_sFilePath,
+	I_iMaxCollumns:= 		4 );
+
+(* Reset *)	
+IF pFl_Reset.Q
+THEN
+	fbParameterCSV.I_bReset		:= TRUE;
+	iStepParameter				:=0;
+END_IF
+
+(*=======================================================*)
+CASE iStepParameter OF
+(*=======================================================*)
+0:(* INIT*)
+(*=======================================================*)
+	fbParameterCSV.I_bStartWrite	:= FALSE;
+	fbCoeDataRead.I_bExecute		:= FALSE;
+	fbCoeDataWrite.I_bExecute		:= FALSE;
+	fbParameterCSV.I_bStartRead		:= FALSE;
+	bParamGeladenInCSV 				:= FALSE;
+	bParamGeladenInFu				:= FALSE;
+	bParamGeladenInMem				:= FALSE;
+	bParamError 					:= FALSE;
+	j 								:= 0;
+
+	IF pFL_StartLesen.Q
+	THEN
+		fbParameterCSV.I_bReset	:= FALSE;
+		iStepParameter := iStepParameter +10;
+	END_IF
+
+	IF pFL_StartSchreiben.Q
+	THEN
+		fbParameterCSV.I_bReset	:= FALSE;
+		iStepParameter :=60;	(* Lesen aus CSV	*)
+	END_IF
+
+(*=======================================================*)
+10:(* Start Lesen 	*)
+(*=======================================================*)
+	sStepParameter	:= 'Laden aus FU Starten';
+
+	fbCoeDataRead.I_bExecute := TRUE;
+
+	IF	fbCoeDataRead.Q_bBusy
+	THEN
+		fbCoeDataRead.I_bExecute := FALSE;
+		iStepParameter := iStepParameter +10;
+	END_IF
+
+(*=======================================================*)
+20:(*  Lesen 	*)
+(*=======================================================*)
+	sStepParameter	:= CONCAT('Lade aus FU-> ',INT_TO_STRING(fbCoeDataRead.iParam));
+
+	IF fbCoeDataRead.iParam > tempiParam
+	THEN
+		tempiParam:=fbCoeDataRead.iParam;
+	END_IF
+	
+	IF	NOT fbCoeDataRead.Q_bBusy
+		AND NOT fbCoeDataRead.Q_bError
+	THEN
+		bParamGeladenInMem := TRUE;
+		iStepParameter := iStepParameter +10;
+		tempiParam:=0;
+	ELSIF
+		fbCoeDataRead.Q_bError
+	THEN
+		sStepParameter :=		CONCAT('Fehler beim lesen aus FU, Parameter-> ',INT_TO_STRING(fbCoeDataRead.iParam));
+		sStepParameter :=		CONCAT(sStepParameter,' | ErrorCode-> ');
+		sStepParameter :=		CONCAT(sStepParameter,UDINT_TO_STRING(fbCoeDataRead.fbCoERead.nErrId));
+		iStepParameter := 		-999;
+	END_IF
+
+(*=======================================================*)
+30:(*  In CSV Schreiben 	*)
+(*=======================================================*)
+
+	FOR j := 0 TO GVL_1000.MaxCOEParam BY 1 DO
+		fbParameterCSV.I_stParameter[j].sName	:=	fbCoeDataRead.I_stParameter[j].sName;
+		fbParameterCSV.I_stParameter[j].nWert	:=	fbCoeDataRead.Q_stParameter[j].nWert;
+	END_FOR
+
+	IF j >= GVL_1000.MaxCOEParam
+	THEN
+		fbParameterCSV.I_bStartWrite	:= TRUE;
+	END_IF
+
+	IF	fbParameterCSV.bBusy
+	THEN
+		fbParameterCSV.I_bStartWrite	:= FALSE;
+		iStepParameter := iStepParameter +10;
+	END_IF
+
+(*=======================================================*)
+40:(*  In CSV Schreiben 	*)
+(*=======================================================*)
+	fbParameterCSV.I_bStartWrite	:= FALSE;
+	sStepParameter :=CONCAT('Schreiben in CSV -> ',fbParameterCSV.sState);
+
+	IF NOT fbParameterCSV.bBusy
+		AND NOT fbParameterCSV.bErr
+	THEN
+		bParamGeladenInCSV := TRUE;
+		iStepParameter := iStepParameter +10;
+	ELSIF
+		fbParameterCSV.bErr
+	THEN
+		sStepParameter := CONCAT('Fehler beim schreiben in CSV -> ', fbParameterCSV.sState);
+		iStepParameter := -999;
+	END_IF
+
+(*=======================================================*)
+50:(* Erfolgreich gelesen 	*)
+(*=======================================================*)
+	sStepParameter	:='Erfolgreich aus FU in Memory geladen!';
+	bParamGeladenInMem := TRUE;
+
+	IF	bParamGeladenInMem
+		AND bParamInFUSchreiben
+	THEN
+		bParamGeladenInFu := FALSE;
+		iStepParameter := 		100;
+	ELSIF
+		(bParamAusFULesen
+		AND bParamGeladenInMem)
+		OR bParamAusCSVLesen
+	THEN
+		iStepParameter := 		0;
+	END_IF
+
+(*=======================================================*)
+60:(* Lesen aus CSV 	*)
+(*=======================================================*)
+	fbParameterCSV.I_bStartWrite	:= FALSE;
+	fbParameterCSV.I_bStartRead	:= TRUE;
+
+	bParamGeladenAusCSV := FALSE;
+
+	IF	fbParameterCSV.bBusy
+	THEN
+		fbParameterCSV.I_bStartRead	:= FALSE;
+		iStepParameter := iStepParameter +10;
+	END_IF
+
+(*=======================================================*)
+70:(*  Lesen aus CSV 	*)
+(*=======================================================*)
+	sStepParameter :=CONCAT('Lesen aus CSV -> ',fbParameterCSV.sState);
+
+	IF NOT fbParameterCSV.bBusy
+		AND NOT fbParameterCSV.bErr
+	THEN
+		bParamGeladenAusCSV := TRUE;
+		iStepParameter := iStepParameter +10;
+	ELSIF
+		fbParameterCSV.bErr
+	THEN
+		sStepParameter := CONCAT('Fehler beim lesen aus CSV -> ', fbParameterCSV.sState);
+		iStepParameter := -999;
+	END_IF
+
+(*=======================================================*)
+80:(*  Lesen aus CSV 	*)
+(*=======================================================*)
+	FOR j := 0 TO GVL_1000.MaxCOEParam BY 1 DO
+		fbCoeDataWrite.I_stParameter[j].nZugriff:=		fbCoeDataRead.I_stParameter[j].nZugriff;
+		fbCoeDataWrite.I_stParameter[j].nIndex:=		fbCoeDataRead.I_stParameter[j].nIndex;
+		fbCoeDataWrite.I_stParameter[j].nLength:=	fbCoeDataRead.I_stParameter[j].nLength;
+		fbCoeDataWrite.I_stParameter[j].nSubIndex:=	fbCoeDataRead.I_stParameter[j].nSubIndex;
+		fbCoeDataWrite.I_stParameter[j].sName:=		fbCoeDataRead.I_stParameter[j].sName;
+		fbCoeDataWrite.I_stParameter[j].nWert	:=	LREAL_TO_DWORD(fbParameterCSV.Q_stParameter[j].nWert);
+	END_FOR
+
+	iStepParameter := 110;
+
+(*=======================================================*)
+100:(* Zuweisung Readbaustein auf Schreib Baustein schreiben  	*)
+(*=======================================================*)
+	FOR j := 0 TO GVL_1000.MaxCOEParam BY 1 DO
+		fbCoeDataWrite.I_stParameter[j].nZugriff:=		fbCoeDataRead.I_stParameter[j].nZugriff;
+		fbCoeDataWrite.I_stParameter[j].nIndex:=		fbCoeDataRead.I_stParameter[j].nIndex;
+		fbCoeDataWrite.I_stParameter[j].nLength:=	fbCoeDataRead.I_stParameter[j].nLength;
+		fbCoeDataWrite.I_stParameter[j].nSubIndex:=	fbCoeDataRead.I_stParameter[j].nSubIndex;
+		fbCoeDataWrite.I_stParameter[j].sName:=		fbCoeDataRead.I_stParameter[j].sName;
+		fbCoeDataWrite.I_stParameter[j].nWert:=		LREAL_TO_DWORD(fbCoeDataRead.Q_stParameter[j].nWert);
+	END_FOR
+
+	iStepParameter := iStepParameter +10;
+
+(*=======================================================*)
+110:(* Starte Schreiben 	*)
+(*=======================================================*)
+	sStepParameter	:= 'Laden in FU Starten';
+
+	fbCoeDataWrite.I_bExecute := TRUE;
+
+	IF	fbCoeDataWrite.Q_bBusy
+	THEN
+		fbCoeDataWrite.I_bExecute := FALSE;
+		iStepParameter := iStepParameter +10;
+	END_IF
+
+(*=======================================================*)
+120:(*  Schreiben 	*)
+(*=======================================================*)
+	sStepParameter	:= CONCAT('Lade in FU-> ',INT_TO_STRING(fbCoeDataWrite.iParam));
+
+	IF	NOT fbCoeDataWrite.Q_bBusy
+		AND NOT fbCoeDataWrite.Q_bError
+	THEN
+		iStepParameter := iStepParameter +10;
+	ELSIF
+		fbCoeDataWrite.Q_bError
+	THEN
+		sStepParameter :=		CONCAT('Fehler beim schreiben in FU, Parameter-> ',INT_TO_STRING(fbCoeDataWrite.iParam));
+		sStepParameter :=		CONCAT(sStepParameter,' | ErrorCode-> ');
+		sStepParameter :=		CONCAT(sStepParameter,UDINT_TO_STRING(fbCoeDataWrite.fbCoEWrite.nErrId));
+		iStepParameter := 		-999;
+	END_IF
+
+(*=======================================================*)
+130:(*  Erfolgreich geschrieben in FU 	*)
+(*=======================================================*)
+	sStepParameter	:='Erfolgreich in FU geladen!';
+	bParamGeladenInFu := TRUE;
+	iStepParameter :=0;
+
+(*=======================================================*)
+-999:(* ERROR 	*)
+(*=======================================================*)
+	bParamError := 		TRUE;
+
+	IF NOT	bParamInFUSchreiben
+		AND NOT bParamAusFULesen
+	THEN
+		iStepParameter := 		0;
+	END_IF
+
+END_CASE]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="Output" Id="{5dd283bc-7a32-42e8-b6cb-07e29fb799f4}">
+      <Implementation>
+        <ST><![CDATA[(*=======================================================*)
+(*	Output 	*)
+(*=======================================================*)
+Q_bBusy	:=		iStepParameter > 0 AND iStepParameter <> 50;
+Q_bError :=		bParamError;
+Q_sState :=		sStepParameter;
+Q_bMemDone:=	bParamGeladenInMem;
+Q_bCSVDone:=	bParamGeladenInCSV;
+Q_bWriteDone:=	bParamGeladenInFu;]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="Parameter" Id="{a8f78fb7-6bd8-41b5-81a3-ddf988db65af}">
+      <Implementation>
+        <ST><![CDATA[
+(* MC 07B	*)
+fbCoeDataRead.I_stParameter[0].nIndex:=8301;	fbCoeDataRead.I_stParameter[0].nSubIndex:=0;	fbCoeDataRead.I_stParameter[0].nLength:=4;	fbCoeDataRead.I_stParameter[0].sName:='8301.0 Gerätetyp';					fbCoeDataRead.I_stParameter[0].nZugriff:=0;
+fbCoeDataRead.I_stParameter[1].nIndex:=8361;	fbCoeDataRead.I_stParameter[1].nSubIndex:=0;	fbCoeDataRead.I_stParameter[1].nLength:=4;	fbCoeDataRead.I_stParameter[1].sName:='8361.0 Ausgangsnennstrom';			fbCoeDataRead.I_stParameter[1].nZugriff:=0;
+fbCoeDataRead.I_stParameter[2].nIndex:=8362;	fbCoeDataRead.I_stParameter[2].nSubIndex:=0;	fbCoeDataRead.I_stParameter[2].nLength:=4;	fbCoeDataRead.I_stParameter[2].sName:='8362.0 Frontoption';					fbCoeDataRead.I_stParameter[2].nZugriff:=0;
+fbCoeDataRead.I_stParameter[3].nIndex:=8314;	fbCoeDataRead.I_stParameter[3].nSubIndex:=0;	fbCoeDataRead.I_stParameter[3].nLength:=4;	fbCoeDataRead.I_stParameter[3].sName:='8314.0 Signatur';					fbCoeDataRead.I_stParameter[3].nZugriff:=2;
+fbCoeDataRead.I_stParameter[4].nIndex:=8315;	fbCoeDataRead.I_stParameter[4].nSubIndex:=0;	fbCoeDataRead.I_stParameter[4].nLength:=4;	fbCoeDataRead.I_stParameter[4].sName:='8315.0 Signatur';					fbCoeDataRead.I_stParameter[4].nZugriff:=2;
+fbCoeDataRead.I_stParameter[5].nIndex:=8316;	fbCoeDataRead.I_stParameter[5].nSubIndex:=0;	fbCoeDataRead.I_stParameter[5].nLength:=4;	fbCoeDataRead.I_stParameter[5].sName:='8316.0 Signatur';					fbCoeDataRead.I_stParameter[5].nZugriff:=2;
+fbCoeDataRead.I_stParameter[6].nIndex:=8317;	fbCoeDataRead.I_stParameter[6].nSubIndex:=0;	fbCoeDataRead.I_stParameter[6].nLength:=4;	fbCoeDataRead.I_stParameter[6].sName:='8317.0 Signatur';					fbCoeDataRead.I_stParameter[6].nZugriff:=2;
+fbCoeDataRead.I_stParameter[7].nIndex:=8660;	fbCoeDataRead.I_stParameter[7].nSubIndex:=0;	fbCoeDataRead.I_stParameter[7].nLength:=4;	fbCoeDataRead.I_stParameter[7].sName:='8660.0 Netzspannung';				fbCoeDataRead.I_stParameter[7].nZugriff:=2;
+fbCoeDataRead.I_stParameter[8].nIndex:=8607;	fbCoeDataRead.I_stParameter[8].nSubIndex:=0;	fbCoeDataRead.I_stParameter[8].nLength:=4;	fbCoeDataRead.I_stParameter[8].sName:='8607.0 4-Quadranten Betrieb 1';		fbCoeDataRead.I_stParameter[8].nZugriff:=2;
+fbCoeDataRead.I_stParameter[9].nIndex:=8608;	fbCoeDataRead.I_stParameter[9].nSubIndex:=0;	fbCoeDataRead.I_stParameter[9].nLength:=4;	fbCoeDataRead.I_stParameter[9].sName:='8608.0 4-Quadranten Betrieb 2';		fbCoeDataRead.I_stParameter[9].nZugriff:=2;
+fbCoeDataRead.I_stParameter[10].nIndex:=8461;	fbCoeDataRead.I_stParameter[10].nSubIndex:=0;	fbCoeDataRead.I_stParameter[10].nLength:=4;	fbCoeDataRead.I_stParameter[10].sName:='8461.0 Sollwertquelle';				fbCoeDataRead.I_stParameter[10].nZugriff:=2;
+fbCoeDataRead.I_stParameter[11].nIndex:=8462;	fbCoeDataRead.I_stParameter[11].nSubIndex:=0;	fbCoeDataRead.I_stParameter[11].nLength:=4;	fbCoeDataRead.I_stParameter[11].sName:='8462.0 Steuerquelle';				fbCoeDataRead.I_stParameter[11].nZugriff:=2;
+fbCoeDataRead.I_stParameter[12].nIndex:=8574;	fbCoeDataRead.I_stParameter[12].nSubIndex:=0;	fbCoeDataRead.I_stParameter[12].nLength:=4;	fbCoeDataRead.I_stParameter[12].sName:='8574.0 Betriebsart 1';				fbCoeDataRead.I_stParameter[12].nZugriff:=2;
+fbCoeDataRead.I_stParameter[13].nIndex:=8575;	fbCoeDataRead.I_stParameter[13].nSubIndex:=0;	fbCoeDataRead.I_stParameter[13].nLength:=4;	fbCoeDataRead.I_stParameter[13].sName:='8575.0 Betriebsart 2';				fbCoeDataRead.I_stParameter[13].nZugriff:=2;
+fbCoeDataRead.I_stParameter[14].nIndex:=10000;	fbCoeDataRead.I_stParameter[14].nSubIndex:=0;	fbCoeDataRead.I_stParameter[14].nLength:=4;	fbCoeDataRead.I_stParameter[14].sName:='10000.0 Name 1';					fbCoeDataRead.I_stParameter[14].nZugriff:=2;
+fbCoeDataRead.I_stParameter[15].nIndex:=10019;	fbCoeDataRead.I_stParameter[15].nSubIndex:=0;	fbCoeDataRead.I_stParameter[15].nLength:=4;	fbCoeDataRead.I_stParameter[15].sName:='10019.0 Name 2';					fbCoeDataRead.I_stParameter[15].nZugriff:=2;
+fbCoeDataRead.I_stParameter[16].nIndex:=8642;	fbCoeDataRead.I_stParameter[16].nSubIndex:=0;	fbCoeDataRead.I_stParameter[16].nLength:=4;	fbCoeDataRead.I_stParameter[16].sName:='8642.0 Nenndrehzahl 1';				fbCoeDataRead.I_stParameter[16].nZugriff:=2;
+fbCoeDataRead.I_stParameter[17].nIndex:=8643;	fbCoeDataRead.I_stParameter[17].nSubIndex:=0;	fbCoeDataRead.I_stParameter[17].nLength:=4;	fbCoeDataRead.I_stParameter[17].sName:='8643.0 Nenndrehzahl 2';				fbCoeDataRead.I_stParameter[17].nZugriff:=2;
+fbCoeDataRead.I_stParameter[18].nIndex:=10016;	fbCoeDataRead.I_stParameter[18].nSubIndex:=0;	fbCoeDataRead.I_stParameter[18].nLength:=4;	fbCoeDataRead.I_stParameter[18].sName:='10016.0 Nennleistung 1';			fbCoeDataRead.I_stParameter[18].nZugriff:=0;
+fbCoeDataRead.I_stParameter[19].nIndex:=10017;	fbCoeDataRead.I_stParameter[19].nSubIndex:=0;	fbCoeDataRead.I_stParameter[19].nLength:=4;	fbCoeDataRead.I_stParameter[19].sName:='10017.0 Nennleistung 2';			fbCoeDataRead.I_stParameter[19].nZugriff:=0;
+fbCoeDataRead.I_stParameter[20].nIndex:=8451;	fbCoeDataRead.I_stParameter[20].nSubIndex:=0;	fbCoeDataRead.I_stParameter[20].nLength:=4;	fbCoeDataRead.I_stParameter[20].sName:='8451.0 PD-Konfiguration';			fbCoeDataRead.I_stParameter[20].nZugriff:=0;
+fbCoeDataRead.I_stParameter[21].nIndex:=8452;	fbCoeDataRead.I_stParameter[21].nSubIndex:=0;	fbCoeDataRead.I_stParameter[21].nLength:=4;	fbCoeDataRead.I_stParameter[21].sName:='8452.0 Feldbustyp';					fbCoeDataRead.I_stParameter[21].nZugriff:=0;
+fbCoeDataRead.I_stParameter[22].nIndex:=8454;	fbCoeDataRead.I_stParameter[22].nSubIndex:=0;	fbCoeDataRead.I_stParameter[22].nLength:=4;	fbCoeDataRead.I_stParameter[22].sName:='8454.0 Feldbusadresse';				fbCoeDataRead.I_stParameter[22].nZugriff:=0;
+fbCoeDataRead.I_stParameter[23].nIndex:=10247;	fbCoeDataRead.I_stParameter[23].nSubIndex:=10;	fbCoeDataRead.I_stParameter[23].nLength:=4;	fbCoeDataRead.I_stParameter[23].sName:='10247.10 Sollwert-Bezugsdrehzahl';	fbCoeDataRead.I_stParameter[23].nZugriff:=2;
+fbCoeDataRead.I_stParameter[24].nIndex:=8515;	fbCoeDataRead.I_stParameter[24].nSubIndex:=0;	fbCoeDataRead.I_stParameter[24].nLength:=4;	fbCoeDataRead.I_stParameter[24].sName:='8515.0 Start-Stopp-Drehzahl';		fbCoeDataRead.I_stParameter[24].nZugriff:=2;
+fbCoeDataRead.I_stParameter[25].nIndex:=8516;	fbCoeDataRead.I_stParameter[25].nSubIndex:=0;	fbCoeDataRead.I_stParameter[25].nLength:=4;	fbCoeDataRead.I_stParameter[25].sName:='8516.0 Minimaldrehzahl 1';			fbCoeDataRead.I_stParameter[25].nZugriff:=2;
+fbCoeDataRead.I_stParameter[26].nIndex:=8517;	fbCoeDataRead.I_stParameter[26].nSubIndex:=0;	fbCoeDataRead.I_stParameter[26].nLength:=4;	fbCoeDataRead.I_stParameter[26].sName:='8517.0 Maximaldrehzahl 1';			fbCoeDataRead.I_stParameter[26].nZugriff:=2;
+fbCoeDataRead.I_stParameter[27].nIndex:=8518;	fbCoeDataRead.I_stParameter[27].nSubIndex:=0;	fbCoeDataRead.I_stParameter[27].nLength:=4;	fbCoeDataRead.I_stParameter[27].sName:='8518.0 Stromgrenze 1';				fbCoeDataRead.I_stParameter[27].nZugriff:=2;
+fbCoeDataRead.I_stParameter[28].nIndex:=8519;	fbCoeDataRead.I_stParameter[28].nSubIndex:=0;	fbCoeDataRead.I_stParameter[28].nLength:=4;	fbCoeDataRead.I_stParameter[28].sName:='8519.0 Start-Stopp-Drehzahl 2';		fbCoeDataRead.I_stParameter[28].nZugriff:=2;
+fbCoeDataRead.I_stParameter[29].nIndex:=8520;	fbCoeDataRead.I_stParameter[29].nSubIndex:=0;	fbCoeDataRead.I_stParameter[29].nLength:=4;	fbCoeDataRead.I_stParameter[29].sName:='8520.0 Minimaldrehzahl 2';			fbCoeDataRead.I_stParameter[29].nZugriff:=2;
+fbCoeDataRead.I_stParameter[30].nIndex:=8521;	fbCoeDataRead.I_stParameter[30].nSubIndex:=0;	fbCoeDataRead.I_stParameter[30].nLength:=4;	fbCoeDataRead.I_stParameter[30].sName:='8521.0 Maximaldrehzahl 2';			fbCoeDataRead.I_stParameter[30].nZugriff:=2;
+fbCoeDataRead.I_stParameter[31].nIndex:=8522;	fbCoeDataRead.I_stParameter[31].nSubIndex:=0;	fbCoeDataRead.I_stParameter[31].nLength:=4;	fbCoeDataRead.I_stParameter[31].sName:='8522.0 Stromgrenze 2';				fbCoeDataRead.I_stParameter[31].nZugriff:=2;
+fbCoeDataRead.I_stParameter[32].nIndex:=8533;	fbCoeDataRead.I_stParameter[32].nSubIndex:=0;	fbCoeDataRead.I_stParameter[32].nLength:=4;	fbCoeDataRead.I_stParameter[32].sName:='8533.0 Motorschutz 1';				fbCoeDataRead.I_stParameter[32].nZugriff:=2;
+fbCoeDataRead.I_stParameter[33].nIndex:=8534;	fbCoeDataRead.I_stParameter[33].nSubIndex:=0;	fbCoeDataRead.I_stParameter[33].nLength:=4;	fbCoeDataRead.I_stParameter[33].sName:='8534.0 Kühlungsart 1';				fbCoeDataRead.I_stParameter[33].nZugriff:=2;
+fbCoeDataRead.I_stParameter[34].nIndex:=8535;	fbCoeDataRead.I_stParameter[34].nSubIndex:=0;	fbCoeDataRead.I_stParameter[34].nLength:=4;	fbCoeDataRead.I_stParameter[34].sName:='8535.0 Motorschutz 2';				fbCoeDataRead.I_stParameter[34].nZugriff:=2;
+fbCoeDataRead.I_stParameter[35].nIndex:=8536;	fbCoeDataRead.I_stParameter[35].nSubIndex:=0;	fbCoeDataRead.I_stParameter[35].nLength:=4;	fbCoeDataRead.I_stParameter[35].sName:='8536.0 Kühlungsart 2';				fbCoeDataRead.I_stParameter[35].nZugriff:=2;
+fbCoeDataRead.I_stParameter[36].nIndex:=8844;	fbCoeDataRead.I_stParameter[36].nSubIndex:=0;	fbCoeDataRead.I_stParameter[36].nLength:=4;	fbCoeDataRead.I_stParameter[36].sName:='8844.0 Belegung Binäreingang DI00';	fbCoeDataRead.I_stParameter[36].nZugriff:=2;
+fbCoeDataRead.I_stParameter[37].nIndex:=8336;	fbCoeDataRead.I_stParameter[37].nSubIndex:=0;	fbCoeDataRead.I_stParameter[37].nLength:=4;	fbCoeDataRead.I_stParameter[37].sName:='8336.0 Belegung Binäreingang DI02';	fbCoeDataRead.I_stParameter[37].nZugriff:=2;
+fbCoeDataRead.I_stParameter[38].nIndex:=8337;	fbCoeDataRead.I_stParameter[38].nSubIndex:=0;	fbCoeDataRead.I_stParameter[38].nLength:=4;	fbCoeDataRead.I_stParameter[38].sName:='8337.0 Belegung Binäreingang DI03';	fbCoeDataRead.I_stParameter[38].nZugriff:=2;
+fbCoeDataRead.I_stParameter[39].nIndex:=8338;	fbCoeDataRead.I_stParameter[39].nSubIndex:=0;	fbCoeDataRead.I_stParameter[39].nLength:=4;	fbCoeDataRead.I_stParameter[39].sName:='8338.0 Belegung Binäreingang DI04';	fbCoeDataRead.I_stParameter[39].nZugriff:=2;
+fbCoeDataRead.I_stParameter[40].nIndex:=8339;	fbCoeDataRead.I_stParameter[40].nSubIndex:=0;	fbCoeDataRead.I_stParameter[40].nLength:=4;	fbCoeDataRead.I_stParameter[40].sName:='8339.0 Belegung Binäreingang DI05';	fbCoeDataRead.I_stParameter[40].nZugriff:=2;
+fbCoeDataRead.I_stParameter[41].nIndex:=8335;	fbCoeDataRead.I_stParameter[41].nSubIndex:=0;	fbCoeDataRead.I_stParameter[41].nLength:=4;	fbCoeDataRead.I_stParameter[41].sName:='8335.0 Belegung Binäreingang DI01';	fbCoeDataRead.I_stParameter[41].nZugriff:=0;
+fbCoeDataRead.I_stParameter[42].nIndex:=8350;	fbCoeDataRead.I_stParameter[42].nSubIndex:=0;	fbCoeDataRead.I_stParameter[42].nLength:=4;	fbCoeDataRead.I_stParameter[42].sName:='8350.0 Belegung Binärausgang DO01';	fbCoeDataRead.I_stParameter[42].nZugriff:=2;
+fbCoeDataRead.I_stParameter[43].nIndex:=8351;	fbCoeDataRead.I_stParameter[43].nSubIndex:=0;	fbCoeDataRead.I_stParameter[43].nLength:=4;	fbCoeDataRead.I_stParameter[43].sName:='8351.0 Belegung Binärausgang DO02';	fbCoeDataRead.I_stParameter[43].nZugriff:=2;
+fbCoeDataRead.I_stParameter[44].nIndex:=8916;	fbCoeDataRead.I_stParameter[44].nSubIndex:=0;	fbCoeDataRead.I_stParameter[44].nLength:=4;	fbCoeDataRead.I_stParameter[44].sName:='8916.0 Belegung Binärausgang DO03';	fbCoeDataRead.I_stParameter[44].nZugriff:=2;
+fbCoeDataRead.I_stParameter[45].nIndex:=8749;	fbCoeDataRead.I_stParameter[45].nSubIndex:=0;	fbCoeDataRead.I_stParameter[45].nLength:=4;	fbCoeDataRead.I_stParameter[45].sName:='8749.0 Bremsenöffnungszeit 1';		fbCoeDataRead.I_stParameter[45].nZugriff:=2;
+fbCoeDataRead.I_stParameter[46].nIndex:=8585;	fbCoeDataRead.I_stParameter[46].nSubIndex:=0;	fbCoeDataRead.I_stParameter[46].nLength:=4;	fbCoeDataRead.I_stParameter[46].sName:='8585.0 Bremseneinfallzeit 1';		fbCoeDataRead.I_stParameter[46].nZugriff:=2;
+fbCoeDataRead.I_stParameter[47].nIndex:=8750;	fbCoeDataRead.I_stParameter[47].nSubIndex:=0;	fbCoeDataRead.I_stParameter[47].nLength:=4;	fbCoeDataRead.I_stParameter[47].sName:='8750.0 Bremsenöffnungszeit 2';		fbCoeDataRead.I_stParameter[47].nZugriff:=2;
+fbCoeDataRead.I_stParameter[48].nIndex:=8587;	fbCoeDataRead.I_stParameter[48].nSubIndex:=0;	fbCoeDataRead.I_stParameter[48].nLength:=4;	fbCoeDataRead.I_stParameter[48].sName:='8587.0 Bremseneinfallzeit 1';		fbCoeDataRead.I_stParameter[48].nZugriff:=2;
+fbCoeDataRead.I_stParameter[49].nIndex:=8798;	fbCoeDataRead.I_stParameter[49].nSubIndex:=0;	fbCoeDataRead.I_stParameter[49].nLength:=4;	fbCoeDataRead.I_stParameter[49].sName:='8798.0 Verriegelung Run/Stop-Tasten';fbCoeDataRead.I_stParameter[49].nZugriff:=2;
+fbCoeDataRead.I_stParameter[50].nIndex:=8925;	fbCoeDataRead.I_stParameter[50].nSubIndex:=0;	fbCoeDataRead.I_stParameter[50].nLength:=4;	fbCoeDataRead.I_stParameter[50].sName:='8925.0 Energiesparfunktion';		fbCoeDataRead.I_stParameter[50].nZugriff:=2;
+fbCoeDataRead.I_stParameter[51].nIndex:=10204;	fbCoeDataRead.I_stParameter[51].nSubIndex:=3;	fbCoeDataRead.I_stParameter[51].nLength:=4;	fbCoeDataRead.I_stParameter[51].sName:='10204.3 Hilfsspannungs-Ausgang VIO 24V';	fbCoeDataRead.I_stParameter[51].nZugriff:=2;
+fbCoeDataRead.I_stParameter[52].nIndex:=8304;	fbCoeDataRead.I_stParameter[52].nSubIndex:=0;	fbCoeDataRead.I_stParameter[52].nLength:=4;	fbCoeDataRead.I_stParameter[52].sName:='8304.0 Sollwert-Beschreibung PA1';	fbCoeDataRead.I_stParameter[52].nZugriff:=2;
+fbCoeDataRead.I_stParameter[53].nIndex:=8305;	fbCoeDataRead.I_stParameter[53].nSubIndex:=0;	fbCoeDataRead.I_stParameter[53].nLength:=4;	fbCoeDataRead.I_stParameter[53].sName:='8305.0 Sollwert-Beschreibung PA2';	fbCoeDataRead.I_stParameter[53].nZugriff:=2;
+fbCoeDataRead.I_stParameter[54].nIndex:=8306;	fbCoeDataRead.I_stParameter[54].nSubIndex:=0;	fbCoeDataRead.I_stParameter[54].nLength:=4;	fbCoeDataRead.I_stParameter[54].sName:='8306.0 Sollwert-Beschreibung PA3';	fbCoeDataRead.I_stParameter[54].nZugriff:=2;
+fbCoeDataRead.I_stParameter[55].nIndex:=8307;	fbCoeDataRead.I_stParameter[55].nSubIndex:=0;	fbCoeDataRead.I_stParameter[55].nLength:=4;	fbCoeDataRead.I_stParameter[55].sName:='8307.0 Istwert-Beschreibung PE1';	fbCoeDataRead.I_stParameter[55].nZugriff:=2;
+fbCoeDataRead.I_stParameter[56].nIndex:=8308;	fbCoeDataRead.I_stParameter[56].nSubIndex:=0;	fbCoeDataRead.I_stParameter[56].nLength:=4;	fbCoeDataRead.I_stParameter[56].sName:='8308.0 Istwert-Beschreibung PE2';	fbCoeDataRead.I_stParameter[56].nZugriff:=2;
+fbCoeDataRead.I_stParameter[57].nIndex:=8309;	fbCoeDataRead.I_stParameter[57].nSubIndex:=0;	fbCoeDataRead.I_stParameter[57].nLength:=4;	fbCoeDataRead.I_stParameter[57].sName:='8309.0 Istwert-Beschreibung PE3';	fbCoeDataRead.I_stParameter[57].nZugriff:=2;
+fbCoeDataRead.I_stParameter[58].nIndex:=8622;	fbCoeDataRead.I_stParameter[58].nSubIndex:=0;	fbCoeDataRead.I_stParameter[58].nLength:=4;	fbCoeDataRead.I_stParameter[58].sName:='8622.0 PA-Daten freigeben';			fbCoeDataRead.I_stParameter[58].nZugriff:=2;
+fbCoeDataRead.I_stParameter[59].nIndex:=8937;	fbCoeDataRead.I_stParameter[59].nSubIndex:=0;	fbCoeDataRead.I_stParameter[59].nLength:=4;	fbCoeDataRead.I_stParameter[59].sName:='8937.0 SBus Protokoll';				fbCoeDataRead.I_stParameter[59].nZugriff:=2;
+fbCoeDataRead.I_stParameter[60].nIndex:=8600;	fbCoeDataRead.I_stParameter[60].nSubIndex:=0;	fbCoeDataRead.I_stParameter[60].nLength:=4;	fbCoeDataRead.I_stParameter[60].sName:='8600.0 SBus Aderesse';				fbCoeDataRead.I_stParameter[60].nZugriff:=2;
+fbCoeDataRead.I_stParameter[61].nIndex:=8601;	fbCoeDataRead.I_stParameter[61].nSubIndex:=0;	fbCoeDataRead.I_stParameter[61].nLength:=4;	fbCoeDataRead.I_stParameter[61].sName:='8601.0 SBus Gruppenadresse';		fbCoeDataRead.I_stParameter[61].nZugriff:=2;
+fbCoeDataRead.I_stParameter[62].nIndex:=8602;	fbCoeDataRead.I_stParameter[62].nSubIndex:=0;	fbCoeDataRead.I_stParameter[62].nLength:=4;	fbCoeDataRead.I_stParameter[62].sName:='8602.0 SBus Timeout-Zeit';			fbCoeDataRead.I_stParameter[62].nZugriff:=2;
+fbCoeDataRead.I_stParameter[63].nIndex:=8603;	fbCoeDataRead.I_stParameter[63].nSubIndex:=0;	fbCoeDataRead.I_stParameter[63].nLength:=4;	fbCoeDataRead.I_stParameter[63].sName:='8603.0 SBus Baudrate';				fbCoeDataRead.I_stParameter[63].nZugriff:=2;
+fbCoeDataRead.I_stParameter[64].nIndex:=8989;	fbCoeDataRead.I_stParameter[64].nSubIndex:=0;	fbCoeDataRead.I_stParameter[64].nLength:=4;	fbCoeDataRead.I_stParameter[64].sName:='8989.0 CANopen Adresse';			fbCoeDataRead.I_stParameter[64].nZugriff:=2;
+fbCoeDataRead.I_stParameter[65].nIndex:=8524;	fbCoeDataRead.I_stParameter[65].nSubIndex:=0;	fbCoeDataRead.I_stParameter[65].nLength:=4;	fbCoeDataRead.I_stParameter[65].sName:='8524.0 Boost 1';	fbCoeDataRead.I_stParameter[65].nZugriff:=2;
+fbCoeDataRead.I_stParameter[66].nIndex:=8525;	fbCoeDataRead.I_stParameter[66].nSubIndex:=0;	fbCoeDataRead.I_stParameter[66].nLength:=4;	fbCoeDataRead.I_stParameter[66].sName:='8525.0 IxR-Abgleich 1';	fbCoeDataRead.I_stParameter[66].nZugriff:=2;
+fbCoeDataRead.I_stParameter[67].nIndex:=8526;	fbCoeDataRead.I_stParameter[67].nSubIndex:=0;	fbCoeDataRead.I_stParameter[67].nLength:=4;	fbCoeDataRead.I_stParameter[67].sName:='8526.0 Vormagnetisierungszeit 1';	fbCoeDataRead.I_stParameter[67].nZugriff:=2;
+fbCoeDataRead.I_stParameter[68].nIndex:=8527;	fbCoeDataRead.I_stParameter[68].nSubIndex:=0;	fbCoeDataRead.I_stParameter[68].nLength:=4;	fbCoeDataRead.I_stParameter[68].sName:='8527.0 Schlupfkompensation 1';	fbCoeDataRead.I_stParameter[68].nZugriff:=2;
+fbCoeDataRead.I_stParameter[69].nIndex:=8531;	fbCoeDataRead.I_stParameter[69].nSubIndex:=0;	fbCoeDataRead.I_stParameter[69].nLength:=4;	fbCoeDataRead.I_stParameter[69].sName:='8531.0 Vormagnetierungszeit 2';	fbCoeDataRead.I_stParameter[69].nZugriff:=2;
+fbCoeDataRead.I_stParameter[70].nIndex:=8646;	fbCoeDataRead.I_stParameter[70].nSubIndex:=0;	fbCoeDataRead.I_stParameter[70].nLength:=4;	fbCoeDataRead.I_stParameter[70].sName:='8646.0 Motor-Nennschlupf 1';	fbCoeDataRead.I_stParameter[70].nZugriff:=2;
+fbCoeDataRead.I_stParameter[71].nIndex:=8650;	fbCoeDataRead.I_stParameter[71].nSubIndex:=0;	fbCoeDataRead.I_stParameter[71].nLength:=4;	fbCoeDataRead.I_stParameter[71].sName:='8650.0 Motor-Nennstrom 1';	fbCoeDataRead.I_stParameter[71].nZugriff:=2;
+fbCoeDataRead.I_stParameter[72].nIndex:=8658;	fbCoeDataRead.I_stParameter[72].nSubIndex:=0;	fbCoeDataRead.I_stParameter[72].nLength:=4;	fbCoeDataRead.I_stParameter[72].sName:='8658.0 Streuinduktivität 1';	fbCoeDataRead.I_stParameter[72].nZugriff:=2;
+fbCoeDataRead.I_stParameter[73].nIndex:=8670;	fbCoeDataRead.I_stParameter[73].nSubIndex:=0;	fbCoeDataRead.I_stParameter[73].nLength:=4;	fbCoeDataRead.I_stParameter[73].sName:='8670.0 Magnetisierungsstrom 1';	fbCoeDataRead.I_stParameter[73].nZugriff:=2;
+fbCoeDataRead.I_stParameter[74].nIndex:=8672;	fbCoeDataRead.I_stParameter[74].nSubIndex:=0;	fbCoeDataRead.I_stParameter[74].nLength:=4;	fbCoeDataRead.I_stParameter[74].sName:='8672.0 Statorinduktivität 1';	fbCoeDataRead.I_stParameter[74].nZugriff:=2;
+fbCoeDataRead.I_stParameter[75].nIndex:=8674;	fbCoeDataRead.I_stParameter[75].nSubIndex:=0;	fbCoeDataRead.I_stParameter[75].nLength:=4;	fbCoeDataRead.I_stParameter[75].sName:='8674.0 Cos Phi 1';	fbCoeDataRead.I_stParameter[75].nZugriff:=2;
+fbCoeDataRead.I_stParameter[76].nIndex:=8676;	fbCoeDataRead.I_stParameter[76].nSubIndex:=0;	fbCoeDataRead.I_stParameter[76].nLength:=4;	fbCoeDataRead.I_stParameter[76].sName:='8676.0 Rotor-Zeitkonstante 1';	fbCoeDataRead.I_stParameter[76].nZugriff:=2;
+fbCoeDataRead.I_stParameter[77].nIndex:=8807;	fbCoeDataRead.I_stParameter[77].nSubIndex:=0;	fbCoeDataRead.I_stParameter[77].nLength:=4;	fbCoeDataRead.I_stParameter[77].sName:='8807.0 Rampe t11 auf';	fbCoeDataRead.I_stParameter[77].nZugriff:=2;
+fbCoeDataRead.I_stParameter[78].nIndex:=8808;	fbCoeDataRead.I_stParameter[78].nSubIndex:=0;	fbCoeDataRead.I_stParameter[78].nLength:=4;	fbCoeDataRead.I_stParameter[78].sName:='8808.0 Rampe t11 ab';	fbCoeDataRead.I_stParameter[78].nZugriff:=2;
+fbCoeDataRead.I_stParameter[79].nIndex:=8821;	fbCoeDataRead.I_stParameter[79].nSubIndex:=0;	fbCoeDataRead.I_stParameter[79].nLength:=4;	fbCoeDataRead.I_stParameter[79].sName:='8821.0 Einmessen Boost 1';	fbCoeDataRead.I_stParameter[79].nZugriff:=2;
+fbCoeDataRead.I_stParameter[80].nIndex:=8822;	fbCoeDataRead.I_stParameter[80].nSubIndex:=0;	fbCoeDataRead.I_stParameter[80].nLength:=4;	fbCoeDataRead.I_stParameter[80].sName:='8822.0 Einmessen IxR 1';	fbCoeDataRead.I_stParameter[80].nZugriff:=2;
+fbCoeDataRead.I_stParameter[81].nIndex:=9114;	fbCoeDataRead.I_stParameter[81].nSubIndex:=0;	fbCoeDataRead.I_stParameter[81].nLength:=4;	fbCoeDataRead.I_stParameter[81].sName:='9114.0 IN-UL-Überwachung 1';	fbCoeDataRead.I_stParameter[81].nZugriff:=2;
+fbCoeDataRead.I_stParameter[82].nIndex:=9264;	fbCoeDataRead.I_stParameter[82].nSubIndex:=0;	fbCoeDataRead.I_stParameter[82].nLength:=4;	fbCoeDataRead.I_stParameter[82].sName:='9264.0 Rampe t21 auf';	fbCoeDataRead.I_stParameter[82].nZugriff:=2;
+fbCoeDataRead.I_stParameter[83].nIndex:=9265;	fbCoeDataRead.I_stParameter[83].nSubIndex:=0;	fbCoeDataRead.I_stParameter[83].nLength:=4;	fbCoeDataRead.I_stParameter[83].sName:='9265.0 Rampe t21 ab';	fbCoeDataRead.I_stParameter[83].nZugriff:=2;
+fbCoeDataRead.I_stParameter[84].nIndex:=10004;	fbCoeDataRead.I_stParameter[84].nSubIndex:=0;	fbCoeDataRead.I_stParameter[84].nLength:=4;	fbCoeDataRead.I_stParameter[84].sName:='10004.0 Shellmerker 10000.0[4]';	fbCoeDataRead.I_stParameter[84].nZugriff:=2;
+fbCoeDataRead.I_stParameter[85].nIndex:=10006;	fbCoeDataRead.I_stParameter[85].nSubIndex:=0;	fbCoeDataRead.I_stParameter[85].nLength:=4;	fbCoeDataRead.I_stParameter[85].sName:='10006.0 Shellmerker 10000.0[6]';	fbCoeDataRead.I_stParameter[85].nZugriff:=2;
+fbCoeDataRead.I_stParameter[86].nIndex:=10007;	fbCoeDataRead.I_stParameter[86].nSubIndex:=0;	fbCoeDataRead.I_stParameter[86].nLength:=4;	fbCoeDataRead.I_stParameter[86].sName:='10007.0 Shellmerker 10000.0[7]';	fbCoeDataRead.I_stParameter[86].nZugriff:=2;
+fbCoeDataRead.I_stParameter[87].nIndex:=10010;	fbCoeDataRead.I_stParameter[87].nSubIndex:=0;	fbCoeDataRead.I_stParameter[87].nLength:=4;	fbCoeDataRead.I_stParameter[87].sName:='10010.0 Shellmerker 10000.0[10]';	fbCoeDataRead.I_stParameter[87].nZugriff:=2;
+fbCoeDataRead.I_stParameter[88].nIndex:=10014;	fbCoeDataRead.I_stParameter[88].nSubIndex:=0;	fbCoeDataRead.I_stParameter[88].nLength:=4;	fbCoeDataRead.I_stParameter[88].sName:='10014.0 Shellmerker 10000.0[14]';	fbCoeDataRead.I_stParameter[88].nZugriff:=2;
+fbCoeDataRead.I_stParameter[89].nIndex:=10020;	fbCoeDataRead.I_stParameter[89].nSubIndex:=0;	fbCoeDataRead.I_stParameter[89].nLength:=4;	fbCoeDataRead.I_stParameter[89].sName:='10020.0 Shellmerker 10000.0[20]';	fbCoeDataRead.I_stParameter[89].nZugriff:=2;
+fbCoeDataRead.I_stParameter[90].nIndex:=10494;	fbCoeDataRead.I_stParameter[90].nSubIndex:=31;	fbCoeDataRead.I_stParameter[90].nLength:=4;	fbCoeDataRead.I_stParameter[90].sName:='10494.31 Regelungsdynamik';	fbCoeDataRead.I_stParameter[90].nZugriff:=2;
+fbCoeDataRead.I_stParameter[91].nIndex:=10016;	fbCoeDataRead.I_stParameter[91].nSubIndex:=0;	fbCoeDataRead.I_stParameter[91].nLength:=4;	fbCoeDataRead.I_stParameter[91].sName:='10016.0 Shellmerker 10000.0[16]';	fbCoeDataRead.I_stParameter[91].nZugriff:=2;
+
+fbCoeDataRead.I_stParameter[92].nZugriff := 3;]]></ST>
+      </Implementation>
+    </Action>
+  </POU>
+</TcPlcObject>

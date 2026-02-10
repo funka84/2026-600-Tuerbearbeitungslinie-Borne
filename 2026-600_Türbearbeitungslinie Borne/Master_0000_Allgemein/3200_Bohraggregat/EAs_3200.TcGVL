@@ -1,0 +1,111 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <GVL Name="EAs_3200" Id="{20725d4d-8621-48f1-b8bd-a6a177b86bc4}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+{attribute 'linkalways'} 
+VAR_GLOBAL
+
+	// Servoregler *************************************************************************************************************************************************
+
+	{attribute 'TcNcAxis':='=3200+FS2-11M1 (X-Achse)'}	
+	ea_X_Achse					: Axis_ref;				// Schnittstellen Struktur zwischen NC<->SPS
+	
+	{attribute 'TcNcAxis':='=3200+FS2-12M1 (Y-Achse)'}	
+	ea_Y_Achse					: Axis_ref;				// Schnittstellen Struktur zwischen NC<->SPS
+	
+	{attribute 'TcNcAxis':='=3200+FS2-13M1 (Z-Achse)'}	
+	ea_Z_Achse					: Axis_ref;				// Schnittstellen Struktur zwischen NC<->SPS
+
+
+    // Umrichter
+    //_______________________________________________________
+												  
+	 {attribute 'TcLinkTo' := '	.PD_1_STATUSWORT  		:= TIID^Device 1 (EtherCAT)^=3200+FS2-16T1 (Bohraggr Stufenbohrer)^Module 1 (Standard 16 PD)^Inputs 16 PD^PI 1;
+								.PD_2_IST_DREHZAHL  	:= TIID^Device 1 (EtherCAT)^=3200+FS2-16T1 (Bohraggr Stufenbohrer)^Module 1 (Standard 16 PD)^Inputs 16 PD^PI 2;
+								.PD_3_Status  			:= TIID^Device 1 (EtherCAT)^=3200+FS2-16T1 (Bohraggr Stufenbohrer)^Module 1 (Standard 16 PD)^Inputs 16 PD^PI 3;
+								.PD_4_IST_DREHMOMENT  	:= TIID^Device 1 (EtherCAT)^=3200+FS2-16T1 (Bohraggr Stufenbohrer)^Module 1 (Standard 16 PD)^Inputs 16 PD^PI 4;
+								.PD_5_IST_STROM  		:= TIID^Device 1 (EtherCAT)^=3200+FS2-16T1 (Bohraggr Stufenbohrer)^Module 1 (Standard 16 PD)^Inputs 16 PD^PI 5'}		
+		e_Bohraggr_Stufenbohr	AT%I*	: DUT_SEW_FU_PD_IN; 	// Schnittstelle zwischen SPS und FU
+	 {attribute 'TcLinkTo' := '	.PD_1_Steuerwort  		:= TIID^Device 1 (EtherCAT)^=3200+FS2-16T1 (Bohraggr Stufenbohrer)^Module 1 (Standard 16 PD)^Outputs 16 PD^PO 1;
+								.PD_2_Solldrehzahl  	:= TIID^Device 1 (EtherCAT)^=3200+FS2-16T1 (Bohraggr Stufenbohrer)^Module 1 (Standard 16 PD)^Outputs 16 PD^PO 2;
+								.PD_3_Sollbeschleunigung:= TIID^Device 1 (EtherCAT)^=3200+FS2-16T1 (Bohraggr Stufenbohrer)^Module 1 (Standard 16 PD)^Outputs 16 PD^PO 3;
+								.PD_4_Sollverzoegerung  := TIID^Device 1 (EtherCAT)^=3200+FS2-16T1 (Bohraggr Stufenbohrer)^Module 1 (Standard 16 PD)^Outputs 16 PD^PO 4;
+								.PD_5_Digitalausgaenge  := TIID^Device 1 (EtherCAT)^=3200+FS2-16T1 (Bohraggr Stufenbohrer)^Module 1 (Standard 16 PD)^Outputs 16 PD^PO 5'}
+		a_Bohraggr_Stufenbohr	AT%Q*	: DUT_SEW_FU_PD_OUT;	// Schnittstelle zwischen SPS und FU
+
+
+			  
+	 {attribute 'TcLinkTo' := '	.PD_1_STATUSWORT  		:= TIID^Device 1 (EtherCAT)^=3200+FS2-17T1 (Bohraggr Stulpfräser)^Module 1 (Standard 16 PD)^Inputs 16 PD^PI 1;
+								.PD_2_IST_DREHZAHL  	:= TIID^Device 1 (EtherCAT)^=3200+FS2-17T1 (Bohraggr Stulpfräser)^Module 1 (Standard 16 PD)^Inputs 16 PD^PI 2;
+								.PD_3_Status  			:= TIID^Device 1 (EtherCAT)^=3200+FS2-17T1 (Bohraggr Stulpfräser)^Module 1 (Standard 16 PD)^Inputs 16 PD^PI 3;
+								.PD_4_IST_DREHMOMENT  	:= TIID^Device 1 (EtherCAT)^=3200+FS2-17T1 (Bohraggr Stulpfräser)^Module 1 (Standard 16 PD)^Inputs 16 PD^PI 4;
+								.PD_5_IST_STROM  		:= TIID^Device 1 (EtherCAT)^=3200+FS2-17T1 (Bohraggr Stulpfräser)^Module 1 (Standard 16 PD)^Inputs 16 PD^PI 5'}		
+		e_Bohraggr_Stulpfraes	AT%I*	: DUT_SEW_FU_PD_IN; 	// Schnittstelle zwischen SPS und FU
+	 {attribute 'TcLinkTo' := '	.PD_1_Steuerwort  		:= TIID^Device 1 (EtherCAT)^=3200+FS2-17T1 (Bohraggr Stulpfräser)^Module 1 (Standard 16 PD)^Outputs 16 PD^PO 1;
+								.PD_2_Solldrehzahl  	:= TIID^Device 1 (EtherCAT)^=3200+FS2-17T1 (Bohraggr Stulpfräser)^Module 1 (Standard 16 PD)^Outputs 16 PD^PO 2;
+								.PD_3_Sollbeschleunigung:= TIID^Device 1 (EtherCAT)^=3200+FS2-17T1 (Bohraggr Stulpfräser)^Module 1 (Standard 16 PD)^Outputs 16 PD^PO 3;
+								.PD_4_Sollverzoegerung  := TIID^Device 1 (EtherCAT)^=3200+FS2-17T1 (Bohraggr Stulpfräser)^Module 1 (Standard 16 PD)^Outputs 16 PD^PO 4;
+								.PD_5_Digitalausgaenge  := TIID^Device 1 (EtherCAT)^=3200+FS2-17T1 (Bohraggr Stulpfräser)^Module 1 (Standard 16 PD)^Outputs 16 PD^PO 5'}
+		a_Bohraggr_Stulpfraes	AT%Q*	: DUT_SEW_FU_PD_OUT;	// Schnittstelle zwischen SPS und FU
+
+
+    // Eingaenge
+    //_______________________________________________________
+
+    // +FS1-3K5
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K5 (EL1809)^Channel 9^Input'}
+        e_FR_3200_Bohraggregat_4_Stufenbohrer_Stillstandserkennung_Motor_steht AT %I* : BOOL; (* =FR.3200 Bohraggregat 4 (Stufenbohrer) Stillstandserkennung Motor steht *)
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K5 (EL1809)^Channel 10^Input'}
+        e_FR_3200_Bohraggregat_5_Stulpfraeser_Stillstandserkennung_Motor_steht AT %I* : BOOL; (* =FR.3200 Bohraggregat 5 (Stulpfräser) Stillstandserkennung Motor steht *)
+
+    // +K110-1K2
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-1K2 (EL1809)^Channel 7^Input'}
+        e_FR_3200_Bandbearbeitung_Bohraggregat_4_Bohrhub_ist_vorne AT %I* : BOOL; (* =FR.3200 Bandbearbeitung Bohraggregat 4 Bohrhub ist vorne *)
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-1K2 (EL1809)^Channel 8^Input'}
+        e_FR_3200_Bandbearbeitung_Bohraggregat_4_Bohrhub_ist_hinten AT %I* : BOOL; (* =FR.3200 Bandbearbeitung Bohraggregat 4 Bohrhub ist hinten *)
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-1K2 (EL1809)^Channel 9^Input'}
+        e_FR_3200_Bandbearbeitung_Bohraggregat_5_Vorlegehub_ist_vorne AT %I* : BOOL; (* =FR.3200 Bandbearbeitung Bohraggregat 5 Vorlegehub ist vorne *)
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-1K2 (EL1809)^Channel 10^Input'}
+        e_FR_3200_Bandbearbeitung_Bohraggregat_5_Vorlegehub_ist_hinten AT %I* : BOOL; (* =FR.3200 Bandbearbeitung Bohraggregat 5 Vorlegehub ist hinten *)
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-1K2 (EL1809)^Channel 11^Input'}
+        e_FR_3200_Bandbearbeitung_Pusher_ist_hinten AT %I* : BOOL; (* =FR.3200 Bandbearbeitung Pusher ist hinten *)
+
+
+    // Ausgaenge
+    //_______________________________________________________
+
+    // +K110-2K1
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-2K1 (EL2809)^Channel 7^Output'}
+        a_FR_3200_Bandbearbeitung_Bohraggregat_4_Bohrhub_vor AT %Q* : BOOL; (* =FR.3200 Bandbearbeitung Bohraggregat 4 Bohrhub vor *)
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-2K1 (EL2809)^Channel 8^Output'}
+        a_FR_3200_Bandbearbeitung_Bohraggregat_4_Bohrhub_zurueck AT %Q* : BOOL; (* =FR.3200 Bandbearbeitung Bohraggregat 4 Bohrhub zurück *)
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-2K1 (EL2809)^Channel 9^Output'}
+        a_FR_3200_Bandbearbeitung_Bohraggregat_5_Vorlegehub_vor AT %Q* : BOOL; (* =FR.3200 Bandbearbeitung Bohraggregat 5 Vorlegehub vor *)
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-2K1 (EL2809)^Channel 10^Output'}
+        a_FR_3200_Bandbearbeitung_Bohraggregat_5_Vorlegehub_zurueck AT %Q* : BOOL; (* =FR.3200 Bandbearbeitung Bohraggregat 5 Vorlegehub zurück *)
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-2K1 (EL2809)^Channel 11^Output'}
+        a_FR_3200_Bandbearbeitung_Pusher_vor AT %Q* : BOOL; (* =FR.3200 Bandbearbeitung Pusher vor *)
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-2K1 (EL2809)^Channel 12^Output'}
+        a_FR_3200_Bandbearbeitung_Pusher_zurueck AT %Q* : BOOL; (* =FR.3200 Bandbearbeitung Pusher zurück *)
+
+    // +K110-2K3
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-2K3 (EL2808)^Channel 4^Output'}
+        a_FR_3200_Bandbearbeitung_Y_Achse_Schienenklemmung_klemmen AT %Q* : BOOL; (* =FR.3200 Bandbearbeitung Y-Achse Schienenklemmung klemmen *)
+END_VAR
+    ]]></Declaration>
+  </GVL>
+</TcPlcObject>

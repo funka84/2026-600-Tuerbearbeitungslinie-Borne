@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="DUT_Rexroth_FU_steuern" Id="{48b438ec-ecfd-4c61-b0d8-20d8e7e65a3f}">
+    <Declaration><![CDATA[TYPE DUT_Rexroth_FU_steuern :
+STRUCT
+	vor					:BOOL;
+	zur					:BOOL;
+	rampe				:INT;
+	speed				:REAL;
+	speed_hand			:REAL;   
+	reglerfreigabe		:BOOL;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

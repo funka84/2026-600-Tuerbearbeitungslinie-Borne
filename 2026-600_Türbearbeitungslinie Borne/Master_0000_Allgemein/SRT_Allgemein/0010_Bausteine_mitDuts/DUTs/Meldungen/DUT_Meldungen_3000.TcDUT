@@ -1,0 +1,229 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="DUT_Meldungen_3000" Id="{b570a163-b78e-4d9b-b046-91dc2e1f2df9}">
+    <Declaration><![CDATA[TYPE DUT_Meldungen_3000 :
+STRUCT
+					  // #MText: Achtung ein Fehler #HText: Achtung eine Hilfe #Prio: 1-10 Error 11-20 Warnung 21-30 Info #BMK:	
+
+	Nr_001		:BOOL;// #MText: 3100 Bohraggregat - Frequenzumrichter =3100+FS2-16T1 (Bohraggr Schlosskastenfräser) gestört 	#HText: #Prio: #BMK: =3100+FS2-16T1
+	Nr_002		:BOOL;// #MText: 3100 Bohraggregat - Frequenzumrichter =3100+FS2-17T1 (Bohraggr Vorbohren) gestört 				#HText: #Prio: #BMK: =3100+FS2-17T1
+	Nr_003		:BOOL;// #MText: 3100 Bohraggregat - Frequenzumrichter =3100+FS2-18T1 (Bohraggr Stulpfräser) gestört 			#HText: #Prio: #BMK: =3100+FS2-18T1 
+	Nr_004		:BOOL;// #MText: 3200 Bohraggregat - Frequenzumrichter =3200+FS2-16T1 (Bohraggr Stufenbohrer) gestört 			#HText: #Prio: #BMK: =3200+FS2-16T1 
+	Nr_005		:BOOL;// #MText: 3200 Bohraggregat - Frequenzumrichter =3200+FS2-17T1 (Bohraggr Stulpfräser) gestört 			#HText: #Prio: #BMK: =3200+FS2-17T1 
+	Nr_006		:BOOL;// #MText: 3300 Bohraggregat - Frequenzumrichter =3300+FS2-16T1 (Bohraggr Schlüsselloch unten) gestört 	#HText: #Prio: #BMK: =3300+FS2-16T1 
+	Nr_007		:BOOL;// #MText: 3400 Bohraggregat - Frequenzumrichter =3400+FS2-16T1 (Bohraggr Schlüsselloch oben) gestört 	#HText: #Prio: #BMK: =3400+FS2-16T1 
+	Nr_008		:BOOL;// #MText: 3510 Transport - Frequenzumrichter =3510+FS2-6T1 (Transport Schlossseite X-Achse) gestört 		#HText: #Prio: #BMK: =3510+FS2-6T1 
+	Nr_009		:BOOL;// #MText: 3510 Transport - Frequenzumrichter =3520+FS2-6T1 (Transport Bandseite X-Achse) gestört			#HText: #Prio: #BMK: =3520+FS2-6T1 
+                                                                                                                                
+	Nr_010		:BOOL;// #MText: 3100 Bohraggregat - Achse =3100+FS2-11M1 (X-Achse) gestört 									#HText: #Prio: #BMK: =3100+FS2-11M1
+	Nr_011		:BOOL;// #MText: 3100 Bohraggregat - Achse =3100+FS2-11M1 (X-Achse) Endlage MIN angefahren 						#HText: #Prio: #BMK: =3100+FS2-11M1
+	Nr_012		:BOOL;// #MText: 3100 Bohraggregat - Achse =3100+FS2-11M1 (X-Achse) Endlage MAX angefahren 						#HText: #Prio: #BMK: =3100+FS2-11M1
+	Nr_013		:BOOL;// #MText: 3100 Bohraggregat - Achse =3100+FS2-12M1 (Y-Achse) gestört 									#HText: #Prio: #BMK: =3100+FS2-12M1
+	Nr_014		:BOOL;// #MText: 3100 Bohraggregat - Achse =3100+FS2-12M1 (Y-Achse) Endlage MIN angefahren 						#HText: #Prio: #BMK: =3100+FS2-12M1
+	Nr_015		:BOOL;// #MText: 3100 Bohraggregat - Achse =3100+FS2-12M1 (Y-Achse) Endlage MAX angefahren 						#HText: #Prio: #BMK: =3100+FS2-12M1
+	Nr_016		:BOOL;// #MText: 3100 Bohraggregat - Achse =3100+FS2-13M1 (Z-Achse) gestört 									#HText: #Prio: #BMK: =3100+FS2-13M1
+	Nr_017		:BOOL;// #MText: 3100 Bohraggregat - Achse =3100+FS2-13M1 (Z-Achse) Endlage MIN angefahren 						#HText: #Prio: #BMK: =3100+FS2-13M1
+	Nr_018		:BOOL;// #MText: 3100 Bohraggregat - Achse =3100+FS2-13M1 (Z-Achse) Endlage MAX angefahren 						#HText: #Prio: #BMK: =3100+FS2-13M1
+							                                                                                                    
+	Nr_019		:BOOL;// #MText: 3200 Bohraggregat - Achse =3200+FS2-11M1 (X-Achse) gestört 									#HText: #Prio: #BMK: =3200+FS2-11M1     
+	Nr_020		:BOOL;// #MText: 3200 Bohraggregat - Achse =3200+FS2-11M1 (X-Achse) Endlage MIN angefahren 						#HText: #Prio: #BMK: =3200+FS2-11M1
+	Nr_021		:BOOL;// #MText: 3200 Bohraggregat - Achse =3200+FS2-11M1 (X-Achse) Endlage MAX angefahren 						#HText: #Prio: #BMK: =3200+FS2-11M1     
+	Nr_022		:BOOL;// #MText: 3200 Bohraggregat - Achse =3200+FS2-12M1 (Y-Achse) gestört 									#HText: #Prio: #BMK: =3200+FS2-12M1     
+	Nr_023		:BOOL;// #MText: 3200 Bohraggregat - Achse =3200+FS2-12M1 (Y-Achse) Endlage MIN angefahren 						#HText: #Prio: #BMK: =3200+FS2-12M1      
+	Nr_024		:BOOL;// #MText: 3200 Bohraggregat - Achse =3200+FS2-12M1 (Y-Achse) Endlage MAX angefahren 						#HText: #Prio: #BMK: =3200+FS2-12M1
+	Nr_025		:BOOL;// #MText: 3200 Bohraggregat - Achse =3200+FS2-13M1 (Z-Achse) gestört 									#HText: #Prio: #BMK: =3200+FS2-13M1      
+	Nr_026		:BOOL;// #MText: 3200 Bohraggregat - Achse =3200+FS2-13M1 (Z-Achse) Endlage MIN angefahren 						#HText: #Prio: #BMK: =3200+FS2-13M1
+	Nr_027		:BOOL;// #MText: 3200 Bohraggregat - Achse =3200+FS2-13M1 (Z-Achse) Endlage MAX angefahren 						#HText: #Prio: #BMK: =3200+FS2-13M1  
+							                                                                                                    
+	Nr_028		:BOOL;// #MText: 3300 Bohraggregat - Achse =3300+FS2-11M1 (X-Achse) gestört 									#HText: #Prio: #BMK: =3300+FS2-11M1  
+	Nr_029		:BOOL;// #MText: 3300 Bohraggregat - Achse =3300+FS2-11M1 (X-Achse) Endlage MIN angefahren 						#HText: #Prio: #BMK: =3300+FS2-11M1     
+	Nr_030		:BOOL;// #MText: 3300 Bohraggregat - Achse =3300+FS2-11M1 (X-Achse) Endlage MAX angefahren 						#HText: #Prio: #BMK: =3300+FS2-11M1  
+	Nr_031		:BOOL;// #MText: 3300 Bohraggregat - Achse =3300+FS2-12M1 (Y-Achse) gestört 									#HText: #Prio: #BMK: =3300+FS2-12M1       
+	Nr_032		:BOOL;// #MText: 3300 Bohraggregat - Achse =3300+FS2-12M1 (Y-Achse) Endlage MIN angefahren 						#HText: #Prio: #BMK: =3300+FS2-12M1  
+	Nr_033		:BOOL;// #MText: 3300 Bohraggregat - Achse =3300+FS2-12M1 (Y-Achse) Endlage MAX angefahren 						#HText: #Prio: #BMK: =3300+FS2-12M1     
+	                                                                                                                            
+	Nr_034		:BOOL;// #MText: 3400 Bohraggregat - Achse =3400+FS2-11M1 (X-Achse) gestört 									#HText: #Prio: #BMK: =3400+FS2-11M1  
+	Nr_035		:BOOL;// #MText: 3400 Bohraggregat - Achse =3400+FS2-11M1 (X-Achse) Endlage MIN angefahren 						#HText: #Prio: #BMK: =3400+FS2-11M1         
+	Nr_036		:BOOL;// #MText: 3400 Bohraggregat - Achse =3400+FS2-11M1 (X-Achse) Endlage MAX angefahren 						#HText: #Prio: #BMK: =3400+FS2-11M1  
+	Nr_037		:BOOL;// #MText: 3400 Bohraggregat - Achse =3400+FS2-12M1 (Y-Achse) gestört 									#HText: #Prio: #BMK: =3400+FS2-12M1       
+	Nr_038		:BOOL;// #MText: 3400 Bohraggregat - Achse =3400+FS2-12M1 (Y-Achse) Endlage MIN angefahren 						#HText: #Prio: #BMK: =3400+FS2-12M1  
+	Nr_039		:BOOL;// #MText: 3400 Bohraggregat - Achse =3400+FS2-12M1 (Y-Achse) Endlage MAX angefahren 						#HText: #Prio: #BMK: =3400+FS2-12M1     
+	                                                                                                                            
+	Nr_040		:BOOL;// #MText: 3400 Bohraggregat - Achse =3520+FS2-11M1 (Y-Achse) gestört 									#HText: #Prio: #BMK: =3520+FS2-11M1   
+	Nr_041		:BOOL;// #MText: 3400 Bohraggregat - Achse =3520+FS2-11M1 (Y-Achse) Endlage MIN angefahren 						#HText: #Prio: #BMK: =3520+FS2-11M1  
+	Nr_042		:BOOL;// #MText: 3400 Bohraggregat - Achse =3520+FS2-11M1 (Y-Achse) Endlage MAX angefahren 						#HText: #Prio: #BMK: =3520+FS2-11M1   
+	                                                                                                                            
+	Nr_043		:BOOL;// #MText: 3400 Bohraggregat - Achse =3540+FS2-11M1 (Y-Achse) gestört 									#HText: #Prio: #BMK: =3540+FS2-11M1   
+	Nr_044		:BOOL;// #MText: 3400 Bohraggregat - Achse =3540+FS2-11M1 (Y-Achse) Endlage MIN angefahren 						#HText: #Prio: #BMK: =3540+FS2-11M1  
+	Nr_045		:BOOL;// #MText: 3400 Bohraggregat - Achse =3540+FS2-11M1 (Y-Achse) Endlage MAX angefahren 						#HText: #Prio: #BMK: =3540+FS2-11M1   
+	
+	Nr_046		:BOOL;// #MText: 3100 Bohraggregat - Ventil Schlosskasten Vorlegehub Endlage vor nicht erreicht 				#HText: #Prio: #BMK: =FR.3100+M-22B1
+	Nr_047		:BOOL;// #MText: 3100 Bohraggregat - Ventil Schlosskasten Vorlegehub Endlage zur nicht erreicht 				#HText: #Prio: #BMK: =FR.3100+M-22B2
+	Nr_048		:BOOL;// #MText: 3100 Bohraggregat - Ventil Schlosskasten Vorlegehub Endlage vor / zur nicht erreicht 			#HText: #Prio: #BMK: =FR.3100+M-22B2
+	Nr_049		:BOOL;// #MText: 3100 Bohraggregat - Ventil Vorbohren Bohrhub Endlage vor nicht erreicht 						#HText: #Prio: #BMK: =FR.3100+M-23B1
+	Nr_050		:BOOL;// #MText: 3100 Bohraggregat - Ventil Vorbohren Bohrhub Endlage zur nicht erreicht 						#HText: #Prio: #BMK: =FR.3100+M-23B2
+	Nr_051		:BOOL;// #MText: 3100 Bohraggregat - Ventil Vorbohren Bohrhub Endlage vor / zur nicht erreicht 					#HText: #Prio: #BMK: =FR.3100+M-23B2
+	Nr_052		:BOOL;// #MText: 3100 Bohraggregat - Ventil Stulpfräser Vorlegehub Endlage vor nicht erreicht 					#HText: #Prio: #BMK: =FR.3100+M-24B1
+	Nr_053		:BOOL;// #MText: 3100 Bohraggregat - Ventil Stulpfräser Vorlegehub Endlage zur nicht erreicht 					#HText: #Prio: #BMK: =FR.3100+M-24B2
+	Nr_054		:BOOL;// #MText: 3100 Bohraggregat - Ventil Stulpfräser Vorlegehub Endlage vor / zur nicht erreicht 			#HText: #Prio: #BMK: =FR.3100+M-24B2
+	Nr_055		:BOOL;// #MText: 3100 Bohraggregat - Ventil Nullkante Einlauf & Auslauf Endlage vor nicht erreicht 				#HText: #Prio: #BMK: =FR.3100+M-25B1
+	Nr_056		:BOOL;// #MText: 3100 Bohraggregat - Ventil Nullkante Einlauf & Auslauf Endlage zur nicht erreicht 				#HText: #Prio: #BMK: =FR.3100+M-25B2
+	Nr_057		:BOOL;// #MText: 3100 Bohraggregat - Ventil Nullkante Einlauf & Auslauf Endlage vor / zur nicht erreicht 		#HText: #Prio: #BMK: =FR.3100+M-25B2
+	
+	Nr_058		:BOOL;// #MText: 3200 Bohraggregat - Ventil Vorbohren Bohrhub Endlage vor nicht erreicht 						#HText: #Prio: #BMK: =FR.3200+M-22B1
+	Nr_059		:BOOL;// #MText: 3200 Bohraggregat - Ventil Vorbohren Bohrhub Endlage zur nicht erreicht 						#HText: #Prio: #BMK: =FR.3200+M-22B2
+	Nr_060		:BOOL;// #MText: 3200 Bohraggregat - Ventil Vorbohren Bohrhub Endlage vor / zur nicht erreicht 					#HText: #Prio: #BMK: =FR.3200+M-22B2
+	Nr_061		:BOOL;// #MText: 3200 Bohraggregat - Ventil Stulpfräser Vorlegehub Endlage vor nicht erreicht 					#HText: #Prio: #BMK: =FR.3200+M-23B1
+	Nr_062		:BOOL;// #MText: 3200 Bohraggregat - Ventil Stulpfräser Vorlegehub Endlage zur nicht erreicht 					#HText: #Prio: #BMK: =FR.3200+M-23B2
+	Nr_063		:BOOL;// #MText: 3200 Bohraggregat - Ventil Stulpfräser Vorlegehub Endlage vor / zur nicht erreicht 			#HText: #Prio: #BMK: =FR.3200+M-23B2
+	Nr_064		:BOOL;// #MText: 3200 Bohraggregat - Ventil Pusher Endlage vor nicht erreicht 									#HText: #Prio: #BMK: =FR.3200+M-24B1
+	Nr_065		:BOOL;// #MText: 3200 Bohraggregat - Ventil Pusher Endlage zur nicht erreicht 									#HText: #Prio: #BMK: =FR.3200+M-24B2
+	Nr_066		:BOOL;// #MText: 3200 Bohraggregat - Ventil Pusher Endlage vor / zur nicht erreicht 							#HText: #Prio: #BMK: =FR.3200+M-24B2
+	
+	Nr_067		:BOOL;// #MText: 3300 Bohraggregat - Ventil Schlüsselkasten unten Bohrhub Endlage vor nicht erreicht 			#HText: #Prio: #BMK: =FR.3300+M-22B1
+	Nr_068		:BOOL;// #MText: 3300 Bohraggregat - Ventil Schlüsselkasten unten Bohrhub Endlage zur nicht erreicht 			#HText: #Prio: #BMK: =FR.3300+M-22B2
+	Nr_069		:BOOL;// #MText: 3300 Bohraggregat - Ventil Schlüsselkasten unten Bohrhub Endlage vor / zur nicht erreicht 		#HText: #Prio: #BMK: =FR.3300+M-22B2
+	
+	Nr_070		:BOOL;// #MText: 3400 Bohraggregat - Ventil Schlüsselkasten oben Bohrhub Endlage vor nicht erreicht 			#HText: #Prio: #BMK: =FR.3400+M-22B1
+	Nr_071		:BOOL;// #MText: 3400 Bohraggregat - Ventil Schlüsselkasten oben Bohrhub Endlage zur nicht erreicht 			#HText: #Prio: #BMK: =FR.3400+M-22B2
+	Nr_072		:BOOL;// #MText: 3400 Bohraggregat - Ventil Schlüsselkasten oben Bohrhub Endlage vor / zur nicht erreicht 		#HText: #Prio: #BMK: =FR.3400+M-22B2
+	
+	Nr_073		:BOOL;// #MText: 3510 Transport - Ventil Längsanschlag Schlossseite Endlage vor nicht erreicht 					#HText: #Prio: #BMK: =FR.3510+M-23B1
+	Nr_074		:BOOL;// #MText: 3510 Transport - Ventil Längsanschlag Schlossseite Endlage zur nicht erreicht 					#HText: #Prio: #BMK: =FR.3510+M-23B2
+	Nr_075		:BOOL;// #MText: 3510 Transport - Ventil Längsanschlag Schlossseite Endlage vor / zur nicht erreicht 			#HText: #Prio: #BMK: =FR.3510+M-23B2
+	
+	Nr_076		:BOOL;// #MText: 3520 Transport - Ventil Längsanschlag Bandseite Endlage vor nicht erreicht 					#HText: #Prio: #BMK: =FR.3520+M-22B1
+	Nr_077		:BOOL;// #MText: 3520 Transport - Ventil Längsanschlag Bandseite Endlage zur nicht erreicht 					#HText: #Prio: #BMK: =FR.3520+M-22B2
+	Nr_078		:BOOL;// #MText: 3520 Transport - Ventil Längsanschlag Bandseite Endlage vor / zur nicht erreicht 				#HText: #Prio: #BMK: =FR.3520+M-22B2
+	
+	Nr_079		:BOOL;// #MText: 3540 Niederhalter - Ventil Niederhalter Bandseite Einlauf & Auslauf Endlage vor nicht erreicht 			#HText: #Prio: #BMK: =FR.3540+M-22B1
+	Nr_080		:BOOL;// #MText: 3540 Niederhalter - Ventil Niederhalter Bandseite Einlauf & Auslauf Endlage zur nicht erreicht 			#HText: #Prio: #BMK: =FR.3540+M-22B2
+	Nr_081		:BOOL;// #MText: 3540 Niederhalter - Ventil Niederhalter Bandseite Einlauf & Auslauf Endlage vor / zur nicht erreicht 		#HText: #Prio: #BMK: =FR.3540+M-22B2
+	
+	Nr_082		:BOOL;// #MText: 3100 Bohraggregat - Ventil Schienenklemmung Endlage vor nicht erreicht 						#HText: #Prio: #BMK: =FR.3100+M-21K1
+	Nr_083		:BOOL;// #MText: 3100 Bohraggregat - Ventil Schienenklemmung Endlage zur nicht erreicht 						#HText: #Prio: #BMK: =FR.3100+M-21K1
+	Nr_084		:BOOL;// #MText: 3100 Bohraggregat - Ventil Schienenklemmung Endlage vor / zur nicht erreicht 					#HText: #Prio: #BMK: =FR.3100+M-21K1
+	Nr_085		:BOOL;// #MText: 3200 Bohraggregat - Ventil Schienenklemmung Endlage vor nicht erreicht 						#HText: #Prio: #BMK: =FR.3200+M-21K1
+	Nr_086		:BOOL;// #MText: 3200 Bohraggregat - Ventil Schienenklemmung Endlage zur nicht erreicht 						#HText: #Prio: #BMK: =FR.3200+M-21K1
+	Nr_087		:BOOL;// #MText: 3200 Bohraggregat - Ventil Schienenklemmung Endlage vor / zur nicht erreicht 					#HText: #Prio: #BMK: =FR.3200+M-21K1
+	
+	Nr_088		:BOOL;// #MText: 3510 Transport - Ventil Schienenklemmung Endlage vor nicht erreicht 							#HText: #Prio: #BMK: =FR.3510+M-22K1
+	Nr_089		:BOOL;// #MText: 3510 Transport - Ventil Schienenklemmung Endlage zur nicht erreicht 							#HText: #Prio: #BMK: =FR.3510+M-22K1
+	Nr_090		:BOOL;// #MText: 3510 Transport - Ventil Schienenklemmung Endlage vor / zur nicht erreicht 						#HText: #Prio: #BMK: =FR.3510+M-22K1
+	Nr_091		:BOOL;// #MText: 3520 Transport - Ventil Schienenklemmung Endlage vor nicht erreicht 							#HText: #Prio: #BMK: =FR.3520+M-22K3
+	Nr_092		:BOOL;// #MText: 3520 Transport - Ventil Schienenklemmung Endlage zur nicht erreicht 							#HText: #Prio: #BMK: =FR.3520+M-22K3
+	Nr_093		:BOOL;// #MText: 3520 Transport - Ventil Schienenklemmung Endlage vor / zur nicht erreicht 						#HText: #Prio: #BMK: =FR.3520+M-22K3
+	
+	Nr_094		:BOOL;// #MText: 3530 Niederhalter - Ventil Niederhalter Schlosseite Einlauf & Auslauf Endlage vor nicht erreicht 			#HText: #Prio: #BMK: =FR.3530+M-21B1
+	Nr_095		:BOOL;// #MText: 3530 Niederhalter - Ventil Niederhalter Schlosseite Einlauf & Auslauf Endlage zur nicht erreicht 			#HText: #Prio: #BMK: =FR.3530+M-21B2
+	Nr_096		:BOOL;// #MText: 3530 Niederhalter - Ventil Niederhalter Schlosseite Einlauf & Auslauf Endlage vor / zur nicht erreicht 	#HText: #Prio: #BMK: =FR.3530+M-21B2
+	Nr_097		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_098		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_099		:BOOL;// #MText: #HText: #Prio: #BMK:
+	
+	Nr_100		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_101		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_102		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_103		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_104		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_105		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_106		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_107		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_108		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_109		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_110		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_111		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_112		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_113		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_114		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_115		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_116		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_117		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_118		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_119		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_120		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_121		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_122		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_123		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_124		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_125		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_126		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_127		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_128		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_129		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_130		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_131		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_132		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_133		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_134		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_135		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_136		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_137		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_138		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_139		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_140		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_141		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_142		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_143		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_144		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_145		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_146		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_147		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_148		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_149		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_150		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_151		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_152		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_153		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_154		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_155		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_156		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_157		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_158		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_159		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_160		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_161		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_162		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_163		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_164		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_165		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_166		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_167		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_168		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_169		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_170		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_171		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_172		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_173		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_174		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_175		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_176		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_177		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_178		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_179		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_180		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_181		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_182		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_183		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_184		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_185		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_186		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_187		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_188		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_189		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_190		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_191		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_192		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_193		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_194		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_195		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_196		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_197		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_198		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_199		:BOOL;// #MText: #HText: #Prio: #BMK:
+	
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_Automatik" Id="{4dad129d-aa09-4a41-880b-abc376ad6c78}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Automatik
+VAR_INPUT
+	in_frg_Safety	:BOOL;
+	in_IBN		:BOOL;
+END_VAR
+VAR_OUTPUT
+	out_Aktor_aktiv	:BOOL;
+	out_frg_Automatik:BOOL;
+END_VAR
+
+VAR_IN_OUT
+	inout_Steuerstatus	:DUT_Visu_SteuerStatus;
+	sk								:INT;
+END_VAR
+
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[//Automatik starten
+
+IF inout_Steuerstatus.auto_start
+THEN
+	IF in_frg_Safety
+	THEN
+		inout_Steuerstatus.auto_aktiv:=TRUE;
+	END_IF
+	inout_Steuerstatus.auto_start:=FALSE;	
+END_IF
+
+//Automatik stoppen
+
+IF inout_Steuerstatus.auto_stop
+	OR inout_Steuerstatus.hand
+THEN
+		inout_Steuerstatus.auto_aktiv:=FALSE;
+		inout_Steuerstatus.auto_stop:=FALSE;
+END_IF
+
+//Reset
+	inout_Steuerstatus.grundstellung := inout_Steuerstatus.reset;
+	
+	IF inout_Steuerstatus.reset
+	THEN
+		out_Aktor_aktiv :=FALSE;
+		GVL_1200.sk:=0;
+		inout_Steuerstatus.grundstellung:=FALSE;
+		inout_Steuerstatus.reset:=FALSE;
+	END_IF
+	
+	//Freigabe Automatik
+	out_frg_Automatik:=inout_Steuerstatus.auto_aktiv 
+									AND (in_frg_Safety OR in_IBN);
+	
+	
+
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="DUT_Busdiagnose" Id="{165f82fa-705e-4a0a-830d-a6c68fb91e65}">
+    <Declaration><![CDATA[TYPE DUT_Busdiagnose :
+STRUCT
+	AmsNetId AT%I* :T_AmsNetIdArr;
+		
+	AnzahlTeilnehmer:UINT;//Busdiagnose - Tatsächliche Anzahl der teilnehmer
+	FehlerfreiAktiv:BOOL; //Busdiagnose - Start für Visu
+	Update:UINT; //Busdiagnose - Trigger für Visu
+	AnzahlFehler:UINT; //Busdiagnose - Anzahl gestörter teilnehmer
+	Daten:ARRAY [0..300] OF DUT_Busdiagnose_Daten; //Busdiagnose - Daten für Visu
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

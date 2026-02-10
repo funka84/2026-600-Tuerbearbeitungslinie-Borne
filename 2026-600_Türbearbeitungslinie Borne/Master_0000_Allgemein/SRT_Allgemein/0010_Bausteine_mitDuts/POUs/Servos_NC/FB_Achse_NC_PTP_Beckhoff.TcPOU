@@ -1,0 +1,631 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_Achse_NC_PTP_Beckhoff" Id="{27c8e8b9-69df-4a0a-9e2f-aa4d4a79d2a7}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Achse_NC_PTP_Beckhoff
+(*
+	Ansteuerung einer Achse über die NC (PTP)
+	Autor O.E.
+	Erstellt xx.xx.2017
+	Version 1.0 	
+				
+*)
+
+VAR_INPUT
+	in_max_Velo				: REAL;						(*	maximale Geschwindigkeit - Anwendereinheit z.B. xx mm/s *)
+	in_Reglersperre			: BOOL;						(*  Software-Freigabe für die Achse  *)
+	in_Freigabe				: BOOL;						(*  Freigabe JogMode und Positionieren *)
+	in_Reset				: BOOL;						(*  Achs Reset  *)
+	in_Hand					: BOOL;						(*  Handbetrieb  *)
+	in_Auto					: BOOL;						(*  Automatikbetrieb  *)
+	in_Auto_Override		: INT;						(*  in %  *)
+	in_Auto_pos				: REAL;						(*  Auto Sollwert *)
+	in_PosFenster			: REAL;						(*  Positionsfenster Achse in Position  *)
+	in_Ref_pos				: REAL;						(*  Referenz-Wert der gesetzt werden soll  *)
+	in_HomingOption			:ST_HomingOptions;
+	in_EndlageRef			: BOOL;
+	in_DirRef				:INT;						//1=Positiv 2=Negativ
+	
+	in_PosEa: LREAL;
+END_VAR
+VAR_OUTPUT
+	out_ist_pos					: REAL;						(*  aktuelle ist Position  *)
+	out_in_pos					: BOOL;						(*  Achse in Position (Soll=IST + - Positionsfenster) *)
+	out_ziel_pos				: REAL;						(* aktuelle Zielposition *)
+	out_nicht_ref				: BOOL;						(*  Achse ist nicht referenziert  *)
+	out_bremse					: BOOL;						(*  Bremse lösen *)
+	out_Achs_Status				: ST_AxisStatus;			(* 	aktueller Achsstatus *)
+	out_Achs_Error				: BOOL;						(*  Achs Fehler *)
+	out_Achs_ErrorID			: DINT;						(*  Achs Fehler ID *) 
+	out_FB_Error				: BOOL;						(*  FB Fehler - intern *)
+	out_FB_ErrorID				: DWORD;					(*  FB Fehler ID - intern *) 
+
+END_VAR
+VAR_IN_OUT
+	inout_NC				: AXIS_REF;					(*  Schnittstelle zwischen der SPS und der NC  *)												
+	inout_service			: DUT_Achse_Service;		(*  Eingangs-Variablen für den Servicebetrieb	 *)
+	inout_Ref_start			: BOOL;						(*  Achse start referenzieren  *)
+	inout_Auto_start		: BOOL;						(*  Achse start Positionieren *)
+	inout_Auto_stop			: BOOL;						(*  Achse stopp Positionieren *)
+END_VAR
+
+VAR
+	FB_ReadPos				: MC_ReadActualPosition;	(*  Aktuelle Istposition auslesen *)
+	FB_ReadErrorID			: MC_ReadAxisError;			(*  FehlerID der Achse auslesen  *)
+	FB_ReadStatus			: MC_ReadStatus;
+	FB_POWER				: MC_POWER;					(*  Leistung ein-/ausschalten  *)
+	FB_RESET				: MC_RESET;					(*  Achse resetten *)
+	FB_Stop					: MC_Halt;					(*  Achse anhalten  *)
+	FB_Jog					: MC_Jog;					(*  Achse tippen  *)
+	FB_Move					: MC_MoveAbsolute;			(*  Achse positionieren  *)
+	FB_Move_Seq_1			: MC_MoveAbsolute;
+	FB_Move_Seq_2			: MC_MoveAbsolute;
+	FB_Read_Parameter		: MC_ReadParameterSet;
+	FB_Set_Position			: MC_SetPosition;
+	FB_Homing				: MC_Home;
+	
+	start_seq				: BOOL;						(*  Start Merker Pos1<-> Pos 2 *)
+	ton_verweil				: ton;
+	ton_verzoegert			: tof;
+	temp_in_pos_plus		: BOOL;
+	temp_in_pos_minus		: BOOL;
+	verz_reset				: ton;
+	fl_start				: R_trig;					(* Start als Flanke auswerten und den Zähler erhöhen *)
+	bremsentest_ver			: ton;						(* Verzögerungszeit zum Auswerten *)
+	AnzahlVersuche			: INT;
+	Achsparameter			: ST_AxisParameterSet;
+	startRef				:BOOL;
+	rTrig_StartRef			:R_TRIG;
+	sk_ref					:INT;
+	ton_freifahren			:TON;
+	rTrig_NotReference		:R_Trig;
+	
+	FB_PosOffset 			:FB_CoEEL72xxSetPositionOffset;
+	teststop: BOOL;
+	temp_jogPos: BOOL;
+	temp_jogNeg: BOOL;
+	tp_reset				:tp;
+	
+	ton_Freigabe			:ton;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[//	IF out_Achs_Error OR out_FB_Error
+//	THEN
+//		inout_Auto_start:=FALSE;
+//	END_IF
+
+
+
+// ***** Achs Status aktualisieren *******************************************************************************************
+	//************************************************************************************************************************
+	inout_NC();
+
+	out_Achs_Status	:= FB_ReadStatus.Status;
+	out_Achs_Error	:= FB_ReadErrorID.AxisErrorID > 0;
+
+// ***** Aktuelle Zielposition ***********************************************************************************************
+	//************************************************************************************************************************
+	IF inout_nc.Status.Moving
+	THEN
+		out_ziel_pos := LREAL_TO_REAL(inout_NC.NcToPlc.TargetPos);
+	ELSIF in_auto
+		AND inout_auto_start
+	THEN
+		out_ziel_pos := in_auto_pos;
+	ELSIF in_hand
+		AND inout_service.betriebsart = 2				
+			AND inout_service.plus_start
+	THEN
+		out_ziel_pos := inout_service.sollpos_hand;	
+	END_IF	
+	
+	
+// Freigabe positionieren ****************************************************************************************************
+	//************************************************************************************************************************
+	IF NOT in_Freigabe
+	THEN
+		inout_Auto_start 	:= FALSE;
+		FB_Move.Execute		:= FALSE;
+	END_IF	
+	
+// ***** Hand Betriebsart /Geschwindigkeit zurücksetzen***********************************************************************
+	//************************************************************************************************************************
+	IF NOT in_Hand
+	THEN
+		inout_service.betriebsart	:= 0;
+		inout_service.override		:= 0;
+	END_IF
+
+// ***** Sollposition / Geschwindigkeit umkopieren ***************************************************************************
+	//************************************************************************************************************************
+	IF in_hand
+	THEN
+		FB_Move.Position		:= inout_service.sollpos_hand;
+		FB_Power.Override		:= INT_TO_LREAL(inout_service.override);
+		FB_Move.Velocity		:= in_max_velo;
+		FB_Jog.Velocity			:= in_max_velo;
+		fb_Move_seq_1.Velocity 	:= in_max_velo;
+		fb_Move_seq_2.Velocity 	:= in_max_velo;
+		fb_Move_seq_1.Position	:= inout_service.sollpos_hand;
+		fb_Move_seq_2.Position	:= inout_service.pos_2;
+	ELSE
+		FB_Move.Position		:= in_Auto_pos;
+		FB_Power.Override		:= INT_TO_LREAL(in_Auto_Override);
+		FB_Move.Velocity		:= in_max_velo;
+		FB_Jog.Velocity			:= 0.0;
+	END_IF
+	
+	
+// ***** Reset ***************************************************************************************************************
+	//************************************************************************************************************************
+	IF out_Achs_Error
+		OR out_FB_Error
+	THEN
+		inout_Auto_start:= FALSE;
+	END_IF;		
+			
+	IF (FB_Move.Execute
+		AND FB_Move.Done)
+		OR out_Achs_Error
+		OR out_FB_Error
+	THEN
+		FB_Move.Execute				:=FALSE;
+		inout_Auto_start			:=FALSE;
+		inout_service.plus_start 	:=FALSE;
+	END_IF	
+
+IF in_Reset
+		AND NOT FB_Power.Enable
+		AND (out_FB_Error
+			OR out_Achs_Error) 
+		OR ( in_Hand
+				AND inout_service.betriebsart=0
+				AND inout_service.minus_stop ) 
+	THEN
+		FB_Reset.Execute	:= inout_NC.NcToPlc.CoupleState <> 3; // Achse ist kein Slave
+		FB_Stop.Execute		:= FALSE;
+		FB_Move.Execute		:= FALSE;
+		out_FB_Error		:= FALSE;
+		out_FB_ErrorID		:= 0;
+		inout_Auto_start	:=FALSE;
+		inout_Auto_stop		:=FALSE;
+		inout_Ref_start		:=FALSE;
+	END_IF
+
+	tp_reset(in:=in_Reset
+				AND (out_FB_Error
+					OR out_Achs_Error),
+				pt:=T#1S);
+
+	verz_reset(	in:= FB_Reset.Execute,
+				pt:= T#200MS);
+	IF verz_reset.Q
+	THEN
+		FB_Reset.Execute := FALSE;
+	END_IF
+
+// ***** Achse stoppen *******************************************************************************************************
+	//************************************************************************************************************************
+	IF (in_Hand
+			AND inout_service.minus_stop
+			AND inout_service.betriebsart <> 1)
+		OR inout_Auto_stop
+		OR (NOT in_Freigabe
+			AND inout_NC.Status.Moving
+			AND inout_NC.NcToPlc.CoupleState <> 3) // Achse ist keine Slave Achse
+		OR FB_Move.CommandAborted
+		OR FB_Move.Error
+		OR out_Achs_Error 
+	THEN
+		FB_STOP.Execute				:= TRUE;
+		FB_Move.Execute				:= FALSE;
+		start_seq 					:= FALSE;
+		inout_service.plus_start 	:= FALSE;	
+	END_IF                             
+                                       
+	IF (FB_STOP.Execute                
+		AND FB_STOP.Done)              
+	THEN                               
+		inout_Auto_stop				:= FALSE;
+		FB_STOP.Execute				:= FALSE;
+		inout_service.minus_stop  	:= FALSE;
+	END_IF
+	
+		IF (FB_Move.Execute
+		AND FB_Move.Done)
+		OR out_Achs_Error
+		OR out_FB_Error
+	THEN
+		FB_Move.Execute				:=FALSE;
+		inout_Auto_start			:=FALSE;
+		inout_service.plus_start 	:=FALSE;
+	END_IF
+
+// ***** Referenzieren *******************************************************************************************************
+	//************************************************************************************************************************
+IF FB_Stop.Execute
+	THEN teststop:=TRUE;
+END_IF
+
+FB_PosOffset(Axis:=inout_NC,
+			Execute:=startRef,
+			Memory:=1);
+			
+// Achse referenzieren - Absolutwert setzen
+	//41943828 inc bei 0
+	//20971552 inc bei 10
+	//20972276 inc Differenz 
+ 
+	rTrig_StartRef(CLK:=inout_service.plus_start);
+	rTrig_NotReference(CLK:=inout_service.betriebsart<>4);
+	ton_freifahren(PT:=T#2S);
+
+
+	
+	IF  in_Reglersperre
+		AND (in_Hand
+		AND inout_service.betriebsart=4)
+	THEN
+	CASE sk_ref OF 
+	 
+	 0:// Refernzieren starten
+		IF rTrig_StartRef.Q
+		THEN 
+			IF in_DirRef <>0
+			THEN
+			sk_ref:=10;	
+			ELSE
+			sk_ref:=40;	
+			END_IF
+		END_IF
+		
+	10:// Prüfen ob Endlage erreicht und startbutton zurücksetzen
+		inout_service.plus_start:=FALSE;
+	 	IF NOT in_EndlageRef
+		THEN sk_ref:=20;
+		ELSE sk_ref:=30;
+		END_IF
+	 20:// Endlage freifahren
+	 	temp_jogNeg:=TRUE;
+		
+		IF in_EndlageRef
+		THEN ton_freifahren.IN:=TRUE;
+		END_IF
+		
+		IF ton_freifahren.Q
+		THEN ton_freifahren.IN:=FALSE;
+			temp_jogNeg:=FALSE;
+			sk_ref:=30;
+		END_IF
+	30:// Endlage belegen
+		temp_jogPos :=in_EndlageRef;
+		
+		IF NOT in_EndlageRef
+			AND NOT inout_nc.Status.Moving
+		THEN sk_ref:=40;	
+		END_IF
+		
+	40:// Reset Nullpunkt
+		
+	startRef:=TRUE;
+	FB_PosOffset.Position:=0 ;
+	
+	
+	IF NOT FB_PosOffset.Busy
+		AND TRUNC(inout_NC.NcToPlc.ActPos) = 0
+		THEN
+			startRef:=FALSE;
+			sk_ref:=50;
+		END_IF
+		
+	50: //Offset schreiben
+	startRef:=TRUE;
+	//FB_PosOffset.Position:=((20972276.0/10)*in_Ref_pos);
+	FB_PosOffset.Position:=in_Ref_pos;
+	
+	
+	IF NOT FB_PosOffset.Busy
+		AND inout_NC.NcToPlc.ActPos = in_Ref_pos
+		THEN
+			startRef:=FALSE;
+			sk_ref:=0;
+	END_IF
+	
+		
+	END_CASE;
+	END_IF;
+	
+	IF inout_service.minus_stop THEN
+		temp_jogPos:=FALSE;
+		temp_jogNeg:=FALSE;
+		startRef:=FALSE;
+		sk_ref:=0;
+	END_IF
+	
+	IF rTrig_NotReference.Q
+		THEN
+		temp_jogPos:=FALSE;
+		temp_jogNeg:=FALSE;		
+	END_IF
+
+
+	IF in_DirRef = 1
+	THEN
+		FB_Jog.JogForward:=temp_jogPos;
+		FB_Jog.JogBackwards :=temp_jogNeg;
+	ELSIF in_DirRef = 2
+	THEN
+		FB_Jog.JogForward:=temp_jogNeg;
+		FB_Jog.JogBackwards :=temp_jogPos;
+	END_IF
+// ***** Achse positionieren *************************************************************************************************
+	//************************************************************************************************************************
+	IF ((in_Hand
+			AND inout_service.betriebsart = 2				
+			AND inout_service.plus_start)		
+		OR (in_auto
+			AND inout_Auto_start))
+		AND NOT FB_Move.Done
+		AND NOT FB_Move.busy
+		AND NOT out_Achs_Error // optimierung 01.10.2020
+		AND ton_Freigabe.Q
+		AND FB_Power.Enable
+	THEN
+		FB_Move.Execute:=TRUE;	
+	END_IF
+
+
+	
+	IF inout_service.betriebsart = 2
+		AND (FB_Move.Execute
+		AND FB_Move.Done)
+	THEN 
+		FB_Move.Execute := FALSE;
+	END_IF
+// ***** Handbetrieb - Achse POS1<->POS 2 ************************************************************************************
+	//************************************************************************************************************************
+	IF  in_hand
+		AND inout_service.betriebsart = 3
+		AND inout_service.plus_start
+	THEN 
+		start_seq := TRUE;
+	END_IF
+
+// ***** Handbetrieb - Achse tippen ******************************************************************************************
+	//************************************************************************************************************************
+	IF in_Hand
+		AND inout_service.betriebsart=1
+		AND NOT FB_Jog.CommandAborted
+		AND NOT FB_Jog.Error
+		AND ton_Freigabe.Q
+	THEN
+		FB_Jog.JogForward	:= inout_service.plus_start 
+								AND inout_nc.NcToPlc.ActPos < (Achsparameter.fEncSoftEndMax - in_PosFenster);
+		FB_Jog.JogBackwards	:= inout_service.minus_stop
+								AND inout_nc.NcToPlc.ActPos > (Achsparameter.fEncSoftEndMin + in_PosFenster);
+		
+		// Geschwindigkeit tippen vor den Endlagen reduzieren
+			// letzer 1% des Fahrwegs
+		IF (FB_Jog.JogForward 
+			AND inout_nc.NcToPlc.ActPos 
+				> Achsparameter.fEncSoftEndMax - ((Achsparameter.fEncSoftEndMax - Achsparameter.fEncSoftEndMin) * 0.01))
+			
+			OR (FB_Jog.JogBackwards
+				AND inout_nc.NcToPlc.ActPos  
+					< Achsparameter.fEncSoftEndMin + ((Achsparameter.fEncSoftEndMax - Achsparameter.fEncSoftEndMin) * 0.01))
+					
+			AND FB_Power.Override > 5
+		THEN
+			FB_Power.Override := 5;
+			
+			// letzten 5% des Fahrwegs
+		ELSIF (FB_Jog.JogForward 
+			AND inout_nc.NcToPlc.ActPos 
+				> Achsparameter.fEncSoftEndMax - ((Achsparameter.fEncSoftEndMax - Achsparameter.fEncSoftEndMin) * 0.05))
+			
+			OR (FB_Jog.JogBackwards
+				AND inout_nc.NcToPlc.ActPos  
+					< Achsparameter.fEncSoftEndMin + ((Achsparameter.fEncSoftEndMax - Achsparameter.fEncSoftEndMin) * 0.05))
+					
+			AND FB_Power.Override > 10	
+		THEN
+			FB_Power.Override := 10;
+		END_IF
+	ELSIF inout_service.betriebsart<>4
+	THEN
+		FB_Jog.JogForward	:= FALSE;
+		FB_Jog.JogBackwards	:= FALSE;
+	END_IF
+	
+// ***** Aufruf der FB´s  ****************************************************************************************************
+	//************************************************************************************************************************
+	 ACT_Achse_NC_PTP();					
+// ***** Bremse lösen ********************************************************************************************************
+	//************************************************************************************************************************
+	ton_verzoegert.IN 	:= FB_ReadStatus.Status.HasJob; 
+	ton_verzoegert.pt 	:= T#2S;
+	ton_verzoegert();
+	out_bremse			:= ton_verzoegert.Q;
+	
+// ***** Achse in Position ***************************************************************************************************
+	//************************************************************************************************************************
+	out_in_pos := FB_ReadStatus.Status.InTargetPosition
+					AND ((out_ist_pos >= (in_Auto_pos - in_PosFenster))
+					AND (out_ist_pos <= (in_Auto_pos + in_PosFenster)));
+					
+// ***** Achse Referenzert ***************************************************************************************************
+	//************************************************************************************************************************
+	out_nicht_ref:=	NOT FB_ReadStatus.Status.Homed;
+
+// ***** FB Fehler auswerten und ausgeben ************************************************************************************
+	//************************************************************************************************************************
+	IF FB_Jog.Error
+		AND FB_Jog.ErrorID > 0
+	THEN
+		out_FB_Error	:= TRUE;
+		out_FB_ErrorID	:= FB_Jog.ErrorID;
+		
+	ELSIF FB_Move.Error
+		AND FB_Move.ErrorID>0
+	THEN
+		FB_Move.Execute	:= FALSE;
+		out_FB_Error	:= TRUE;
+		out_FB_ErrorID	:= FB_Move.ErrorID;
+		
+	ELSIF FB_Stop.Error
+		AND FB_Stop.ErrorID>0
+	THEN	
+		FB_Stop.Execute	:= FALSE;
+		out_FB_Error	:= TRUE;
+		out_FB_ErrorID	:= FB_Stop.ErrorID;
+		
+	ELSIF FB_Reset.Error
+		AND FB_Reset.ErrorID>0
+	THEN
+		FB_Reset.Execute	:= FALSE;
+		out_FB_Error		:= TRUE;
+		out_FB_ErrorID		:= FB_Reset.ErrorID;
+	END_IF			
+
+					
+// ***** Servicetasten zurück setzen ************************************************************************************
+	//************************************************************************************************************************
+	IF inout_service.betriebsart <> 1
+		AND inout_service.betriebsart <> 4
+	THEN
+		inout_service.plus_start := FALSE;				
+		inout_service.minus_stop := FALSE;				
+	END_IF
+	
+	IF NOT in_Hand
+	THEN
+		inout_service.betriebsart := 0;
+	END_IF				
+	
+	inout_Auto_start := FALSE;				
+	IF inout_service.betriebsart <> 1
+	THEN				
+	inout_service.minus_stop := FALSE;	
+	END_IF			
+	
+	
+	
+	
+	ton_Freigabe(in:=in_freigabe and FB_Power.Enable,
+						pt:=T#1S);
+					]]></ST>
+    </Implementation>
+    <Action Name="ACT_Achse_NC_PTP" Id="{76cdd90c-2637-4b68-8282-fd423f54e0a8}">
+      <Implementation>
+        <ST><![CDATA[	
+	FB_ReadErrorID(	Axis:=inout_NC,
+					Enable:=TRUE,
+					AxisErrorID=>);
+	out_achs_ErrorID:= DWORD_TO_DINT(FB_ReadErrorID.AxisErrorID);	
+	
+	
+	FB_ReadPos(		Axis:=inout_NC,
+					Enable:=TRUE,
+					Position=> ,
+					Position=> );				
+				
+	out_ist_pos:=inout_service.istpos:=LREAL_TO_REAL(FB_ReadPos.Position);
+	
+	FB_Read_Parameter(	Parameter:= Achsparameter, 
+						Axis:= inout_NC, 
+						Execute:= in_Reglersperre, 
+						Done=> , 
+						Busy=> , 
+						Error=> , 
+						ErrorID=> );
+			
+	FB_ReadStatus(	Axis:=inout_NC,
+					Enable:=TRUE);
+
+	FB_Power.Enable:=
+	FB_Power.Enable_Positive:=
+	FB_Power.Enable_Negative:= in_Reglersperre 
+								AND NOT tp_reset.Q
+								AND NOT startRef;
+				
+	FB_Power(	Axis:=inout_NC,
+				Override:=,
+				BufferMode:=MC_Aborting,
+				Options:=	);
+				
+	FB_Reset(	Axis:=inout_NC,
+				Execute:=	);
+				
+	FB_Stop(	Axis:=inout_NC,
+				Execute:=,
+				Deceleration:=0,				(* Bei einem Wert von 0 wirkt die mit dem letzten Move-Kommando parametrierte Verzögerung *)
+				Jerk:=0,						(* Bei einem Wert von 0 wirkt der mit dem letzten Move-Kommando parametrierte Ruck *)		
+				BufferMode:= MC_Aborting);						
+																		
+	FB_Move(	Axis:=inout_NC,
+				Execute:=,
+				Position:=,
+				Velocity:=,
+				Acceleration:=0,				(* Beschleunigung, bei einem Wert von 0 wirkt die Standardbeschleunigung aus der Achskonfiguration im System Manager *)
+				Deceleration:=0,				(* Verzögerung, bei einem Wert von 0 wirkt die Standardverzögerung aus der Achskonfiguration im System Manager *)
+				Jerk:=0, 						(* Ruck, bei einem Wert von 0 wirkt der Standardruck aus der Achskonfiguration im System Manager *)
+				BufferMode:= MC_Buffered);		
+									
+	FB_Jog(		Axis:=inout_NC,
+				JogForward:=,
+				JogBackwards:=,
+				Mode:= MC_JOGMODE_STANDARD_SLOW, //MC_JOGMODE_CONTINOUS,
+				Position:=,						(* nicht in diesem Mode notwendig *)
+				Velocity:=,
+				Acceleration:=0,				(* Beschleunigung, bei einem Wert von 0 wirkt die Standardbeschleunigung aus der Achskonfiguration im System Manager *)
+				Deceleration:=0,				(* Verzögerung, bei einem Wert von 0 wirkt die Standardverzögerung aus der Achskonfiguration im System Manager *)
+				Jerk:=0 );						(* Ruck, bei einem Wert von 0 wirkt der Standardruck aus der Achskonfiguration im System Manager *)
+	
+	ton_verweil(in:= (NOT fb_move_seq_1.active 
+						AND NOT fb_move_seq_2.active
+						AND inout_service.betriebsart=3),
+				pt:= INT_TO_TIME(inout_service.zeit));
+				
+	FB_Move_Seq_1(
+				Execute:= 	(start_seq 
+								AND NOT fb_move_seq_2.busy 
+								AND ton_verweil.Q),
+				Position:= 			,
+				Velocity:= 			,
+				Acceleration:= ,				(* Beschleunigung, bei einem Wert von 0 wirkt die Standardbeschleunigung aus der Achskonfiguration im System Manager *)
+				Deceleration:= ,			 	(* Verzögerung, bei einem Wert von 0 wirkt die Standardverzögerung aus der Achskonfiguration im System Manager *)
+				Jerk:=,							(* Ruck, bei einem Wert von 0 wirkt der Standardruck aus der Achskonfiguration im System Manager *) 
+				BufferMode:= MC_Buffered,
+				Options:= ,
+				Axis:=inout_NC,
+				Done=>				,
+				Busy=> 				,
+				Active=> 			,
+				CommandAborted=> 	,
+				Error=> 			,
+				ErrorID=> 			);
+
+
+	FB_Move_Seq_2(
+				Execute:= 		(start_seq	
+								AND fb_move_seq_1.done
+								AND ton_verweil.Q),
+				Position:= 		,
+				Velocity:= 			,
+				Acceleration:= ,				(* Beschleunigung, bei einem Wert von 0 wirkt die Standardbeschleunigung aus der Achskonfiguration im System Manager *)
+				Deceleration:= ,				(* Verzögerung, bei einem Wert von 0 wirkt die Standardverzögerung aus der Achskonfiguration im System Manager *)
+				Jerk:= ,						(* Ruck, bei einem Wert von 0 wirkt der Standardruck aus der Achskonfiguration im System Manager *)
+				BufferMode:= MC_Buffered,
+				Options:= ,
+				Axis:= inout_NC,
+				Done=>				,
+				Busy=> 				,
+				Active=> 			,
+				CommandAborted=> 	,
+				Error=> 			,
+				ErrorID=> 			);
+]]></ST>
+      </Implementation>
+    </Action>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,243 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_Toogle" Id="{7b68ef36-1bb7-4d89-ba33-fbc4b404c74b}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Toogle
+VAR_INPUT
+	Eingang: BOOL;
+	Reset: BOOL;
+END_VAR
+VAR_OUTPUT
+	Ausgang: BOOL;
+END_VAR
+VAR_IN_OUT
+	H_Merker: BOOL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <LADDER>
+        <XmlArchive>
+          <Data>
+            <o xml:space="preserve" t="LadderImplementationObject">
+              <v n="ModelJson">"{
+  "$type": "LadderDataModel",
+  "Networks": [
+    {
+      "$type": "Network",
+      "Id": "293ctBNT",
+      "Sequence": {
+        "$type": "Sequence",
+        "Elements": [
+          {
+            "$type": "Contact",
+            "Operand": {
+              "$type": "Operand",
+              "Expression": "Ausgang"
+            }
+          },
+          {
+            "$type": "Contact",
+            "Operand": {
+              "$type": "Operand",
+              "Expression": "H_Merker",
+              "Modifier": {
+                "$type": "Modifier",
+                "Negation": true
+              }
+            }
+          },
+          {
+            "$type": "Contact",
+            "Operand": {
+              "$type": "Operand",
+              "Expression": "Eingang",
+              "Modifier": {
+                "$type": "Modifier",
+                "Negation": true
+              }
+            }
+          },
+          {
+            "$type": "Coil",
+            "Operand": {
+              "$type": "Operand",
+              "Expression": "H_Merker",
+              "Modifier": {
+                "$type": "Modifier",
+                "Storage": 1
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "$type": "Network",
+      "Id": "2JFCQHhR",
+      "Sequence": {
+        "$type": "Sequence",
+        "Elements": [
+          {
+            "$type": "ParallelClosed",
+            "Branches": [
+              {
+                "$type": "Sequence",
+                "Elements": [
+                  {
+                    "$type": "Contact",
+                    "Operand": {
+                      "$type": "Operand",
+                      "Expression": "Ausgang",
+                      "Modifier": {
+                        "$type": "Modifier",
+                        "Negation": true
+                      }
+                    }
+                  },
+                  {
+                    "$type": "Contact",
+                    "Operand": {
+                      "$type": "Operand",
+                      "Expression": "Eingang",
+                      "Modifier": {
+                        "$type": "Modifier",
+                        "Negation": true
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "$type": "Sequence",
+                "Elements": [
+                  {
+                    "$type": "Contact",
+                    "Operand": {
+                      "$type": "Operand",
+                      "Expression": "Reset"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "$type": "Coil",
+            "Operand": {
+              "$type": "Operand",
+              "Expression": "H_Merker",
+              "Modifier": {
+                "$type": "Modifier",
+                "Storage": 2
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "$type": "Network",
+      "Id": "0lMWp8IW",
+      "Sequence": {
+        "$type": "Sequence",
+        "Elements": [
+          {
+            "$type": "Contact",
+            "Operand": {
+              "$type": "Operand",
+              "Expression": "Eingang"
+            }
+          },
+          {
+            "$type": "Contact",
+            "Operand": {
+              "$type": "Operand",
+              "Expression": "H_Merker",
+              "Modifier": {
+                "$type": "Modifier",
+                "Negation": true
+              }
+            }
+          },
+          {
+            "$type": "Coil",
+            "Operand": {
+              "$type": "Operand",
+              "Expression": "Ausgang",
+              "Modifier": {
+                "$type": "Modifier",
+                "Storage": 1
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "$type": "Network",
+      "Id": "6CV7emc5",
+      "Sequence": {
+        "$type": "Sequence",
+        "Elements": [
+          {
+            "$type": "ParallelClosed",
+            "Branches": [
+              {
+                "$type": "Sequence",
+                "Elements": [
+                  {
+                    "$type": "Contact",
+                    "Operand": {
+                      "$type": "Operand",
+                      "Expression": "H_Merker"
+                    }
+                  },
+                  {
+                    "$type": "Contact",
+                    "Operand": {
+                      "$type": "Operand",
+                      "Expression": "Eingang"
+                    }
+                  }
+                ]
+              },
+              {
+                "$type": "Sequence",
+                "Elements": [
+                  {
+                    "$type": "Contact",
+                    "Operand": {
+                      "$type": "Operand",
+                      "Expression": "Reset"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "$type": "Coil",
+            "Operand": {
+              "$type": "Operand",
+              "Expression": "Ausgang",
+              "Modifier": {
+                "$type": "Modifier",
+                "Storage": 2
+              }
+            }
+          }
+        ]
+      }
+    }
+  ]
+}"</v>
+            </o>
+          </Data>
+          <TypeList>
+            <Type n="LadderImplementationObject">{f0fda5b8-8c48-4377-bbd5-c49444e4d26e}</Type>
+            <Type n="String">System.String</Type>
+          </TypeList>
+        </XmlArchive>
+      </LADDER>
+    </Implementation>
+  </POU>
+</TcPlcObject>

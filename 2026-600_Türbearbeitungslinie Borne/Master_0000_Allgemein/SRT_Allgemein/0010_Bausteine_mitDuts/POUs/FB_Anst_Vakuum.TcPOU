@@ -1,0 +1,152 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_Anst_Vakuum" Id="{209a463b-e5c6-4064-894e-7b36795590c6}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Anst_Vakuum
+VAR_INPUT
+	in_auto				:BOOL; (*1=Automatikbetrieb*)
+	in_hand				:BOOL;  (*1=Handbetrieb*)			  	
+	in_Vakuum_ok		:BOOL;(*//Vakuum ok, wenn kein Vakuumschalter vorhanden auf True setzen*)
+	in_reset			:BOOL;(*Reset*)
+	in_zeit_ueberw		:INT;(*Überwachungszeit in Sekunden*)
+	in_zeit_ein			:TIME;(*Zeitwert (Verzögerung) Vakuum erreicht*)
+	in_zeit_aus			:TIME;(*Zeitwert (Verzögerung) Vakuum aus*)
+	in_zeit_abblasen	:TIME;(*Zeitwert Abblasdauer*)
+END_VAR
+VAR_OUTPUT
+	out_vakuum			:BOOL;(*Ausgang Vakuum ausschalten*)
+	out_abblasen		:BOOL;(*Ausgang Abblasluft*)
+END_VAR
+VAR_IN_OUT
+	inout_start_ein		:BOOL;(*Start Signal Vakuum EIN*)
+	inout_start_aus		:BOOL;(*Start Signal Vakuum AUS*)
+	inout_stoer_ein		:BOOL;(*Störungsausgang Vakuum nicht erreicht*)
+	inout_hand_ein		:BOOL;(*Handbetrieb Vakuum ein*)
+	inout_hand_aus		:BOOL;(*Handbetrieb Vakuum aus*)
+END_VAR
+VAR
+	ein_fl: R_TRIG;
+	aus_fl: R_TRIG;
+	zeit: INT;
+	ein_t: TON;
+	aus_t: TON;
+	aus_t_abblasen: tp;
+	Sek_Zeit: TON;
+	Sek_Flanke: R_TRIG;
+END_VAR
+VAR_TEMP
+	temp_1: BOOL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(*****************************************************************************)
+(*Sekunden Impuls bilden *)
+Sek_Zeit(	PT:=T#1S,
+			IN:=NOT Sek_Flanke.Q);
+Sek_Flanke(	CLK:=Sek_Zeit.Q);
+(*****************************************************************************)
+(***************************************************************************************************)
+(***************************************************************************************************)
+(***************************************************************************************************)
+(* Befehl ausschalten reset wenn Befehl einschalten kommt *)
+	ein_fl(clk:=inout_start_ein 
+				OR in_reset 
+				OR inout_hand_ein);
+ 	IF ein_fl.Q
+    	THEN
+		inout_start_aus:=FALSE;
+		inout_hand_aus:= FALSE;
+		zeit:=0;
+	END_IF
+
+(* Vakuum ok verzögert *)
+   ein_t();
+   ein_t.PT:=in_zeit_ein;
+   ein_t.IN:=(inout_start_ein
+                OR inout_hand_ein)
+				AND in_vakuum_ok
+                AND NOT inout_stoer_ein;
+
+(* Vakuum ok Start zurücksetzen *)
+    IF (inout_start_ein
+           OR inout_hand_ein)
+		   AND in_Vakuum_ok
+		   AND NOT inout_stoer_ein
+           AND ein_t.Q
+    THEN
+        inout_start_ein:=FALSE;
+		inout_hand_ein:=FALSE;
+    END_IF
+
+(***************************************************************************************************)
+(***************************************************************************************************)
+(***************************************************************************************************)
+(* Befehl einschalten reset wenn Befehl auschalten kommt *)
+	aus_fl(clk:=inout_start_aus 
+				OR in_reset 
+				OR inout_hand_aus);
+ 	IF aus_fl.Q
+    	THEN
+		inout_start_ein:=FALSE;
+		inout_hand_ein:= FALSE;
+		zeit:=0;
+	END_IF
+(* Vakuum Aus verzögert *)
+	aus_t();
+	aus_t.PT:=in_zeit_aus;
+	aus_t.IN:=inout_start_aus;
+		
+(* Vakuum Aus Ventile zurücksetzen *)
+    IF (inout_start_aus
+           OR inout_hand_aus)
+           AND aus_t.Q
+    THEN
+        inout_start_aus:=FALSE;
+		inout_hand_aus:=FALSE;
+    END_IF			
+
+(***************************************************************************************************)
+(***************************************************************************************************)
+(***************************************************************************************************)
+(* Ausgang Abblasen *)
+	aus_t_abblasen();
+	aus_t_abblasen.PT:=in_zeit_abblasen;
+	aus_t_abblasen.IN:=inout_start_aus
+						OR inout_hand_aus;
+
+	out_abblasen:=aus_t_abblasen.Q;	
+	IF aus_t_abblasen.ET = aus_t_abblasen.PT 
+	THEN
+		inout_hand_aus := FALSE;
+		inout_start_aus := false;
+	END_IF
+					
+(***************************************************************************************************)
+(* Ausgang Vakuum *)
+    out_vakuum:= (inout_start_ein
+                    OR inout_Hand_ein
+					OR out_vakuum)
+				AND NOT inout_start_aus
+                AND NOT inout_hand_aus
+                AND NOT in_reset;					
+(***************************************************************************************************)
+(* Ansteuern der Überwachungszeit Vakuum ein *)
+    IF NOT out_vakuum
+        AND NOT in_vakuum_ok
+        AND NOT inout_stoer_ein
+        AND Sek_Flanke.Q
+    THEN
+          zeit:=zeit+1;
+    END_IF
+(* Störungs - Vakuum nicht erreicht*)
+    IF (zeit>in_zeit_ueberw)
+        AND out_vakuum
+        AND NOT in_vakuum_ok
+    THEN
+        inout_stoer_ein:=TRUE;
+        zeit:=0;
+   END_IF
+
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

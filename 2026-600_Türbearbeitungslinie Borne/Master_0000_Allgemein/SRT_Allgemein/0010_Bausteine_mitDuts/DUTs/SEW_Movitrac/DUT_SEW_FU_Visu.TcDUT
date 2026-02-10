@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="DUT_SEW_FU_Visu" Id="{66e2143d-7968-4071-93b6-a2bd85ae5bc0}">
+    <Declaration><![CDATA[TYPE DUT_SEW_FU_Visu :
+STRUCT
+	plus_start			:BOOL;	(* Motor ein *)
+	minus_stop			:BOOL;	(* Motor aus *)
+	betriebsart			:INT;	(* 0=keine , 1=Tippen, 2=Vorwärts, 3=Rückwärts 4=Option 5= CoE-Daten*)
+	override			:REAL;	(* Anlagenoverride *)
+	istdrehzahl			:REAL;	(* Ist-Drehzahl *)
+	iststrom			:REAL;
+	diagnose			:INT;	(* Status und Fehlerverweis auf die Diagnoseliste*)
+	status				:INT;	(* Buttonstatus (Farbzuweisung)*)
+	Para				:DUT_SEW_Para;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

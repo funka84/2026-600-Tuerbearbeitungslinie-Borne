@@ -1,0 +1,231 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_Schutztuer_mitBremsentest" Id="{bb266717-62c8-4a06-a809-9eff27781685}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Schutztuer_mitBremsentest
+(*
+	Ansteuerung der Schutztüren mit anstoßen des Bremsentests 
+	Autor O.E.
+	Erstellt 06.09.2022
+	Version 1.0 	
+*)
+VAR_INPUT
+	in_Anfordern_Quitt		:BOOL;(*Anforderungstaster Schutztür öffnen / Ablauf Reset=5Sek gedrückt*)             
+	in_Ablauf_Start			:BOOL;(*Ablauf wieder starten*) 
+	in_Steuerhilfsluft		:BOOL;            
+	in_Tuer_zu				:BOOL;(*Schutztür geschlossen            *)               
+	in_Tuer_verriegelt		:BOOL;(*Schutztür geschlossen und verriegelt*)                           
+	in_frg_zutritt			:BOOL;(*Anlagenzyklus steht, Freigabe Zutritt*)    
+	in_2mal_anfordern		:BOOL;(*es muss innerhalb von 3Sekunden zweimal die Anfordern-Taste gedrückt werden*)
+	in_mit_bremsentest		:BOOL;(*mit Bremsentest?  0=nein, 1=ja*)
+    in_bremsentest_ok		:BOOL;(*Bremsentest ok/fehlerfrei*)
+ 
+END_VAR
+VAR_OUTPUT
+	out_Tuer_entr_high		:BOOL;(*Schutztür entriegeln im Ruhezustand 1*)
+	out_Tuer_entr_low		:BOOL;(*Schutztür entriegeln im Ruhezustand 0*)
+	out_Led_Anf_quitt		:BOOL;(*Meldeleuchte Schutztür*)
+	out_Led_Ablauf_start	:BOOL;(*Meldeleuchte Schutztür*)
+	out_Freigabe			:BOOL;(*Türen Freigeben*)
+	out_Zyk_stop			:BOOL;(*Zyklus anhalten*)
+END_VAR
+
+VAR_IN_OUT
+	inout_bremsentest_start	:BOOL;(*Bremsentest starten*)	
+END_VAR
+
+VAR
+	sk						:INT;(*Schrittkette*)
+	totzeit					:TON;(*Totzeit nach erster Anforderung*)
+	verz_reset				:ton;
+	fl_bremsentest			:r_trig;(**)
+	fl_Anfordern			:R_TRIG;
+	nFl_Anfordern			:F_TRIG;			
+	t_100ms_an				:ton;
+	t_100ms_aus				:tof;
+	
+	t_500ms_an				:ton;
+	t_500ms_aus				:tof;
+	
+	t_1000ms_an				:ton;
+	t_1000ms_aus			:tof;
+	
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[//***** Sondersachen, Zeiten Berechnungen oder was auch immer **************************************************
+	//**********************************************************************************************************
+	
+	
+totzeit(PT:=  T#60S,
+		IN:=(sk=30 AND NOT inout_bremsentest_start)
+				OR(sk=40 AND in_Tuer_zu));
+verz_reset(pt:=T#5S,
+			in:= in_Anfordern_Quitt);
+			
+fl_Anfordern(clk:=in_Anfordern_Quitt);		
+nFl_Anfordern(CLK:=in_Anfordern_Quitt);
+
+t_100ms_an(IN:=NOT t_100ms_aus.Q , PT:=T#100MS);
+t_100ms_aus(IN:=t_100ms_an.Q , PT:=T#100MS , Q=>);
+	
+t_500ms_an(IN:=NOT t_500ms_aus.Q , PT:=T#500MS);
+t_500ms_aus(IN:=t_500ms_an.Q , PT:=T#500MS , Q=>);
+	
+t_1000ms_an(IN:=NOT t_1000ms_aus.Q , PT:=T#1000MS);
+t_1000ms_aus(IN:=t_1000ms_an.Q , PT:=T#1000MS , Q=>);
+	
+//***** Reset **************************************************************************************************
+	//**********************************************************************************************************
+IF verz_reset.Q
+	OR totzeit.Q
+THEN
+	sk							:= 0;
+END_IF
+
+//***** P r o g r a m m   S t a r t ****************************************************************************
+	//**********************************************************************************************************
+CASE sk OF
+
+	0:// Schritt 0 fangen wir an Start Schrittkette 
+		IF fl_Anfordern.Q
+		THEN
+			sk		:= 10;
+		END_IF
+		
+		IF NOT in_Anfordern_Quitt
+			AND (NOT in_Tuer_zu
+				OR NOT in_Tuer_verriegelt)
+		THEN
+			sk		:= 50;
+		END_IF
+		
+	10:// Schritt 10 Anforderungstaster gelöst 
+		IF NOT in_Anfordern_Quitt
+			AND NOT in_2mal_anfordern
+		THEN
+			sk		:= 30;
+		END_IF
+
+		IF NOT in_Anfordern_Quitt
+			AND in_2mal_anfordern
+		THEN
+			sk		:= 20;
+		END_IF
+
+	20:// Schritt 20 Zweite Betätigung Anforderungstaster  
+		IF in_Anfordern_Quitt
+		THEN
+			sk		:= 30;
+		END_IF
+		
+	30:// Schritt 30 Schutztür entriegeln  
+		IF NOT in_Anfordern_Quitt
+			AND in_frg_zutritt
+			AND (NOT in_mit_bremsentest
+				OR in_bremsentest_ok)
+		THEN
+			sk		:= 40;
+		END_IF
+
+	40:// Schritt 40 Schutztür ist offen  
+		IF NOT in_Tuer_zu
+			OR in_Tuer_verriegelt
+		THEN
+			sk		:= 50;
+		END_IF
+
+	50:// Schritt 50 Anforderung Schutztür verriegeln 
+		IF in_Tuer_zu
+			AND NOT in_Tuer_verriegelt
+			AND in_Anfordern_Quitt
+		THEN
+			sk		:= 60;
+		END_IF
+
+	60:// Schritt 60 Schutztür ist verriegelt 
+		IF in_Tuer_zu
+			AND in_Tuer_verriegelt
+			AND NOT in_Anfordern_Quitt
+		THEN
+			sk		:= 70;
+		END_IF
+
+	70:// Schritt 70 Ablauf start
+		IF in_Tuer_zu
+			AND in_Tuer_verriegelt
+			AND in_Ablauf_Start
+		THEN
+			sk		:= 80;
+		END_IF
+		
+		IF nFl_Anfordern.Q
+			AND in_Tuer_verriegelt
+			AND in_Tuer_zu
+		THEN
+			sk		:= 10;
+		END_IF
+		
+	80:// Schritt 80 
+		IF in_Tuer_zu
+			AND in_Tuer_verriegelt
+			AND NOT in_Ablauf_Start
+		THEN
+			sk		:= 0;
+		END_IF
+
+END_CASE
+
+//***** Ausgaenge **********************************************************************************************
+	//**********************************************************************************************************
+	
+	//***** Meldeleuchte Anforderung ***************************************************************************
+		//******************************************************************************************************
+	out_Led_anf_quitt 	:= ((sk = 10  
+								OR sk = 20 
+								OR (sk = 30 AND t_1000ms_aus.q)
+								OR (sk = 40 AND t_500ms_aus.q)
+								OR (sk = 50 AND t_500ms_aus.Q)
+								OR sk = 60 
+								OR sk = 70  
+								OR sk = 80 )
+								AND NOT in_Steuerhilfsluft)
+							OR (in_Steuerhilfsluft
+										AND NOT out_Led_Ablauf_start)
+							OR (sk = 0  AND in_Tuer_verriegelt AND in_Tuer_zu);
+							
+	out_Led_Ablauf_start:=	(((sk = 70 AND t_500ms_aus.Q)  
+								OR 	sk = 80)
+								AND NOT in_Steuerhilfsluft)
+							OR  (in_Steuerhilfsluft
+								AND t_100ms_aus.q
+								AND	(NOT in_Tuer_verriegelt));
+													
+		
+	//***** Schutztür entriegeln *******************************************************************************
+		//******************************************************************************************************
+	out_Tuer_entr_low :=NOT	( sk = 40 
+							OR sk = 50);
+	out_Tuer_entr_high :=	( sk = 40 
+							OR sk = 50);
+	
+	//***** Bremsentest start  *********************************************************************************
+		//******************************************************************************************************
+	fl_bremsentest(clk:=in_mit_bremsentest
+						AND in_frg_zutritt
+						AND sk = 30);
+	IF fl_bremsentest.Q
+	THEN
+		inout_bremsentest_start:=TRUE;
+	END_IF
+		
+	//***** Zyklus anhalten ************************************************************************************
+		//******************************************************************************************************
+	out_Zyk_stop:= sk>20
+					AND sk<80;
+					
+	out_Freigabe:=	sk>30
+					AND sk<80;
+//EndeEndeEndeEndeEndeEndeEndeEndeEndeEndeEndeEndeEndeEndeEndeEndeEndeEndeEndeEndeEndeEndeEndeEndeEndeEndeEndeE*)]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_normieren" Id="{8ea6fe64-9807-4dff-8a8c-05dbc87f76dc}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_normieren
+VAR_INPUT
+	in_Sensor			: INT;	(*Analog wert des Sensors *)
+	in_min_sensor		: INT;	(*minimal Wert vom Sensor*)
+	in_max_sensor		: INT;	(*maximal Wert vom Sensor*)
+	in_min_norm			: REAL;	(*minimal zu normierenden Wert z.B. 0% oder 25mm *)
+	in_max_norm			: REAL;	(*maximal zu normierenden Wert z.B. 100% oder 1025mm*)
+END_VAR
+VAR_OUTPUT
+	out_norm_wert		:REAL;	(* Ausgabe des normierten Wertes*)
+END_VAR
+VAR
+	temp_min_sensor		:REAL;
+	temp_max_sensor		:REAL;
+	temp_out			:REAL;
+	temp_in_sensor		:REAL;
+	temp_diff			:REAL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(* Eingänge wandeln *)
+temp_min_sensor	:=INT_TO_REAL(in_min_sensor);
+temp_max_sensor	:=INT_TO_REAL(in_max_sensor);
+temp_in_sensor	:=INT_TO_REAL(in_Sensor);
+
+(* Messwerte normieren und ausgeben *)
+temp_out:=	(((in_max_norm-in_min_norm) 					(* Normbereich ermitteln *)
+					/ (temp_max_sensor - temp_min_sensor))	(* Messbereich ermitteln *)
+			* (temp_in_sensor-temp_min_sensor));			(* Eingange des Messsensors *)
+(*  *)						
+ out_norm_wert :=(in_min_norm + temp_out);
+	]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

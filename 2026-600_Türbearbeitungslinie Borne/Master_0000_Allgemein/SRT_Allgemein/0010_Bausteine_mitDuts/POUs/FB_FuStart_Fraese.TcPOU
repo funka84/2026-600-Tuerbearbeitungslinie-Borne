@@ -1,0 +1,108 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_FuStart_Fraese" Id="{82f44f54-cb4c-4eba-b3e4-40a9d249501a}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_FuStart_Fraese
+VAR_INPUT
+in_MotorStart	:BOOL;
+in_Soll_setzen	:BOOL;	//Soll-Drehzahl wieder setzen
+in_stop			:BOOL;
+in_TimeStop		:INT;	
+in_SollDrehzahl :INT;
+in_IstDrehzahl  :UINT;
+in_MinDrehzahl	:INT;
+in_modus		:INT; //0=komplett aus, 1= bis auf 25% reduzieren, 2= bis auf 50% reduzieren, 3= bis auf 75% reduzieren
+END_VAR
+VAR_OUTPUT
+out_SollDrehzahl :REAL;
+out_AutoStart	 :BOOL;
+out_DrehzahlOK	 :BOOL;
+END_VAR
+VAR
+	Tof_75		:TOF;
+	Tof_50		:TOF;
+	Tof_25		:TOF;
+	Tof_aus		:TOF;
+	
+	temp_intervall :TIME;
+	temp_solldrehzahl	:INT;
+	
+	fl_setzen:r_trig;
+	
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[temp_intervall:=REAL_TO_TIME(INT_TO_REAL((in_TimeStop)*1000)/4.0);
+
+Tof_75(IN:=in_Soll_setzen,PT:=temp_intervall);
+Tof_50(IN:=in_Soll_setzen,PT:=temp_intervall*2);
+Tof_25(IN:=in_Soll_setzen,PT:=temp_intervall*3);
+Tof_aus(IN:=in_Soll_setzen,PT:=temp_intervall*4);
+
+fl_setzen(clk:=in_SollDrehzahl<>temp_solldrehzahl
+			AND in_SollDrehzahl>0);
+			
+IF fl_setzen.Q
+THEN
+	temp_solldrehzahl:=	in_SollDrehzahl;
+END_IF
+
+//min. Drehzahl schreiben wenn Soll = 0
+IF temp_solldrehzahl=0
+THEN temp_solldrehzahl:=in_MinDrehzahl;;
+END_IF
+
+//Solldrehzahl 100% 
+IF  Tof_75.Q
+	AND Tof_50.Q
+	AND Tof_25.Q
+	AND Tof_aus.Q
+THEN
+	out_SollDrehzahl:=temp_solldrehzahl;
+//Solldrehzahl auf 75% reduzieren
+ELSIF	NOT Tof_75.Q
+	AND Tof_50.Q
+	AND Tof_25.Q
+	AND Tof_aus.Q
+	AND in_modus<=3
+THEN 
+ 	out_SollDrehzahl:=(temp_solldrehzahl/4)*3;
+	
+//Solldrehzahl auf 50% reduzieren
+ELSIF  NOT Tof_75.Q 
+	AND NOT  Tof_50.Q 
+	AND  Tof_25.Q
+	AND  Tof_aus.Q
+	AND in_modus<=2
+THEN
+	 out_SollDrehzahl:=(temp_solldrehzahl/4)*2;
+//Solldrehzahl auf 25% reduzieren
+ELSIF NOT Tof_75.Q 
+	AND NOT  Tof_50.Q 
+	AND NOT Tof_25.Q
+	AND  Tof_aus.Q
+	AND in_modus<=1
+THEN
+	 out_SollDrehzahl:=(temp_solldrehzahl/4)*1;
+//Solldrehzahl auf 0% reduzieren
+ELSIF in_modus=0
+THEN	
+	out_SollDrehzahl:=0;
+END_IF
+
+//min. Drehzahl schreiben
+IF out_SollDrehzahl<in_MinDrehzahl
+	AND in_Modus>0
+THEN
+	out_SollDrehzahl:=in_MinDrehzahl;
+END_IF
+
+//Motor starten
+out_Autostart:= (NOT Tof_aus.Q OR in_modus>0)
+					AND in_MotorStart
+					AND NOT in_stop;
+					
+// Drehzahl erreicht
+out_DrehzahlOK:=in_IstDrehzahl>((temp_solldrehzahl/100)*95)AND in_IstDrehzahl>0;]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

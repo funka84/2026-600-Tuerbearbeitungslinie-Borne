@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="DUT_Ventil_sps" Id="{8accce32-28fe-4e55-b615-3dd041696371}">
+    <Declaration><![CDATA[TYPE DUT_Ventil_sps :
+STRUCT
+	in_auto_vor					:BOOL;			(*Startsignal vorfahren (bleibt gespeichert)*)
+	in_auto_zur					:BOOL;			(*Startsignal zurückfahren (bleibt gespeichert)*)
+	in_aus						:BOOL:=FALSE;	(*intern gespeicherte Startsignale löschen*)
+	in_freigabe_vor				:BOOL:=TRUE;	(*1 = vorfahren freigegeben*)
+	in_freigabe_zur				:BOOL:=TRUE;	(*1 = zurückfahren freigegeben*)
+	
+	out_ist_vor					:BOOL;			(*steht in Endlage vor und kein Fehler*)
+	out_ist_zur					:BOOL;			(*steht in Endlage zur und kein Fehler*)
+	out_stoerung				:BOOL;			(*es steht Störung steht an*)
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

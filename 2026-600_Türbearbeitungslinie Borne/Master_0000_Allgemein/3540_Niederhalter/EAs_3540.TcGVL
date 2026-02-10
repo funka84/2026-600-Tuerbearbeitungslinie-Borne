@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <GVL Name="EAs_3540" Id="{6a21765b-5f42-419c-b963-8f15247c2cb6}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+{attribute 'linkalways'} 
+VAR_GLOBAL
+
+	// Servoregler *************************************************************************************************************************************************
+
+	{attribute 'TcNcAxis':='=3540+FS2-11M1 (Y-Achse)'}	
+	ea_Y_Achse					: Axis_ref;				// Schnittstellen Struktur zwischen NC<->SPS
+
+
+    // Eingaenge
+    //_______________________________________________________
+
+    // +K110-1K3
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-1K3 (EL1809)^Channel 6^Input'}
+        e_FR_3540_Niederhalter_Bandseite_Niederhalter_Einlauf_ist_oben AT %I* : BOOL; (* =FR.3540 Niederhalter Bandseite Niederhalter Einlauf ist oben *)
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-1K3 (EL1809)^Channel 7^Input'}
+        e_FR_3540_Niederhalter_Bandseite_Niederhalter_Einlauf_ist_unten AT %I* : BOOL; (* =FR.3540 Niederhalter Bandseite Niederhalter Einlauf ist unten *)
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-1K3 (EL1809)^Channel 8^Input'}
+        e_FR_3540_Niederhalter_Bandseite_Niederhalter_Auslauf_ist_oben AT %I* : BOOL; (* =FR.3540 Niederhalter Bandseite Niederhalter Auslauf ist oben *)
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-1K3 (EL1809)^Channel 9^Input'}
+        e_FR_3540_Niederhalter_Bandseite_Niederhalter_Auslauf_ist_unten AT %I* : BOOL; (* =FR.3540 Niederhalter Bandseite Niederhalter Auslauf ist unten *)
+
+
+    // Ausgaenge
+    //_______________________________________________________
+
+    // +K110-2K2
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-2K2 (EL2809)^Channel 7^Output'}
+        a_FR_3540_Niederhalter_Bandseite_Niederhalter_heben AT %Q* : BOOL; (* =FR.3540 Niederhalter Bandseite Niederhalter heben *)
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-2K2 (EL2809)^Channel 8^Output'}
+        a_FR_3540_Niederhalter_Bandseite_Niederhalter_senken AT %Q* : BOOL; (* =FR.3540 Niederhalter Bandseite Niederhalter senken *)
+END_VAR
+    ]]></Declaration>
+  </GVL>
+</TcPlcObject>

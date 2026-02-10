@@ -1,0 +1,176 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_PneuPosition" Id="{eec00d6b-439e-411c-a77a-6e4fc7f09b32}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_PneuPosition
+VAR_INPUT
+    Enable          : BOOL;      		// FB aktiv
+    PosIst          : REAL;      		// Istposition (mm)
+    PosSoll         : REAL;     		// Sollposition (mm)
+    Deadband        : REAL := 5.0;      // Totzone +/- mm (Endgenauigkeit)
+    ApproachWindow  : REAL := 80.0;     // Ab hier langsam annähern (mm)
+    PulseOnTime     : TIME := T#100MS;  // Impulsdauer in Feinmode
+    PulseOffTime    : TIME := T#250MS;  // Pausendauer in Feinmode
+    StableTime      : TIME := T#500MS;  // Zeit, die Position im Deadband sein muss
+END_VAR
+
+VAR_OUTPUT
+    DO_Vor      : BOOL;      // Ausgang Vor
+    DO_Zur      : BOOL;      // Ausgang Zurück
+    InPosition  : BOOL;      // TRUE, wenn Position stabil im Deadband
+    FineMode    : BOOL;      // TRUE, wenn im Langsam-Annäherungsbereich
+END_VAR
+
+VAR
+    diff            : REAL;      // Positionsfehler (Soll - Ist)
+    absDiff         : REAL;      // |diff|
+    dirForward      : BOOL;      // TRUE = Vor, FALSE = Zurück
+
+    // Puls-Logik
+    pulseActive     : BOOL;      // TRUE = Ventil EIN-Phase, FALSE = AUS-Phase
+    tOn             : TON;
+    tOff            : TON;
+
+    // Stabilitäts-Überwachung
+    tStable         : TON;       // Timer für "Position stabil im Deadband"
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+// ===================== Hauptlogik =====================
+IF NOT Enable THEN
+    DO_Vor      := FALSE;
+    DO_Zur      := FALSE;
+    InPosition  := FALSE;
+    FineMode    := FALSE;
+
+    // Timer zurücksetzen
+    tOn(IN := FALSE, PT := PulseOnTime);
+    tOff(IN := FALSE, PT := PulseOffTime);
+    tStable(IN := FALSE, PT := StableTime);
+    pulseActive := FALSE;
+    RETURN;
+END_IF;
+
+
+// ---- Fehler berechnen ----
+diff    := PosSoll - PosIst;
+absDiff := ABS(diff);
+
+// Richtung bestimmen
+dirForward := (diff > 0.0);
+
+
+// ===================== Prüfung Deadband + Stabilität =====================
+
+// Wenn im Deadband → Timer für Stabilität laufen lassen
+IF absDiff <= Deadband THEN
+    // Ventile aus
+    DO_Vor := FALSE;
+    DO_Zur := FALSE;
+    FineMode := FALSE;
+
+    // Puls-Timer stoppen
+    tOn(IN := FALSE, PT := PulseOnTime);
+    tOff(IN := FALSE, PT := PulseOffTime);
+    pulseActive := FALSE;
+
+    // Stabilitäts-Timer EIN
+    tStable(IN := TRUE, PT := StableTime);
+
+    // Timer auswerten: erst wenn 500 ms (StableTime) im Fenster → InPosition = TRUE
+    IF tStable.Q THEN
+        InPosition := TRUE;
+    ELSE
+        InPosition := FALSE;
+    END_IF
+
+    RETURN;
+
+ELSE
+    // Nicht im Deadband → Stabilitäts-Timer zurücksetzen
+    tStable(IN := FALSE, PT := StableTime);
+    InPosition := FALSE;
+END_IF;
+
+
+// ===================== Grob- vs. Feinmodus =====================
+
+// ---- Grobmodus: weiter weg als ApproachWindow → Daueransteuerung ----
+IF absDiff > ApproachWindow THEN
+    FineMode := FALSE;
+
+    // Puls-Timer stoppen, falls noch aktiv
+    tOn(IN := FALSE, PT := PulseOnTime);
+    tOff(IN := FALSE, PT := PulseOffTime);
+    pulseActive := FALSE;
+
+    // Dauerhaft in die richtige Richtung fahren
+    IF dirForward THEN
+        DO_Vor := TRUE;
+        DO_Zur := FALSE;
+    ELSE
+        DO_Vor := FALSE;
+        DO_Zur := TRUE;
+    END_IF
+
+// ---- Feinmodus: innerhalb ApproachWindow → Pulsbetrieb ----
+ELSE
+    FineMode := TRUE;
+
+    // Pulszustand steuert, ob Ventil EIN oder AUS ist
+    // Pulslogik:
+    //  - pulseActive = TRUE  → EIN-Phase, Timer tOn läuft
+    //  - pulseActive = FALSE → AUS-Phase, Timer tOff läuft
+
+    // Initialisierung Pulsbetrieb, falls beide Timer aus
+    IF (NOT tOn.IN) AND (NOT tOff.IN) THEN
+        // Mit EIN-Phase starten
+        pulseActive := TRUE;
+        tOn(IN := TRUE, PT := PulseOnTime);
+        tOff(IN := FALSE, PT := PulseOffTime);
+    END_IF
+
+    // --- EIN-Phase ---
+    IF pulseActive THEN
+        // EIN-Timer läuft
+        tOn(IN := TRUE, PT := PulseOnTime);
+        tOff(IN := FALSE, PT := PulseOffTime);
+
+        IF tOn.Q THEN
+            // EIN-Phase zu Ende → auf AUS wechseln
+            pulseActive := FALSE;
+            tOn(IN := FALSE, PT := PulseOnTime);
+            tOff(IN := TRUE, PT := PulseOffTime);
+        END_IF
+
+    // --- AUS-Phase ---
+    ELSE
+        tOn(IN := FALSE, PT := PulseOnTime);
+        tOff(IN := TRUE, PT := PulseOffTime);
+
+        IF tOff.Q THEN
+            // AUS-Phase zu Ende → wieder EIN
+            pulseActive := TRUE;
+            tOff(IN := FALSE, PT := PulseOffTime);
+            tOn(IN := TRUE, PT := PulseOnTime);
+        END_IF
+    END_IF
+
+    // Ventilausgänge je nach Richtung + Puls
+    IF pulseActive THEN
+        IF dirForward THEN
+            DO_Vor := TRUE;
+            DO_Zur := FALSE;
+        ELSE
+            DO_Vor := FALSE;
+            DO_Zur := TRUE;
+        END_IF
+    ELSE
+        // Pause: beide aus
+        DO_Vor := FALSE;
+        DO_Zur := FALSE;
+    END_IF
+END_IF;]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

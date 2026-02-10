@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <GVL Name="GVL_3100" Id="{043d05aa-0e40-4e9f-979a-98bfe705a835}">
+    <Declaration><![CDATA[
+VAR_GLOBAL
+    // Achsen ***************************************************	
+	X_Achse_steuern						: DUT_Achse_Steuern;	
+	X_Achse_status						: DUT_Achse_Status;	
+		                            	
+	Y_Achse_steuern						: DUT_Achse_Steuern;		
+	Y_Achse_status						: DUT_Achse_Status;		
+	
+	Z_Achse_steuern						: DUT_Achse_Steuern;			
+	Z_Achse_status						: DUT_Achse_Status;		
+
+    // Frequenzumrichter ****************************************
+	Bohraggr_Schlosskast_steuern		: DUT_SEW_FU_Steuern;	
+	Bohraggr_Schlosskast_status			: DUT_SEW_FU_Status;
+	Bohraggr_Vorbohren_steuern			: DUT_SEW_FU_Steuern;	
+	Bohraggr_Vorbohren_status			: DUT_SEW_FU_Status;
+	Bohraggr_Stulpfraes_steuern			: DUT_SEW_FU_Steuern;	
+	Bohraggr_Stulpfraes_status			: DUT_SEW_FU_Status;
+	
+
+    // Ventile **************************************************
+    Schlosskast_Vorlegehub     			: DUT_Ventil_sps;
+    Vorbohren_Bohrhub          			: DUT_Ventil_sps;
+    Stulpfraes_Vorlegehub      			: DUT_Ventil_sps;
+    Nullkante	             			: DUT_Ventil_sps;
+    Schienenklemm             			: DUT_Ventil_sps;
+
+    // interne Variablen ****************************************
+    sk_Freigabe                         : BOOL;
+    sk                                  : INT;
+    transport_einfoerdern_bereit        : BOOL;
+    transport_ausfoerdern_bereit        : BOOL;
+
+    Tuer_Anwahl                         : BOOL;   // Signal Tür Anwahl, Tür soll geöffnet werden
+    Tuer_Freigabe                       : BOOL;   // Signal Tür Freigabe, Tür kann geöffnet werden
+END_VAR
+    ]]></Declaration>
+  </GVL>
+</TcPlcObject>

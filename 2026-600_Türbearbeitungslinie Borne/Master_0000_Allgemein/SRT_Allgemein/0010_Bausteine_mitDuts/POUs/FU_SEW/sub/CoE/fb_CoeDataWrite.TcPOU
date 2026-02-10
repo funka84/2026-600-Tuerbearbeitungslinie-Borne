@@ -1,0 +1,223 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="fb_CoeDataWrite" Id="{b680c3f2-a726-42d1-abd3-8811b09b7e15}" SpecialFunc="None">
+    <Declaration><![CDATA[(*======================================================================================================================================*)
+(*	Dieser Baustein Schreibt die vorher an I_stParameter definierten Parameter über COE   (ACHTUNG NUR Schreiben)  *)
+(*
+Date          	| Version    	| created under        	| Author          	| Remark *)
+(*======================================================================================================================================*)
+(*02/04/2024   	| 1.00      		| TC2		  		| N.Kersting       | first release *)
+(*03/04/2024   	| 1.01     		| TC2		  		| N.Kersting       | Neuen Autotimer hinzugefügt, um Zyklisch auszulesen  *)
+(*03/04/2024   	| 1.02     		| TC2		  		| N.Kersting       | Neuen Autoquittierung für Fehler hinzugefügt   *)
+(*02/10/2024   	| 1.03     		| TC2		  		| N.Kersting       | Neue Zugriffoption 4 = Überspringen  *)
+(*======================================================================================================================================*)
+FUNCTION_BLOCK fb_CoeDataWrite
+VAR_INPUT
+	I_bExecute		:BOOL;
+	I_tAutoTime		:TIME :=t#2s;
+	I_sNetID			:STRING;
+	I_nSlave			:UINT;
+	I_stParameter		:ARRAY[0..GVL_1000.MaxCOEParam] OF st_COE_Parameter;
+END_VAR
+VAR_OUTPUT
+	Q_bBusy			:BOOL;
+	Q_bError			:BOOL;
+END_VAR
+VAR
+	nRead			:DWORD;
+	nWrite			:DWORD;
+	iParam			:INT;
+	iStepCoE		:INT;
+	fbCoERead		:FB_EcCoESdoRead;
+	fbCoEWrite		:FB_EcCoESdoWrite;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[CASE iStepCoE OF
+
+0:	Q_bBusy			:=	FALSE;
+	nRead			:=	0;
+	nWrite			:=	0;
+	iParam			:=	 0;
+
+	IF I_bExecute
+	THEN
+		iStepCoE := 1;
+		Q_bError := FALSE;
+	END_IF
+
+1:	Q_bBusy 		:= 	TRUE;
+	nRead			:=	0;
+	nWrite			:=	0;
+
+	fbCoERead(
+		sNetId:=			I_sNetID ,
+		nSlaveAddr:= 	I_nSlave,
+		bExecute:=		FALSE );
+
+	fbCoEWrite(
+		sNetId:=			I_sNetID ,
+		nSlaveAddr:= 	I_nSlave,
+		bExecute:=		FALSE );
+
+	iStepCoE := iStepCoE+1;
+
+2:	IF iParam <= GVL_1000.MaxCOEParam
+	THEN
+		nWrite		:= I_stParameter[iParam].nWert;
+		iStepCoE 	:= iStepCoE+1;
+	ELSE
+		iStepCoE := 999;	(*ENDE*)
+	END_IF
+
+3:	IF	I_stParameter[iParam].nZugriff	= 1
+		OR I_stParameter[iParam].nZugriff	= 2
+	THEN
+
+		IF I_stParameter[iParam].nLength >0
+		THEN
+
+			fbCoEWrite(
+				nSubIndex:= 	I_stParameter[iParam].nSubIndex,
+				nIndex:=		I_stParameter[iParam].nIndex ,
+				pSrcBuf:= 	ADR(nWrite),
+				cbBufLen:= 	I_stParameter[iParam].nLength,
+				bExecute:= 	TRUE,
+				tTimeout:= 	t#10s );
+
+			IF	fbCoEWrite.bBusy
+				AND NOT fbCoEWrite.bError
+			THEN
+				iStepCoE := iStepCoE+1;
+			ELSIF
+				fbCoEWrite.bError
+			THEN
+				iStepCoE := -99; (*ERROR*)
+			END_IF
+		ELSE
+			iStepCoE := -96; (*ERROR*)
+		END_IF
+	ELSIF
+		I_stParameter[iParam].nZugriff = 0
+		OR I_stParameter[iParam].nZugriff = 3
+	THEN
+		fbCoEWrite(
+			bExecute:= 	FALSE );
+
+		iStepCoE := 7;
+	ELSIF
+		I_stParameter[iParam].nZugriff = 4
+	THEN
+		fbCoEWrite(
+			bExecute:= 	FALSE );
+
+		iStepCoE := 7;
+	END_IF
+
+4:	fbCoEWrite(
+			bExecute:= 	FALSE );
+
+	IF NOT fbCoEWrite.bBusy
+		AND NOT fbCoEWrite.bError
+	THEN
+		iStepCoE := iStepCoE+1;
+	ELSIF
+		fbCoEWrite.bError
+	THEN
+		iStepCoE := -99;
+	END_IF
+
+5:	fbCoERead(
+		nSubIndex:= 	I_stParameter[iParam].nSubIndex,
+		nIndex:=		I_stParameter[iParam].nIndex ,
+		pDstBuf:= 	ADR(nRead),
+		cbBufLen:= 	SIZEOF(nRead),
+		bExecute:= 	TRUE,
+		tTimeout:= 	t#10s );
+
+	IF	fbCoERead.bBusy
+		AND NOT fbCoERead.bError
+	THEN
+		iStepCoE := iStepCoE+1;
+	ELSIF
+		fbCoERead.bError
+	THEN
+		iStepCoE := -98; (*ERROR*)
+	END_IF
+
+6:	fbCoERead(
+			bExecute:= 	FALSE );
+
+	IF NOT fbCoERead.bBusy
+		AND NOT fbCoERead.bError
+	THEN
+		IF nRead= nWrite
+		THEN
+			iStepCoE := iStepCoE+1;
+		ELSE
+			iStepCoE := -97;
+		END_IF
+	ELSIF
+		fbCoERead.bError
+	THEN
+		iStepCoE := -98; (*ERROR*)
+	END_IF
+
+7:	IF I_stParameter[iParam].nZugriff	= 3
+	THEN
+		iStepCoE := 999;	(*ENDE*)
+	ELSE
+		iStepCoE :=iStepCoE +1;
+	END_IF
+
+8:	iParam	:= iParam+1;
+	iStepCoE :=1;
+
+999:	(*ENDE *)
+	Q_bBusy			:= 	FALSE;
+
+	IF NOT	I_bExecute
+	THEN
+		iParam	:= 0;
+		iStepCoE :=	0;
+	END_IF
+
+-99:	(*ERROR*)
+	Q_bError		 := TRUE;
+	Q_bBusy		:= FALSE;
+
+	IF NOT	I_bExecute
+	THEN
+		iStepCoE :=	0;
+	END_IF
+
+
+-98:	(*ERROR*)
+	Q_bError		 := TRUE;
+	Q_bBusy		:= FALSE;
+
+	IF NOT	I_bExecute
+	THEN
+		iStepCoE :=	0;
+	END_IF
+
+-97:	(*ERROR*)
+	Q_bError		 := TRUE;
+	Q_bBusy		:= FALSE;
+
+	IF NOT	I_bExecute
+	THEN
+		iStepCoE :=	0;
+	END_IF
+
+-96:	(*ERROR*)
+	Q_bError		 := TRUE;
+	Q_bBusy		:= FALSE;
+
+	IF NOT	I_bExecute
+	THEN
+		iStepCoE :=	0;
+	END_IF
+END_CASE]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

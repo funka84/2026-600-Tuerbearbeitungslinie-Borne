@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <GVL Name="EAs_3530" Id="{78bd011b-b200-47b4-8371-b1ed45519cb4}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+{attribute 'linkalways'} 
+VAR_GLOBAL
+
+    // Eingaenge
+    //_______________________________________________________
+
+    // +K110-1K5
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-1K5 (EL1104)^Channel 3^Input'}
+        e_FR_3530_Niederhalter_Schlossseite_Niederhalter_Einlauf_ist_oben AT %I* : BOOL; (* =FR.3530 Niederhalter Schloßseite Niederhalter Einlauf ist oben *)
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-1K5 (EL1104)^Channel 4^Input'}
+        e_FR_3530_Niederhalter_Schlossseite_Niederhalter_Einlauf_ist_unten AT %I* : BOOL; (* =FR.3530 Niederhalter Schloßseite Niederhalter Einlauf ist unten *)
+
+    // +K110-1K6
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-1K6 (EL1104)^Channel 1^Input'}
+        e_FR_3530_Niederhalter_Schlossseite_Niederhalter_Auslauf_ist_oben AT %I* : BOOL; (* =FR.3530 Niederhalter Schloßseite Niederhalter Auslauf ist oben *)
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-1K6 (EL1104)^Channel 2^Input'}
+        e_FR_3530_Niederhalter_Schlossseite_Niederhalter_Auslauf_ist_unten AT %I* : BOOL; (* =FR.3530 Niederhalter Schloßseite Niederhalter Auslauf ist unten *)
+
+
+    // Ausgaenge
+    //_______________________________________________________
+
+    // +K110-2K3
+	
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-2K3 (EL2808)^Channel 5^Output'}
+        a_FR_3530_Niederhalter_Schlossseite_Niederhalter_heben AT %Q* : BOOL; (* =FR.3530 Niederhalter Schloßseite Niederhalter heben *)
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-2K3 (EL2808)^Channel 6^Output'}
+        a_FR_3530_Niederhalter_Schlossseite_Niederhalter_senken AT %Q* : BOOL; (* =FR.3530 Niederhalter Schloßseite Niederhalter senken *)
+END_VAR
+    ]]></Declaration>
+  </GVL>
+</TcPlcObject>

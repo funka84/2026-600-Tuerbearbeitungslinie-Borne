@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="fb_OrdnerErstellen" Id="{1fb063c7-08f5-4176-b490-eed2e1b3cd4f}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK fb_OrdnerErstellen
+VAR_INPUT
+	I_bExecute	:BOOL;
+	I_sPath		:STRING(255);	
+END_VAR
+VAR_OUTPUT
+	Q_bDone		:BOOL;
+	Q_bBusy		:BOOL;
+	Q_bError	:BOOL;
+	Q_iErrorID	:UDINT;	
+END_VAR
+VAR
+	fbCreateDir	:FB_CreateDir;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+fbCreateDir.sPathName	:=I_sPath;
+fbCreateDir.bExecute		:=I_bExecute;
+fbCreateDir();
+
+Q_bBusy		:= fbCreateDir.bBusy;
+Q_bError	:= fbCreateDir.bError;
+Q_iErrorID	:= fbCreateDir.nErrId;	]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

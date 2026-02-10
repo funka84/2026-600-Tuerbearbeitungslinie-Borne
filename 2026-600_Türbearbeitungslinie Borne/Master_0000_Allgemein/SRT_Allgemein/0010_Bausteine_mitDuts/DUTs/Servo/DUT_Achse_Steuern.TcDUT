@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="DUT_Achse_Steuern" Id="{0340457e-71d3-4fab-8877-cd5aa633e83b}">
+    <Declaration><![CDATA[TYPE DUT_Achse_Steuern :
+STRUCT
+	Reglersperre		:BOOL;	
+	Freigabe			:BOOL;	
+	Auto_Override		:INT;		(*  in %  *)	
+
+	Auto_pos			:REAL;		(*  Auto Sollwert *)
+	Auto_start			:BOOL;		(*  Achse start Positionieren *)
+	Auto_stop			:BOOL;		(*  Achse stopp Positionieren *)
+
+	Auto_start_vor		:BOOL;		(*  Achse start Positive Richtung - Drehzahl geregelter Betrieb*)
+	Auto_start_zur		:BOOL;		(*  Achse start Negative richtung - Drehzahl geregelter Betrieb *)
+
+	Ref_start			:BOOL;		(*  Achse start referenzieren  *)
+	in_Ref_pos			:REAL;		(*  Referenz-Wert der gesetzt werden soll  *)
+	
+	Bremsentest_start 	:BOOL;		(* Bremsentest starten - nur bei Z-Achsen relevant *)
+	
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

@@ -1,0 +1,157 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_Achs_Freigabe" Id="{44f2b8af-301e-451c-81de-0d128e1a4e8b}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Achs_Freigabe
+VAR_INPUT
+	in_service 		: DUT_Achse_Service;
+	in_steuern 		: DUT_Achse_Steuern;
+	in_status  		: DUT_Achse_Status;
+	in_steuerstatus : DUT_Visu_SteuerStatus;
+	in_Einrichtbetrieb : BOOL;
+	in_Bedingung_negativ : BOOL;
+	in_Bedingung_positiv : BOOL;
+	in_min_pos	: REAL;
+	in_max_pos	: REAL;
+END_VAR
+VAR_OUTPUT
+	out_Freigabe : BOOL;
+	out_Meldung_Einrichtbetrieb : BOOL;
+END_VAR
+VAR_IN_OUT
+	inout_Stoerung : BOOL; // Störung keine Freigabe wenn Startbefehl aktiv (Handbetrieb)
+END_VAR
+VAR
+	Sollrichtung : INT; // 1= positiv, 2= negativ
+	Zielposition : REAL;
+END_VAR
+
+// FB zur Erzeugng von Achsfreigaben
+// Freigabe abhängig von Sollrichtung und jeweiliger Bedingung]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[Sollrichtung_pruefen();
+
+// Freigabe positiv
+IF Sollrichtung = 1
+	AND (in_Bedingung_positiv	
+		OR (in_steuerstatus.hand
+			AND in_service.betriebsart = 1
+			AND in_service.minus_stop))
+	AND in_status.ist_pos <= in_max_pos	
+	AND (Zielposition <= in_max_pos	
+		OR (in_steuerstatus.hand
+			AND in_service.betriebsart = 1))
+THEN
+	out_Freigabe := TRUE;
+	
+// Freigabe negativ
+ELSIF Sollrichtung = 2
+	AND (in_Bedingung_negativ
+		OR (in_steuerstatus.hand
+			AND in_service.betriebsart = 1
+			AND in_service.minus_stop))
+	AND in_status.ist_pos >= in_min_pos
+	AND (Zielposition >= in_min_pos
+		OR (in_steuerstatus.hand
+			AND in_service.betriebsart = 1))
+THEN	
+	out_Freigabe := TRUE;
+
+// Keine Richtung - Soll gleich ist	
+ELSIF Sollrichtung = 0
+THEN
+	out_Freigabe := TRUE;
+	
+// Keine Freigabe
+ELSE
+	out_Freigabe := FALSE;
+END_IF
+
+// Störmeldung erzeugen
+IF (NOT out_Freigabe
+	AND in_steuerstatus.hand
+	AND ((in_service.betriebsart = 1	// Tippen
+		AND (in_service.minus_stop
+			OR in_service.plus_start))
+		OR (in_service.betriebsart = 2 	// Positionieren
+			AND in_service.plus_start))	)	
+	//OR NOT in_Bedingung_negativ
+	//OR NOT in_Bedingung_positiv	
+THEN
+	inout_Stoerung := TRUE;
+END_IF
+
+// Einrichtbetrieb
+IF in_Einrichtbetrieb
+	AND in_steuerstatus.hand
+THEN
+	inout_Stoerung 	:= FALSE;
+	out_Freigabe	:= TRUE;
+END_IF]]></ST>
+    </Implementation>
+    <Action Name="Sollrichtung_pruefen" Id="{3a814331-1e7a-437a-879e-91c0e007fe97}">
+      <Implementation>
+        <ST><![CDATA[// Zielposition ermitteln
+IF in_Status.Achs_Status.Moving
+THEN
+	Zielposition := in_status.ziel_pos;
+ELSIF in_steuerstatus.auto
+	AND in_steuern.Auto_start
+THEN
+	Zielposition := in_steuern.Auto_pos;
+ELSIF in_steuerstatus.hand
+	AND in_service.betriebsart = 2				
+			AND in_service.plus_start
+THEN
+	Zielposition := in_service.sollpos_hand;	
+END_IF	
+
+// Sollrichtung Automatik *************************************************************************
+IF in_SteuerStatus.auto
+THEN
+	IF Zielposition < in_status.ist_pos
+	THEN
+		Sollrichtung := 2;
+	ELSIF Zielposition > in_status.ist_pos
+	THEN 
+		Sollrichtung := 1;
+	ELSE
+		Sollrichtung := 0;
+	END_IF
+	
+// Sollrichtung Hand *****************************************************************************	
+ELSIF in_SteuerStatus.hand
+THEN
+	// Tippen
+	IF in_service.betriebsart = 1
+	THEN
+		IF in_service.minus_stop
+		THEN
+			Sollrichtung := 2;
+		ELSIF in_service.plus_start 
+		THEN
+			Sollrichtung := 1;
+		ELSE
+			Sollrichtung := 0;
+		END_IF
+		
+	// Positionieren
+	ELSIF in_service.betriebsart = 2
+	THEN
+		IF Zielposition < in_status.ist_pos
+		THEN		
+			Sollrichtung := 2;
+			
+		ELSIF Zielposition > in_status.ist_pos
+		THEN
+			Sollrichtung := 1;
+		ELSE
+			Sollrichtung := 0;
+		END_IF
+	END_IF	
+ELSE
+	Sollrichtung := 0;
+END_IF]]></ST>
+      </Implementation>
+    </Action>
+  </POU>
+</TcPlcObject>

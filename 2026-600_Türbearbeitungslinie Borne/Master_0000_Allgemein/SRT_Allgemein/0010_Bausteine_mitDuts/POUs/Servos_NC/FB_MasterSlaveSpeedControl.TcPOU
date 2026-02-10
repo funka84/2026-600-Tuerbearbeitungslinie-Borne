@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_MasterSlaveSpeedControl" Id="{38f31450-1d65-4b19-88a9-70e8a70426c6}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_MasterSlaveSpeedControl
+VAR_INPUT
+	SpeedMaster	:REAL;
+	SpeedSlave1	:REAL;
+	SpeedSlave2	:REAL;
+	SpeedSlave3	:REAL;
+	hysterese	:REAL;
+	
+END_VAR
+VAR_OUTPUT
+	speedMasterSlave_OK :BOOL;
+END_VAR
+VAR
+	speedSlave1_OK	:BOOL;
+	speedSlave2_OK	:BOOL;
+	speedSlave3_OK	:BOOL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF SpeedSlave1 < SpeedMaster + hysterese
+	AND SpeedSlave1 > SpeedMaster - hysterese
+THEN
+	speedSlave1_OK :=TRUE;
+ELSE
+	speedSlave1_OK :=FALSE;
+END_IF
+
+IF SpeedSlave2 < SpeedMaster + hysterese
+	AND SpeedSlave2 > SpeedMaster - hysterese
+THEN
+	speedSlave2_OK :=TRUE;
+ELSE
+	speedSlave2_OK :=FALSE;
+END_IF
+
+IF SpeedSlave3 < SpeedMaster + hysterese
+	AND SpeedSlave3 > SpeedMaster - hysterese
+THEN
+	speedSlave3_OK :=TRUE;
+ELSE
+	speedSlave3_OK :=FALSE;
+END_IF
+
+
+IF speedSlave1_OK
+	AND speedSlave2_OK
+	AND speedSlave3_OK
+	AND speedMaster>0
+THEN
+	speedMasterSlave_ok := TRUE;
+ELSE
+	speedMasterSlave_ok := FALSE;
+END_IF]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

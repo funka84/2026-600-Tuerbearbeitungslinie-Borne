@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_InfoGroup" Id="{17b8f8f8-3a5f-4464-844b-a23e0135e80c}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_InfoGroup
+VAR_INPUT
+	stInfoData: ST_InfoDataGroup;
+	bEthercatError: BOOL;
+END_VAR
+VAR_OUTPUT
+	sState: STRING;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF NOT bEthercatError THEN
+	
+		IF stInfoData.usiMapState= 1 THEN
+			sState:='RUN';
+		ELSIF stInfoData.usiMapState= 2 THEN
+			sState:='STOP';
+		ELSIF stInfoData.usiMapState= 3 THEN
+			sState:='SAFE';
+		ELSIF stInfoData.usiMapState= 4 THEN
+			sState:='ERROR';
+		ELSIF stInfoData.usiMapState= 5 THEN
+			sState:='RESET';
+		ELSE
+			sState:='Unknown';
+		END_IF;
+
+ELSE
+	sState:='COM_ERROR';
+END_IF;]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

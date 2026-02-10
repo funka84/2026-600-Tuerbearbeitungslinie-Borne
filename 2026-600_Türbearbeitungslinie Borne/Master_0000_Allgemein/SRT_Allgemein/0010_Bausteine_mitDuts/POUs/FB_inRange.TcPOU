@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_inRange" Id="{001d83f7-815e-488e-ae0d-8a20c0131bc6}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_inRange
+VAR_INPUT
+	in_istPos 	:REAL;
+	in_sollPos	:REAL;
+	in_Fenster	:REAL;
+END_VAR
+VAR_OUTPUT
+	out_imBereich :BOOL;
+END_VAR
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[ out_imBereich := 	in_istPos > in_sollPos - in_Fenster
+ 					AND in_istPos < in_sollPos + in_Fenster;]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

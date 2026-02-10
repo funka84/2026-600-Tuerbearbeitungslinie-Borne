@@ -1,0 +1,300 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="fb_Parameter_CSV" Id="{c2c120da-5c45-4149-ab18-fb25cbfee86d}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK fb_Parameter_CSV
+VAR_INPUT
+	I_bStartRead			:BOOL;
+	I_bStartWrite			:BOOL;
+	I_bReset				:BOOL;
+	I_sNetId				:STRING	:=	'';
+	I_sFileName			:STRING :=	'Parameter.txt';
+	I_sPath				:STRING:= 	'C:\CSV\SEW';
+	I_iMaxCollumns		:INT	:=4;
+	I_stParameter			:ARRAY[0..GVL_1000.MAX_CSV_BASE_ROWS] OF st_MaschParameter;
+END_VAR
+VAR_OUTPUT
+	Q_bBusy				:BOOL;
+	Q_stParameter		:ARRAY[0..GVL_1000.MAX_CSV_BASE_ROWS] OF st_MaschParameter;
+END_VAR
+VAR
+	i					:INT;
+	CSV_Write			:fb_CSVBaseWrite;
+	CSV_Read			:fb_CSVBaseRead;
+
+	bCvToStrDone		:BOOL;
+	bStrToCvDone		:BOOL;
+	iStep: INT;
+
+	bBusy				:BOOL;
+	bErr					:BOOL;
+	bDone				:BOOL;
+	bWrite				:BOOL;
+	bRead				:BOOL;
+	sState				:STRING;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(*	*)
+ac_Read();
+(*	*)
+ac_Write();
+(*	*)
+ac_Ablauf();
+
+Q_bBusy:= bBusy;]]></ST>
+    </Implementation>
+    <Action Name="ac_Ablauf" Id="{3cd10419-72ef-4f30-b690-29efb8bcee8b}">
+      <Implementation>
+        <ST><![CDATA[IF I_bReset
+THEN
+	iStep:=0;
+END_IF
+
+CASE iStep OF
+
+(*======================================================================================================================================*)
+0:(* 	INIT *)
+(*======================================================================================================================================*)
+		ac_Conv_Param_To_String();
+		ac_Conv_String_To_Param();
+
+	bBusy 			:=	FALSE;
+	bWrite			:=	FALSE;
+	bRead			:=	FALSE;
+
+	IF 	I_bStartWrite
+	THEN
+		iStep := iStep +10;
+	END_IF
+
+	IF 	I_bStartRead
+	THEN
+		iStep := iStep +100;
+	END_IF
+
+(*======================================================================================================================================*)
+10:(* 	INIT *)
+(*======================================================================================================================================*)
+		ac_Conv_Param_To_String();
+
+	sState			:=	'WRITE-INIT';
+	bDone			:=	FALSE;
+	bErr				:=	FALSE;
+	bBusy 			:= 	TRUE;
+	bCvToStrDone	:= 	FALSE;
+
+	iStep 			:= 	iStep +10;
+
+(*======================================================================================================================================*)
+20:(* 	Konvertierung  *)
+(*======================================================================================================================================*)
+	sState			:=	'WRITE-CONVERT';
+
+		ac_Conv_Param_To_String();
+
+	IF	bCvToStrDone
+	THEN
+		iStep 			:= 	iStep +10;
+	END_IF
+
+(*======================================================================================================================================*)
+30:(* 	Write *)
+(*======================================================================================================================================*)
+	sState			:=	'WRITE-START';
+	bWrite			:=	TRUE;
+
+	IF CSV_Write.bBusy
+		AND NOT CSV_Write.bError
+	THEN
+		iStep		:=	iStep+10;
+	ELSIF
+		CSV_Write.Q_bError
+	THEN
+		iStep		:=	-20;
+	END_IF
+
+(*======================================================================================================================================*)
+40:(* 	Warte auf Fertig *)
+(*======================================================================================================================================*)
+	sState			:=	'WRITE-START';
+	bWrite			:=	FALSE;
+
+	IF	NOT CSV_Write.bBusy
+		AND CSV_Write.Q_bDone
+		AND NOT CSV_Write.bError
+	THEN
+		bDone			:=	TRUE;
+	END_IF
+
+	IF NOT CSV_Write.bBusy
+		AND CSV_Write.Q_bDone
+		AND NOT I_bStartWrite
+	THEN
+		sState		:=	'WRITE-DONE';
+		iStep		:=	0;
+	ELSIF
+		CSV_Write.Q_bError
+	THEN
+		iStep		:=	-20;
+	END_IF
+
+
+(*======================================================================================================================================*)
+100:(* 	INIT *)
+(*======================================================================================================================================*)
+		ac_Conv_Param_To_String();
+
+	sState			:=	'READ-INIT';
+	bDone			:=	FALSE;
+	bErr				:=	FALSE;
+	bBusy 			:= 	TRUE;
+	bStrToCvDone	:= 	FALSE;
+
+	iStep 			:= 	iStep +20;
+
+(*======================================================================================================================================*)
+120:(* 	READ  *)
+(*======================================================================================================================================*)
+	sState			:=	'READ-START';
+	bRead			:=	TRUE;
+
+	IF CSV_Read.bBusy
+		AND NOT CSV_Read.bError
+	THEN
+		iStep		:=	iStep+10;
+	ELSIF
+		CSV_Read.Q_bError
+	THEN
+		iStep		:=	-130;
+	END_IF
+
+(*======================================================================================================================================*)
+130:(* 	READ *)
+(*======================================================================================================================================*)
+	sState			:=	'READ-WAIT-DONE';
+	bRead			:=	FALSE;
+
+	IF NOT CSV_Read.bBusy
+		AND CSV_Read.Q_bDone
+	THEN
+		iStep		:=	iStep+10;
+	ELSIF
+		CSV_Read.Q_bError
+	THEN
+		iStep		:=	-130;
+	END_IF
+
+(*======================================================================================================================================*)
+140:(* 	Konvertierung in Parameter  *)
+(*======================================================================================================================================*)
+	sState			:=	'READ-CONVERT';
+
+		ac_Conv_String_To_Param();
+
+	IF	bStrToCvDone
+	THEN
+		bDone			:=	TRUE;
+	END_IF
+
+	IF	bStrToCvDone
+		AND NOT I_bStartRead
+	THEN
+		sState			:=	'READ-DONE';
+		iStep 			:= 	0;
+	END_IF
+
+(*======================================================================================================================================*)
+(* 	ERRORs  *)
+(*======================================================================================================================================*)
+
+-20:
+	sState 		:=	CONCAT('CSV-WRITE-ERROR: ',CSV_Write.Q_sState);
+	bErr 		:= 	TRUE;
+	iStep 		:= 	-999;
+
+-130:
+	sState 		:=	CONCAT('CSV-READ-ERROR: ',CSV_Read.Q_sState);
+	bErr 		:= 	TRUE;
+	iStep 		:= 	-999;
+
+-999:
+	IF  NOT I_bStartRead
+	THEN
+		iStep 			:= 	0;
+	END_IF
+
+END_CASE]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="ac_Conv_Param_To_String" Id="{e88c7a9b-4eee-4550-ba6b-8602b4f33fb8}">
+      <Implementation>
+        <ST><![CDATA[FOR i := 0 TO GVL_1000.MAX_CSV_BASE_ROWS BY 1 DO
+	CSV_Write.I_stCSVDatabase[i].sCSV_Column1	:=	I_stParameter[i].sName;
+	CSV_Write.I_stCSVDatabase[i].sCSV_Column2	:=	LREAL_TO_STRING(I_stParameter[i].nWert);
+	CSV_Write.I_stCSVDatabase[i].sCSV_Column3	:=	BOOL_TO_STRING(I_stParameter[i].bWert);
+	CSV_Write.I_stCSVDatabase[i].sCSV_Column4	:=	LREAL_TO_STRING(TIME_TO_LREAL(I_stParameter[i].tWert));
+
+	IF i >= GVL_1000.MAX_CSV_BASE_ROWS
+	THEN
+		bCvToStrDone	:= 	TRUE;
+	ELSE
+		bCvToStrDone	:=	FALSE;
+	END_IF
+
+END_FOR]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="ac_Conv_String_To_Param" Id="{3d577602-9645-4d1a-ac01-36004d911fe3}">
+      <Implementation>
+        <ST><![CDATA[;
+FOR i := 0 TO GVL_1000.MAX_CSV_BASE_ROWS BY 1 DO
+
+	Q_stParameter[i].sName			:=		CSV_Read.Q_stCSVDatabase[i].sCSV_Column1;
+	Q_stParameter[i].nWert				:=		STRING_TO_LREAL(CSV_Read.Q_stCSVDatabase[i].sCSV_Column2);
+	Q_stParameter[i].bWert				:=		STRING_TO_BOOL(CSV_Read.Q_stCSVDatabase[i].sCSV_Column3);
+	Q_stParameter[i].tWert				:=		LREAL_TO_TIME(STRING_TO_LREAL(CSV_Read.Q_stCSVDatabase[i].sCSV_Column4));
+
+	IF i >= GVL_1000.MAX_CSV_BASE_ROWS
+	THEN
+		bStrToCvDone	:= 	TRUE;
+	ELSE
+		bStrToCvDone	:=	FALSE;
+	END_IF
+
+END_FOR]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="ac_Read" Id="{a3ead6d3-57bf-438f-82f9-0b59ebbe6806}">
+      <Implementation>
+        <ST><![CDATA[CSV_Read(
+	I_sFileName:= 		I_sFileName,
+	I_sFilePath:= 			I_sPath,
+	I_sNetId:= 			I_sNetId,
+	I_iMaxCollumns:= 		I_iMaxCollumns,
+	I_bRead:=			bRead ,
+	I_bReset:= 			I_bReset,
+	Q_stCSVDatabase=> ,
+	Q_bError=> ,
+	Q_sState=> ,
+	Q_bDone=> , 
+	Q_bBusy=> );]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="ac_Write" Id="{d7f174ea-4278-46d9-b37a-6d596ba2a408}">
+      <Implementation>
+        <ST><![CDATA[CSV_Write(
+	I_sFileName:= 		I_sFileName,
+	I_sFilePath:= 			I_sPath,
+	I_sNetId:= 			I_sNetId,
+	I_stCSVDatabase:=	 ,
+	I_iMaxCollumns:= 		I_iMaxCollumns,
+	I_bWrite:= 			bWrite,
+	I_bReset:= ,
+	I_sTimeStamp:= , 
+	Q_bError=> , 
+	Q_sState=> , 
+	Q_bDone=> , 
+	Q_bBusy=> );]]></ST>
+      </Implementation>
+    </Action>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<TcSmItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2012/07/TcSmProject" TcSmVersion="1.0" TcVersion="3.1.4026.20" ClassName="CNcSafTaskDef" SubType="0">
+	<NC>
+		<SafTask Priority="4" CycleTime="20000" AmsPort="501" IoAtBegin="true" SafTaskInfo="256" HighPrioAds="true">
+			<Name>NC-Task 1 SAF</Name>
+			<Vars VarGrpType="1" InsertType="1">
+				<Name>Eingänge</Name>
+			</Vars>
+			<Vars VarGrpType="2" InsertType="1">
+				<Name>Ausgänge</Name>
+			</Vars>
+			<Image Id="3" AddrType="1" ImageType="1">
+				<Name>Prozessabbild</Name>
+			</Image>
+		</SafTask>
+		<SvbTask Priority="8" CycleTime="100000" AmsPort="511">
+			<Name>NC-Task 1 SVB</Name>
+		</SvbTask>
+		<Axis File="=3100+FS2-11M1 (X-Achse).xti" Id="1"/>
+		<Axis File="=3100+FS2-12M1 (Y-Achse).xti" Id="2"/>
+		<Axis File="=3100+FS2-13M1 (Z-Achse).xti" Id="3"/>
+		<Axis File="=3200+FS2-11M1 (X-Achse).xti" Id="4"/>
+		<Axis File="=3200+FS2-12M1 (Y-Achse).xti" Id="5"/>
+		<Axis File="=3200+FS2-13M1 (Z-Achse).xti" Id="6"/>
+		<Axis File="=3300+FS2-11M1 (X-Achse).xti" Id="7"/>
+		<Axis File="=3300+FS2-12M1 (Y-Achse).xti" Id="8"/>
+		<Axis File="=3400+FS2-11M1 (X-Achse).xti" Id="9"/>
+		<Axis File="=3400+FS2-12M1 (Y-Achse).xti" Id="10"/>
+		<Axis File="=3520+FS2-11M1 (Y-Achse).xti" Id="11"/>
+		<Axis File="=3540+FS2-11M1 (Y-Achse).xti" Id="12"/>
+	</NC>
+</TcSmItem>

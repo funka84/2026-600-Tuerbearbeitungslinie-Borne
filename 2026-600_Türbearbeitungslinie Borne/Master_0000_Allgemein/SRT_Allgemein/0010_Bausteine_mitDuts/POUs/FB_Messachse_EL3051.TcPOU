@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_Messachse_EL3051" Id="{82cfb032-ec29-4449-9ffd-966b8fc4fddf}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Messachse_EL3051
+VAR_INPUT
+	in_EncPos				: INT;
+	in_min_sensor			: INT;	(*minimal Wert vom Sensor*)
+	in_max_sensor			: INT;	(*maximal Wert vom Sensor*)
+	in_min_norm				: REAL;	(*minimal zu normierenden Wert z.B. 0% oder 25mm *)
+	in_max_norm				: REAL;	(*maximal zu normierenden Wert z.B. 100% oder 1025mm*)
+	in_OffsetIstPos			: LREAL;
+    in_bPneumatikCommand 	: BOOL;           // TRUE wenn Vorschubbefehl aktiv
+END_VAR
+VAR_OUTPUT
+	out_IstPos				: LREAL;
+	out_bDone				: BOOL;	// Ref Position ist gesetzt worden
+	out_bValid				: BOOL; // Positionwert ist stabil
+END_VAR
+VAR
+	temp_Pos				: LREAL;
+	RT_SetPos				: R_TRIG;
+	ton_Valid				: ton;
+	
+	EncoderPos      : LINT;     // akt. Encoderposition (lesen)
+    EncoderPosPrev  : LINT := 0;
+    Delta           : LINT;
+    DeadbandCounts  : LINT := 9;        // hier: ~0.1 mm -> 9 counts
+    SampleTimeMs    : TIME := T#10MS;   // Zykluszeit (zur Info)
+    StableTimer     : TON;
+    StableTimePT    : TIME := T#200MS;  // Bestätigungszeit
+    bStableCount    : BOOL;
+    bAnschlagGefunden : BOOL;           // Ausgang: Anschlag erkannt
+	temp_min_sensor		:REAL;
+	temp_max_sensor		:REAL;
+	temp_out			:REAL;
+	temp_in_sensor		:REAL;
+	temp_diff			:REAL;
+END_VAR
+
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// Istposition umrechnen in eine Einheit
+
+	(* Eingänge wandeln *)
+	temp_min_sensor	:=INT_TO_REAL(in_min_sensor);
+	temp_max_sensor	:=INT_TO_REAL(in_max_sensor);
+	temp_in_sensor	:=INT_TO_REAL(in_EncPos);
+	
+	(* Messwerte normieren und ausgeben *)
+	temp_out:=	(((in_max_norm-in_min_norm) 					(* Normbereich ermitteln *)
+						/ (temp_max_sensor - temp_min_sensor))	(* Messbereich ermitteln *)
+				* (temp_in_sensor-temp_min_sensor));			(* Eingange des Messsensors *)
+	(*  *)						
+	 out_IstPos :=(in_min_norm + temp_out + in_OffsetIstPos);
+
+// Stabile Position erkannt
+// --- Hauptlogik (zyklisch) ---
+	EncoderPos := in_EncPos; // 
+	
+	Delta := ABS(EncoderPos - EncoderPosPrev);
+	
+	IF Delta <= DeadbandCounts THEN
+		bStableCount := TRUE;
+	ELSE
+		bStableCount := FALSE;
+	END_IF
+	
+	// TON nutzt die Eingangssignallogik
+	StableTimer(IN := bStableCount, PT := StableTimePT);
+	
+	// Anschlag nur, wenn Position stabil *und* Pneumatikbefehl noch aktiv (optional)
+	IF StableTimer.Q AND in_bPneumatikCommand THEN
+		out_bValid := TRUE;
+	ELSE
+		out_bValid := FALSE;
+	END_IF
+	
+	EncoderPosPrev := EncoderPos;]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

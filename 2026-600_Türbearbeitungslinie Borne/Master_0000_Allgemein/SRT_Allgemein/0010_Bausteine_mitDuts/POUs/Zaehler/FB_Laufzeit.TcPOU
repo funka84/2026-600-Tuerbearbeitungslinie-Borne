@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_Laufzeit" Id="{f990ab34-0ce7-41b7-b59c-addc7d8265f9}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Laufzeit
+VAR_INPUT
+    inAktiv				: BOOL;		(* Betriebsstatus, 1 = aktiv, 0 = inaktiv *)
+END_VAR
+
+VAR_OUTPUT
+    outLetzeteLaufzeit	: REAL;		(* letzte Laufzeit in Sekunden *)	
+END_VAR
+
+VAR_IN_OUT
+    inoutGesamtLaufzeit	: REAL;		(* Gesamt Laufzeit in Minuten *)	
+END_VAR
+
+VAR
+	t500msAn			: ton;
+	t500msAus			: tof;
+	t500ms				: BOOL;
+	fl_start			: r_trig;
+	fl_stop				: f_trig;
+	zaehler				: UDINT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(* Blinktakt *)
+	t500msAn(IN:=NOT t500msAus.Q , PT:=T#500MS);
+	t500msAus(IN:=t500msAn.Q , PT:=T#500MS , Q=>t500ms);
+	
+(* Start *)
+	fl_start(CLK:=t500ms AND inAktiv);
+	IF fl_start.Q
+	THEN
+		zaehler:=zaehler+1;
+	END_IF
+	
+(* Zählwert auswertent *)
+	fl_stop(CLK:=inAktiv);
+	IF fl_stop.Q
+	THEN
+		outLetzeteLaufzeit:=	TO_REAL (zaehler);
+		inoutGesamtLaufzeit:= 	inoutGesamtLaufzeit + (TO_REAL (zaehler)/60);
+	END_IF
+
+(* Initialisierung des internen Zählers *)
+	IF NOT inAktiv
+	THEN
+		zaehler:=0;
+	END_IF
+
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

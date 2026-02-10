@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="DUT_SEW_Para" Id="{c372af66-92f9-498f-98d2-9293338f7442}">
+    <Declaration><![CDATA[TYPE DUT_SEW_Para :
+STRUCT
+//Geschwindigkeiten	
+Geschwindigkeit_schnell		:REAL; 	// schnelle Geschwindigkeit in Anwendereihneit bei 100% Override	
+Geschwindigkeit_langsam		:REAL; 	// schnelle Geschwindigkeit in Anwendereihneit bei 100% Override
+Speed_Hand					:REAL; 	// langsame Geschwindigkeit in Anwendereihneit bei 100% Override
+Max_Override_Hand			:INT;  	// Overridebegrenzung für Handbetrieb	
+//Rampen
+Beschleunigung				:INT;	// Beschleunigungsrampe in Anwendereinheit
+Verzoegerung				:INT;	// Verzögerungsrampe in Anwendereinheit
+//Einheiten
+Einheit						:INT;	// 0 = mm/s , 1 = m/min	
+//Sonstiges
+Drehtausch					:BOOL;	// Motordrehsinn invertieren
+END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

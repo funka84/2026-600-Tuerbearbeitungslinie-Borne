@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Hardware_3530" Id="{9a54c182-9e1a-4aa6-b4b6-cf350214cacc}" SpecialFunc="None">
+    <Declaration><![CDATA[
+PROGRAM Hardware_3530
+VAR
+    // Servos *********************************************************************
+    //fbAchse                    					: FB_Achse_NC_PTP_V4_1; 
+
+    // Frequenzumrichter **********************************************************
+    //fbTransport                					: FB_SEW_MOVITRAC_C_CoE;
+
+    // Sensorik *******************************************************************
+    //fbSensor                   					: FB_Belegt;
+
+    // Ventile ********************************************************************
+    fbNiederhalter               					: FB_Ventil_V2;
+
+    // ***** Hilfsmerker***********************************************************
+    (*
+        Ventile sind über den DUT_Ventil_para vorparametriert
+                ueberwachung_vor_aktiv    : BOOL := TRUE;   // 0 = Endlagenüberwachung vor deaktiviert
+                ueberwachung_zur_aktiv    : BOOL := TRUE;   // 0 = Endlagenüberwachung zurück deaktiviert
+                ausgang_vor_halten        : BOOL := FALSE;  // 1 = Ausgang immer Ein, sonst 0 in Endlage/1 nicht in Endlage
+                ausgang_zur_halten        : BOOL := FALSE;  // 1 = Ausgang immer Ein, sonst 0 in Endlage/1 nicht in Endlage
+                entprellen_vor_aktiv      : BOOL := TRUE;   // 0 = Endlage sofort überwachen wenn einmal erreicht
+                entprellen_zur_aktiv      : BOOL := TRUE;   // 0 = Endlage sofort überwachen wenn einmal erreicht
+                ueberwachungszeit_vor     : TIME := T#10S;  // Überwachungszeit in ms (0-30000ms)
+                ueberwachungszeit_zur     : TIME := T#10S;  // Überwachungszeit in ms (0-30000ms)
+                entprellungszeit_vor      : TIME := T#50MS; // Entprellungszeit in ms (0-10000ms)
+                entprellungszeit_zur      : TIME := T#50MS; // Entprellungszeit in ms (0-10000ms)
+
+        falls etwas anderes gewünscht ist, kann man gezielt für das Ventil die Parameter anpassen
+        Beispiel:   ***.para.ausgang_vor_halten := TRUE;
+                    ***.para.entprellungszeit_vor := T#100MS;
+    *)
+END_VAR
+    ]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+// Aktionen aufrufen
+//_________________________________________________
+	A_Sensorik();
+	A_Umrichter();
+	A_Ventile();
+	A_Servo();
+		  ]]></ST>
+    </Implementation>
+    <Action Name="A_Sensorik" Id="{a22bed03-1e50-4714-807d-5c816ab88407}">
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="A_Servo" Id="{60f5f0a4-475d-46df-b91f-6e7a05bc30b2}">
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="A_Umrichter" Id="{5f9f02ba-e527-42b9-8e9b-18576a2bee7d}">
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="A_Ventile" Id="{71a6b07e-24d8-4ba5-a385-85a54e953230}">
+      <Implementation>
+        <ST><![CDATA[	
+// ***** Ventile *********************************************************************
+	//********************************************************************************	
+	
+	GVL_Visu_3530.Niederhalter.para.ausgang_vor_halten:=TRUE;	
+	GVL_Visu_3530.Niederhalter.para.ausgang_zur_halten:=TRUE;	
+	GVL_Visu_3530.Niederhalter.para.ueberwachung_vor_aktiv:=TRUE;	
+	GVL_Visu_3530.Niederhalter.para.ueberwachung_zur_aktiv:=TRUE;	
+	GVL_Visu_3530.Niederhalter.para.entprellungszeit_vor:=T#50S;	
+	GVL_Visu_3530.Niederhalter.para.entprellungszeit_zur:=T#50MS;	
+	fbNiederhalter (		in_endlage_vor:= EAs_3530.e_FR_3530_Niederhalter_Schlossseite_Niederhalter_Einlauf_ist_oben
+							AND EAs_3530.e_FR_3530_Niederhalter_Schlossseite_Niederhalter_Auslauf_ist_oben,
+							in_endlage_zur:= EAs_3530.e_FR_3530_Niederhalter_Schlossseite_Niederhalter_Einlauf_ist_unten
+							AND EAs_3530.e_FR_3530_Niederhalter_Schlossseite_Niederhalter_Auslauf_ist_unten,
+							in_hand:=GVL_Visu_3530.SteuerStatus.hand,
+							in_auto:=GVL_Visu_3530.SteuerStatus.auto,
+							in_quit:=GVL_Visu_3530.SteuerStatus.reset 
+							OR GVL_0000.stoerung_quitt,
+							out_vor=>EAs_3530.a_FR_3530_Niederhalter_Schlossseite_Niederhalter_heben,
+							out_zur=>EAs_3530.a_FR_3530_Niederhalter_Schlossseite_Niederhalter_senken,
+							out_stoerung_vor=> GVL_Meldungen.Meldungen_3000.Nr_094,
+							out_stoerung_zur=> GVL_Meldungen.Meldungen_3000.Nr_095,
+							out_stoerung_vorzur=> GVL_Meldungen.Meldungen_3000.Nr_096,
+							inout_ansteuerung:=GVL_3530.Niederhalter ,
+							inout_visu:=GVL_Visu_3530.Niederhalter );
+								
+	]]></ST>
+      </Implementation>
+    </Action>
+  </POU>
+</TcPlcObject>

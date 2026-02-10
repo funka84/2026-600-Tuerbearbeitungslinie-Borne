@@ -1,0 +1,154 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Rexroth_Servo_Modulo" Id="{2745af75-5331-49e3-b755-f922b6d0f623}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Rexroth_Servo_Modulo
+(*
+	Ansteuerung einer Achse über die NC im Bodulobetrieb für den Endlosbetrieb
+	zum Beispiel für Transporte
+	Autor G.L.
+	Erstellt 01.12.2024
+	Version 1.0 	
+*)
+VAR_INPUT
+	in_Reglerfreigabe		: BOOL; 					(*  Software-Freigabe für die Achse  *)
+	in_Freigabe				: BOOL;						(*  Freigabe JogMode und Positionieren *)
+	in_Steuerstatus			: DUT_Visu_SteuerStatus; 	
+	in_Quitt				: BOOL;						(*  Achs Reset  *)
+	//in_Hand				: BOOL;						(*  Handbetrieb  *)
+	//in_Auto				: BOOL;						(*  Automatikbetrieb  *)
+	in_Auto_Speed			: REAL;						(*  in Anwendereinheit  *)
+	in_Auto_pos				: REAL;						(*  Auto Sollwert *)
+	in_PosFenster			: REAL;						(*  Positionsfenster Achse in Position  *)
+	in_Ref_pos				: REAL;						(*  Referenz-Wert der gesetzt werden soll  *)	
+END_VAR
+
+VAR_OUTPUT
+	Out_Ist_Pos					: REAL;						(*  aktuelle ist Position  *)
+	Out_In_Pos					: BOOL;						(*  Achse in Position (Soll=IST + - Positionsfenster) *)
+	Out_Ziel_Pos				: REAL;						(* aktuelle Zielposition *)
+	Out_Nicht_Ref				: BOOL;						(*  Achse ist nicht referenziert  *)
+	Out_Achs_Status				: ST_AxisStatus;			(* 	aktueller Achsstatus *)
+	Out_Achs_Error				: BOOL;						(*  Achs Fehler *)
+	Out_Achs_ErrorID			: DINT;						(*  Achs Fehler ID *) 
+	Out_FB_Error				: BOOL;						(*  FB Fehler - intern *)
+	Out_FB_ErrorID				: DWORD;					(*  FB Fehler ID - intern *) 
+END_VAR
+
+VAR_IN_OUT
+	inout_NC				: AXIS_REF;					(*  Schnittstelle zwischen der SPS und der NC  *)												
+	inout_rexroth			: DUT_PD_InOut_Achsen;		(*  Schnittstelle zwischen der SPS und dem Regler  *)												
+	inout_service			: DUT_Achse_Service;		(*  Eingangs-Variablen für den Servicebetrieb	 *)
+	inout_Ref_start			: BOOL;						(*  Achse start referenzieren  *)
+	inout_Auto_start		: BOOL;						(*  Achse start Positionieren *)
+END_VAR
+VAR
+	quitt				: BOOL;						(*  Achs Reset  *)
+	frg_hand			: BOOL;						(*  Handbetrieb  *)
+	frg_auto			: BOOL;						(*  Automatikbetrieb  *)
+
+	FB_ReadPos				: MC_ReadActualPosition;	(*  Aktuelle Istposition auslesen *)
+	FB_ReadErrorID			: MC_ReadAxisError;			(*  FehlerID der Achse auslesen  *)
+	FB_ReadStatus			: MC_ReadStatus;
+	FB_POWER				: MC_POWER;					(*  Leistung ein-/ausschalten  *)
+	FB_RESET				: MC_RESET;					(*  Achse resetten *)
+	FB_Stop					: MC_Halt;					(*  Achse anhalten  *)
+	FB_Jog					: MC_Jog;					(*  Achse tippen  *)
+	FB_Move					: MC_MoveAbsolute;			(*  Achse positionieren  *)
+	FB_Move_Seq_1			: MC_MoveAbsolute;
+	FB_Move_Seq_2			: MC_MoveAbsolute;
+	FB_Read_Parameter		: MC_ReadParameterSet;
+	FB_Set_Position			: MC_SetPosition;
+	FB_MoveVelocity 		: MC_MoveVelocity;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[//--------------------------------------
+//---Variablen Zuweisen---
+//--------------------------------------
+frg_hand:=in_Steuerstatus.hand;
+frg_auto:=in_Steuerstatus.auto_aktiv;
+quitt:= in_Steuerstatus.reset OR in_Quitt;
+//--------------------------------------
+//---Achstatus schreiben---
+//--------------------------------------
+	inout_NC();
+
+	out_Achs_Status	:= FB_ReadStatus.Status;
+	out_Achs_Error	:= FB_ReadErrorID.AxisErrorID > 0;
+	
+//--------------------------------------
+//---Aktuelle Zielpositionen schreiben---
+//--------------------------------------
+IF inout_nc.Status.Moving
+THEN
+	out_ziel_pos := LREAL_TO_REAL(inout_NC.NcToPlc.TargetPos);
+ELSIF
+	frg_auto
+	AND inout_auto_start
+THEN
+ 	out_ziel_pos:= in_auto_pos;
+ELSIF
+	frg_hand
+	AND inout_service.betriebsart = 2				
+	AND inout_service.plus_start
+THEN
+	out_ziel_pos := inout_service.sollpos_hand;	
+END_IF
+
+//--------------------------------------
+//---Freigabe positionieren---
+//--------------------------------------
+IF NOT in_Freigabe
+THEN
+	inout_Auto_start 	:= FALSE;
+	FB_Move.Execute		:= FALSE;
+END_IF	
+
+
+//--------------------------------------
+//---Geschwindigkeiten umkopieren---
+//--------------------------------------
+
+IF frg_hand
+THEN
+ 	FB_MoveVelocity.Velocity	:=in_Auto_Speed;
+	FB_Power.Override			:=100;
+ELSE
+ 	FB_MoveVelocity.Velocity	:=in_Auto_Speed;
+	FB_Power.Override			:=100;
+	END_IF
+	
+//--------------------------------------
+//---Achse bewegen---
+//--------------------------------------
+
+//In Handbetrieb
+IF (frg_hand
+		AND inout_service.betriebsart = 2
+		AND inout_service.plus_start)
+//In Automatikbetrieb	
+	OR ( frg_auto
+		AND inout_Auto_start)
+//Allgemeine Bedingungen
+	AND NOT FB_MoveVelocity.Busy
+	AND NOT out_Achs_Error 
+	AND in_Freigabe
+THEN
+	FB_MoveVelocity.Execute:=TRUE;	
+END_IF
+
+	
+	
+
+
+
+
+]]></ST>
+    </Implementation>
+    <Action Name="ACT" Id="{99236b96-014b-4dc1-9c5d-b1ffa5624276}">
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Action>
+  </POU>
+</TcPlcObject>

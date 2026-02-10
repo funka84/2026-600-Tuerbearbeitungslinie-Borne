@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FC_InRange" Id="{6ad0739e-1d52-4d44-8e6f-f0c59e96073b}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION FC_InRange : BOOL
+VAR_INPUT
+	Soll: REAL;
+	Ist: REAL;
+	Range: REAL;
+END_VAR
+VAR
+	temp_oben_real: REAL;
+	temp_unten_real: REAL;
+	temp_grenze_oben: BOOL;
+	temp_grenze_unten: BOOL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[	(* Obergrenze überschritten ? *)
+	temp_oben_real := Soll + (Range / 2);
+	temp_grenze_oben := Ist > temp_oben_real;
+
+	(* Untergrenze unterschritten ? *)
+	temp_unten_real := Soll - (Range / 2);
+	temp_grenze_unten := Ist < temp_unten_real;
+
+	(* Wert liegt im zulässigen Bereich *)
+	FC_InRange := 	NOT temp_grenze_unten
+					AND NOT temp_grenze_oben;]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

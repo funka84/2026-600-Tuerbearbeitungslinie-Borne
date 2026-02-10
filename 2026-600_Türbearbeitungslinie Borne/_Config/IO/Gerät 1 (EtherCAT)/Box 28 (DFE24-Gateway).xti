@@ -1,0 +1,167 @@
+<?xml version="1.0"?>
+<TcSmItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2012/07/TcSmProject" TcSmVersion="1.0" TcVersion="3.1.4026.20" ClassName="CFlbTermDef" SubType="9099">
+	<ImageDatas>
+		<ImageData Id="1000">424de6000000000000007600000028000000100000000e000000010004000000000070000000000000000000000000000000000000000000000000008000008000000080800080000000800080008080000080808000c0c0c0000000ff0000ff000000ffff00ff000000ff00ff00ffff0000ffffff00ffff90090fffffffffff900910ffffffffff9999110fffffffff90091110ffffffff9a0911110fffffff900911111fffffff9a0911111fffffff900991111fffffff9a0919111fffffff900991911fffffff999999191ffffffff99999919fffffffff9999991ffffffffff999999fff</ImageData>
+	</ImageDatas>
+	<Box Id="28" BoxType="9099" BoxFlags="#x00000020">
+		<Name>__FILENAME__</Name>
+		<ImageId>1000</ImageId>
+		<EtherCAT SlaveType="2" PdiType="#x0008" CycleMBoxPolling="true" CfgModeSafeOp="true" CoeType="7" FoeType="1" VendorId="#x00000059" ProductCode="#x00000002" RevisionNo="#x00000004" InfoDataAddr="true" WdDivider0400="25000" WdTime0410="0" DdTime0420="100" EnableWdDivider0400="true" EnableWdTime0410="true" EnableWdTime0420="true" PortPhys="17" MaxSlotCount="256" MaxSlotGroupCount="1" SlotPdoIncrement="1" SlotIndexIncrement="16" Type="DFE24-Gateway" Desc="DFE24-Gateway">
+			<SyncMan>0018fa0026000100010000002800fa00fa00001826010000</SyncMan>
+			<SyncMan>fa18fa0022000100020000002800fa00fa00fa1822010000</SyncMan>
+			<SyncMan>001030006400010003000000000000000000001064010000</SyncMan>
+			<SyncMan>001230002000010004000000000000000000001220010000</SyncMan>
+			<Fmmu>0000000000000000001000020100000001000000000000000000000000000000</Fmmu>
+			<Fmmu>0000000000000000001200010100000002000000000000000000000000000000</Fmmu>
+			<BootStrapData>0010140200181402</BootStrapData>
+			<Pdo Name="InputData1 (Standard 24 PI)" Index="#x1a01" Flags="#x0010" SyncMan="3">
+				<Entry Name="PI1" Index="#x3e1c">
+					<Type>UINT</Type>
+				</Entry>
+				<Entry Name="PI2" Index="#x3e1d">
+					<Type>UINT</Type>
+				</Entry>
+				<Entry Name="PI3" Index="#x3e1e">
+					<Type>UINT</Type>
+				</Entry>
+				<Entry Name="PI4" Index="#x3e1f">
+					<Type>UINT</Type>
+				</Entry>
+				<Entry Name="PI5" Index="#x3e20">
+					<Type>UINT</Type>
+				</Entry>
+				<Entry Name="PI6" Index="#x3e21">
+					<Type>UINT</Type>
+				</Entry>
+				<Entry Name="PI7" Index="#x3e22">
+					<Type>UINT</Type>
+				</Entry>
+				<Entry Name="PI8" Index="#x3e23">
+					<Type>UINT</Type>
+				</Entry>
+				<Entry Name="PI9" Index="#x3e24">
+					<Type>UINT</Type>
+				</Entry>
+				<Entry Name="PI10" Index="#x3e25">
+					<Type>UINT</Type>
+				</Entry>
+				<Entry Name="PI11" Index="#x3e26">
+					<Type>UINT</Type>
+				</Entry>
+				<Entry Name="PI12" Index="#x3e27">
+					<Type>UINT</Type>
+				</Entry>
+				<Entry Name="PI13" Index="#x3e28">
+					<Type>UINT</Type>
+				</Entry>
+				<Entry Name="PI14" Index="#x3e29">
+					<Type>UINT</Type>
+				</Entry>
+				<Entry Name="PI15" Index="#x3e2a">
+					<Type>UINT</Type>
+				</Entry>
+				<Entry Name="PI16" Index="#x3e2b">
+					<Type>UINT</Type>
+				</Entry>
+				<Entry Name="PI17" Index="#x3e2c">
+					<Type>UINT</Type>
+				</Entry>
+				<Entry Name="PI18" Index="#x3e2d">
+					<Type>UINT</Type>
+				</Entry>
+				<Entry Name="PI19" Index="#x3e2e">
+					<Type>UINT</Type>
+				</Entry>
+				<Entry Name="PI20" Index="#x3e2f">
+					<Type>UINT</Type>
+				</Entry>
+				<Entry Name="PI21" Index="#x3e30">
+					<Type>UINT</Type>
+				</Entry>
+				<Entry Name="PI22" Index="#x3e31">
+					<Type>UINT</Type>
+				</Entry>
+				<Entry Name="PI23" Index="#x3e32">
+					<Type>UINT</Type>
+				</Entry>
+				<Entry Name="PI24" Index="#x3e33">
+					<Type>UINT</Type>
+				</Entry>
+			</Pdo>
+			<Pdo Name="OutputData1 (Standard 24 PO)" Index="#x1601" InOut="1" Flags="#x0010" SyncMan="2">
+				<Entry Name="PO1" Index="#x3db8">
+					<Type>UINT</Type>
+				</Entry>
+				<Entry Name="PO2" Index="#x3db9">
+					<Type>UINT</Type>
+				</Entry>
+				<Entry Name="PO3" Index="#x3dba">
+					<Type>UINT</Type>
+				</Entry>
+				<Entry Name="PO4" Index="#x3dbb">
+					<Type>UINT</Type>
+				</Entry>
+				<Entry Name="PO5" Index="#x3dbc">
+					<Type>UINT</Type>
+				</Entry>
+				<Entry Name="PO6" Index="#x3dbd">
+					<Type>UINT</Type>
+				</Entry>
+				<Entry Name="PO7" Index="#x3dbe">
+					<Type>UINT</Type>
+				</Entry>
+				<Entry Name="PO8" Index="#x3dbf">
+					<Type>UINT</Type>
+				</Entry>
+				<Entry Name="PO9" Index="#x3dc0">
+					<Type>UINT</Type>
+				</Entry>
+				<Entry Name="PO10" Index="#x3dc1">
+					<Type>UINT</Type>
+				</Entry>
+				<Entry Name="PO11" Index="#x3dc2">
+					<Type>UINT</Type>
+				</Entry>
+				<Entry Name="PO12" Index="#x3dc3">
+					<Type>UINT</Type>
+				</Entry>
+				<Entry Name="PO13" Index="#x3dc4">
+					<Type>UINT</Type>
+				</Entry>
+				<Entry Name="PO14" Index="#x3dc5">
+					<Type>UINT</Type>
+				</Entry>
+				<Entry Name="PO15" Index="#x3dc6">
+					<Type>UINT</Type>
+				</Entry>
+				<Entry Name="PO16" Index="#x3dc7">
+					<Type>UINT</Type>
+				</Entry>
+				<Entry Name="PO17" Index="#x3dc8">
+					<Type>UINT</Type>
+				</Entry>
+				<Entry Name="PO18" Index="#x3dc9">
+					<Type>UINT</Type>
+				</Entry>
+				<Entry Name="PO19" Index="#x3dca">
+					<Type>UINT</Type>
+				</Entry>
+				<Entry Name="PO20" Index="#x3dcb">
+					<Type>UINT</Type>
+				</Entry>
+				<Entry Name="PO21" Index="#x3dcc">
+					<Type>UINT</Type>
+				</Entry>
+				<Entry Name="PO22" Index="#x3dcd">
+					<Type>UINT</Type>
+				</Entry>
+				<Entry Name="PO23" Index="#x3dce">
+					<Type>UINT</Type>
+				</Entry>
+				<Entry Name="PO24" Index="#x3dcf">
+					<Type>UINT</Type>
+				</Entry>
+			</Pdo>
+		</EtherCAT>
+	</Box>
+</TcSmItem>

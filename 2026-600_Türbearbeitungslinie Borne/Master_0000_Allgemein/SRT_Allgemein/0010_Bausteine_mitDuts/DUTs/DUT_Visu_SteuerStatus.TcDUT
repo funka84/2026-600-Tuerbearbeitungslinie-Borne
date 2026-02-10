@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="DUT_Visu_SteuerStatus" Id="{055cfc0c-9a8f-47c5-bad6-3e67b5531db4}">
+    <Declaration><![CDATA[TYPE DUT_Visu_SteuerStatus :
+STRUCT
+	
+	hand			: BOOL ;	(*	Handbetrieb anwählen 	*)
+	auto			: BOOL ;	(*	Automatik anwählen		*)
+	auto_start		: BOOL ;	(*	Automatik Start			*)
+	auto_stop		: BOOL ;	(*	Automatik Stop			*)
+	auto_pause		: BOOL ;	(*	Automatik Pause			*)
+	reset			: BOOL ;	(*	Anlagenreset			*)
+	grundstellung	: BOOL ;	(*	Grundstellung anfahren	*)
+	einlauf_sperre	: BOOL ;
+	auslauf_sperre	: BOOL ;
+
+	auto_aktiv		: BOOL ;	(*	Status an die Visu - Maschinenoverride		*)
+	res10			: BOOL ;	(*	*)
+	res11			: BOOL ;	(*	*)
+	res12			: BOOL ;	(*	*)
+	res13			: BOOL ;	(*	*)
+	res14			: BOOL ;	(*	*)
+	res15			: BOOL ;	(*	*)
+	res16			: BOOL ;	(*	*)
+
+END_STRUCT	
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

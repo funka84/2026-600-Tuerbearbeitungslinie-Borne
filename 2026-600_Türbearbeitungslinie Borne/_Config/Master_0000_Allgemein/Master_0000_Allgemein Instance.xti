@@ -1,0 +1,307 @@
+<?xml version="1.0"?>
+<TcSmItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2012/07/TcSmProject" TcSmVersion="1.0" TcVersion="3.1.4026.20" ClassName="CTComPlcObjDef">
+	<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" XtvPath="Master_0000_Allgemein\Master_0000_Allgemein Instance.xtv" TmcPath="Master_0000_Allgemein\Master_0000_Allgemein.tmc">
+		<Name>__FILENAME__</Name>
+		<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
+		<Contexts>
+			<Context>
+				<Id>0</Id>
+				<Name>PlcTask</Name>
+				<ManualConfig>
+					<OTCID>#x02010030</OTCID>
+				</ManualConfig>
+				<Priority>20</Priority>
+				<CycleTime>10000000</CycleTime>
+			</Context>
+		</Contexts>
+		<TaskPouOids>
+			<TaskPouOid Prio="20" OTCID="#x08502001"/>
+		</TaskPouOids>
+	</Instance>
+	<Mappings>
+		<OwnerA>
+			<OwnerB Name="TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K5 (EL1809)">
+				<Link VarA="PlcTask Inputs^EAs_0000.e_FR_0101_Schaltschranktuer_ist_zu_und_Klimageraet_ist_Betriebsbereit" VarB="Channel 1^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_0000.e_FR_0300_SEW_Bremswiderstand_Versorgungsmodul_ist_OK" VarB="Channel 13^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_0000.e_FR_0400_Schaltschrank_24V_Lastueberwachung_ist_OK" VarB="Channel 2^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_0000.e_FR_0600_Rueckmeldung_von_Safety_Freigabekreis_3" VarB="Channel 3^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_0000.e_FR_0800_24V_UPS_Versorgung_ist_OK_und_zu_80_geladen" VarB="Channel 4^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_0000.e_FS1_3K5_Channel_14" VarB="Channel 14^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_0000.e_FS1_3K5_Channel_15" VarB="Channel 15^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_0000.e_FS1_3K5_Channel_16" VarB="Channel 16^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_1000.e_FR_1000_Allgemein_Druckluft_OK" VarB="Channel 5^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_3100.e_FR_3100_Bohraggregat_1_Schlosskastenfraeser_Stillstandserkennung_Motor_steht" VarB="Channel 6^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_3100.e_FR_3100_Bohraggregat_2_Vorbohren_Stillstandserkennung_Motor_steht" VarB="Channel 7^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_3100.e_FR_3100_Bohraggregat_3_Stulpfraeser_Stillstandserkennung_Motor_steht" VarB="Channel 8^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_3200.e_FR_3200_Bohraggregat_4_Stufenbohrer_Stillstandserkennung_Motor_steht" VarB="Channel 9^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_3200.e_FR_3200_Bohraggregat_5_Stulpfraeser_Stillstandserkennung_Motor_steht" VarB="Channel 10^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_3300.e_FR_3300_Bohraggregat_6_Schluesselloch_unten_Stillstandserkennung_Motor_steht" VarB="Channel 11^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_3400.e_FR_3400_Bohraggregat_7_Schluesselloch_oben_Stillstandserkennung_Motor_steht" VarB="Channel 12^Input" AutoLink="true" Size="1"/>
+			</OwnerB>
+			<OwnerB Name="TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K6 (EL2809)">
+				<Link VarA="PlcTask Outputs^EAs_0000.a_FR_0300_SEW_Netzschuetz_Versorgungsmodul_EIN_1Min_10sec_Ein_Ausschaltzeit" VarB="Channel 1^Output" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^EAs_0000.a_FS1_3K6_Channel_10" VarB="Channel 10^Output" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^EAs_0000.a_FS1_3K6_Channel_11" VarB="Channel 11^Output" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^EAs_0000.a_FS1_3K6_Channel_12" VarB="Channel 12^Output" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^EAs_0000.a_FS1_3K6_Channel_13" VarB="Channel 13^Output" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^EAs_0000.a_FS1_3K6_Channel_14" VarB="Channel 14^Output" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^EAs_0000.a_FS1_3K6_Channel_15" VarB="Channel 15^Output" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^EAs_0000.a_FS1_3K6_Channel_16" VarB="Channel 16^Output" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^EAs_0000.a_FS1_3K6_Channel_2" VarB="Channel 2^Output" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^EAs_0000.a_FS1_3K6_Channel_3" VarB="Channel 3^Output" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^EAs_0000.a_FS1_3K6_Channel_4" VarB="Channel 4^Output" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^EAs_0000.a_FS1_3K6_Channel_5" VarB="Channel 5^Output" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^EAs_0000.a_FS1_3K6_Channel_6" VarB="Channel 6^Output" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^EAs_0000.a_FS1_3K6_Channel_7" VarB="Channel 7^Output" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^EAs_0000.a_FS1_3K6_Channel_8" VarB="Channel 8^Output" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^EAs_0000.a_FS1_3K6_Channel_9" VarB="Channel 9^Output" AutoLink="true" Size="1"/>
+			</OwnerB>
+			<OwnerB Name="TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-1K2 (EL1809)">
+				<Link VarA="PlcTask Inputs^EAs_3100.e_FR_3100_Schlossbearbeitung_Bohraggregat_1_Vorlegehub_ist_hinten" VarB="Channel 2^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_3100.e_FR_3100_Schlossbearbeitung_Bohraggregat_1_Vorlegehub_ist_vorne" VarB="Channel 1^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_3100.e_FR_3100_Schlossbearbeitung_Bohraggregat_2_Bohrhub_ist_hinten" VarB="Channel 4^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_3100.e_FR_3100_Schlossbearbeitung_Bohraggregat_2_Bohrhub_ist_vorne" VarB="Channel 3^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_3100.e_FR_3100_Schlossbearbeitung_Bohraggregat_3_Vorlegehub_ist_hinten" VarB="Channel 6^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_3100.e_FR_3100_Schlossbearbeitung_Bohraggregat_3_Vorlegehub_ist_vorne" VarB="Channel 5^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_3200.e_FR_3200_Bandbearbeitung_Bohraggregat_4_Bohrhub_ist_hinten" VarB="Channel 8^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_3200.e_FR_3200_Bandbearbeitung_Bohraggregat_4_Bohrhub_ist_vorne" VarB="Channel 7^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_3200.e_FR_3200_Bandbearbeitung_Bohraggregat_5_Vorlegehub_ist_hinten" VarB="Channel 10^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_3200.e_FR_3200_Bandbearbeitung_Bohraggregat_5_Vorlegehub_ist_vorne" VarB="Channel 9^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_3200.e_FR_3200_Bandbearbeitung_Pusher_ist_hinten" VarB="Channel 11^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_3300.e_FR_3300_Druecker_Schluesselloch_unten_Bohraggregat_6_Bohrhub_ist_oben" VarB="Channel 12^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_3300.e_FR_3300_Druecker_Schluesselloch_unten_Bohraggregat_6_Bohrhub_ist_unten" VarB="Channel 13^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_3400.e_FR_3400_Druecker_Schluesselloch_oben_Bohraggregat_7_Bohrhub_ist_oben" VarB="Channel 14^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_3400.e_FR_3400_Druecker_Schluesselloch_oben_Bohraggregat_7_Bohrhub_ist_unten" VarB="Channel 15^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_3510.e_FR_3510_Transport_Schlossseite_Riemenfoerderer_langsam" VarB="Channel 16^Input" AutoLink="true" Size="1"/>
+			</OwnerB>
+			<OwnerB Name="TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-1K3 (EL1809)">
+				<Link VarA="PlcTask Inputs^EAs_0000.e_K110_1K3_Channel_10" VarB="Channel 10^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_0000.e_K110_1K3_Channel_11" VarB="Channel 11^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_0000.e_K110_1K3_Channel_12" VarB="Channel 12^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_0000.e_K110_1K3_Channel_13" VarB="Channel 13^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_0000.e_K110_1K3_Channel_14" VarB="Channel 14^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_0000.e_K110_1K3_Channel_15" VarB="Channel 15^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_0000.e_K110_1K3_Channel_16" VarB="Channel 16^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_3510.e_FR_3510_Transport_Schlossseite_Laengsanschlag_ist_oben" VarB="Channel 2^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_3510.e_FR_3510_Transport_Schlossseite_Laengsanschlag_ist_unten" VarB="Channel 3^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_3510.e_FR_3510_Transport_Schlossseite_Riemenfoerderer_stopp" VarB="Channel 1^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_3520.e_FR_3520_Transport_Bandseite_Laengsanschlag_oben" VarB="Channel 4^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_3520.e_FR_3520_Transport_Bandseite_Laengsanschlag_unten" VarB="Channel 5^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_3540.e_FR_3540_Niederhalter_Bandseite_Niederhalter_Auslauf_ist_oben" VarB="Channel 8^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_3540.e_FR_3540_Niederhalter_Bandseite_Niederhalter_Auslauf_ist_unten" VarB="Channel 9^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_3540.e_FR_3540_Niederhalter_Bandseite_Niederhalter_Einlauf_ist_oben" VarB="Channel 6^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_3540.e_FR_3540_Niederhalter_Bandseite_Niederhalter_Einlauf_ist_unten" VarB="Channel 7^Input" AutoLink="true" Size="1"/>
+			</OwnerB>
+			<OwnerB Name="TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-1K4 (EL1104)">
+				<Link VarA="PlcTask Inputs^EAs_3100.e_FR_3100_Schlossbearbeitung_Nullkante_Auslauf_ist_oben" VarB="Channel 3^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_3100.e_FR_3100_Schlossbearbeitung_Nullkante_Auslauf_ist_unten" VarB="Channel 4^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_3100.e_FR_3100_Schlossbearbeitung_Nullkante_Einlauf_ist_oben" VarB="Channel 1^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_3100.e_FR_3100_Schlossbearbeitung_Nullkante_Einlauf_ist_unten" VarB="Channel 2^Input" AutoLink="true" Size="1"/>
+			</OwnerB>
+			<OwnerB Name="TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-1K5 (EL1104)">
+				<Link VarA="PlcTask Inputs^EAs_3510.e_FR_3510_Transport_Schlossseite_X_Achse_Laengsanschlag_Referenz" VarB="Channel 1^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_3520.e_FR_3520_Transport_Bandseite_X_Achse_Laengsanschlag_Referenz" VarB="Channel 2^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_3530.e_FR_3530_Niederhalter_Schlossseite_Niederhalter_Einlauf_ist_oben" VarB="Channel 3^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_3530.e_FR_3530_Niederhalter_Schlossseite_Niederhalter_Einlauf_ist_unten" VarB="Channel 4^Input" AutoLink="true" Size="1"/>
+			</OwnerB>
+			<OwnerB Name="TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-1K6 (EL1104)">
+				<Link VarA="PlcTask Inputs^EAs_0000.e_K110_1K6_Channel_3" VarB="Channel 3^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_0000.e_K110_1K6_Channel_4" VarB="Channel 4^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_3530.e_FR_3530_Niederhalter_Schlossseite_Niederhalter_Auslauf_ist_oben" VarB="Channel 1^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_3530.e_FR_3530_Niederhalter_Schlossseite_Niederhalter_Auslauf_ist_unten" VarB="Channel 2^Input" AutoLink="true" Size="1"/>
+			</OwnerB>
+			<OwnerB Name="TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-2K1 (EL2809)">
+				<Link VarA="PlcTask Outputs^EAs_3100.a_FR_3100_Schlossbearbeitung_Bohraggregat_1_Vorlegehub_vor" VarB="Channel 1^Output" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^EAs_3100.a_FR_3100_Schlossbearbeitung_Bohraggregat_1_Vorlegehub_zurueck" VarB="Channel 2^Output" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^EAs_3100.a_FR_3100_Schlossbearbeitung_Bohraggregat_2_Bohrhub_vor" VarB="Channel 3^Output" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^EAs_3100.a_FR_3100_Schlossbearbeitung_Bohraggregat_2_Bohrhub_zurueck" VarB="Channel 4^Output" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^EAs_3100.a_FR_3100_Schlossbearbeitung_Bohraggregat_3_Vorlegehub_vor" VarB="Channel 5^Output" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^EAs_3100.a_FR_3100_Schlossbearbeitung_Bohraggregat_3_Vorlegehub_zurueck" VarB="Channel 6^Output" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^EAs_3200.a_FR_3200_Bandbearbeitung_Bohraggregat_4_Bohrhub_vor" VarB="Channel 7^Output" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^EAs_3200.a_FR_3200_Bandbearbeitung_Bohraggregat_4_Bohrhub_zurueck" VarB="Channel 8^Output" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^EAs_3200.a_FR_3200_Bandbearbeitung_Bohraggregat_5_Vorlegehub_vor" VarB="Channel 9^Output" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^EAs_3200.a_FR_3200_Bandbearbeitung_Bohraggregat_5_Vorlegehub_zurueck" VarB="Channel 10^Output" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^EAs_3200.a_FR_3200_Bandbearbeitung_Pusher_vor" VarB="Channel 11^Output" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^EAs_3200.a_FR_3200_Bandbearbeitung_Pusher_zurueck" VarB="Channel 12^Output" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^EAs_3300.a_FR_3300_Druecker_Schluesselloch_unten_Bohraggregat_6_Bohrhub_heben" VarB="Channel 13^Output" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^EAs_3300.a_FR_3300_Druecker_Schluesselloch_unten_Bohraggregat_6_Bohrhub_senken" VarB="Channel 14^Output" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^EAs_3400.a_FR_3400_Druecker_Schluesselloch_oben_Bohraggregat_7_Bohrhub_heben" VarB="Channel 15^Output" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^EAs_3400.a_FR_3400_Druecker_Schluesselloch_oben_Bohraggregat_7_Bohrhub_senken" VarB="Channel 16^Output" AutoLink="true" Size="1"/>
+			</OwnerB>
+			<OwnerB Name="TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-2K2 (EL2809)">
+				<Link VarA="PlcTask Outputs^EAs_3510.a_FR_3510_Transport_Schlossseite_Laengsanschlag_heben" VarB="Channel 2^Output" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^EAs_3510.a_FR_3510_Transport_Schlossseite_Laengsanschlag_senken" VarB="Channel 3^Output" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^EAs_3510.a_FR_3510_Transport_Schlossseite_X_Achse_Laengsanschlag_Schienenklemmung_klemmen" VarB="Channel 1^Output" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^EAs_3520.a_FR_3520_Transport_Bandseite_Laengsanschlag_Clamp_X_axis_rail_clamp" VarB="Channel 6^Output" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^EAs_3520.a_FR_3520_Transport_Bandseite_Laengsanschlag_heben" VarB="Channel 4^Output" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^EAs_3520.a_FR_3520_Transport_Bandseite_Laengsanschlag_senken" VarB="Channel 5^Output" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^EAs_3540.a_FR_3540_Niederhalter_Bandseite_Niederhalter_heben" VarB="Channel 7^Output" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^EAs_3540.a_FR_3540_Niederhalter_Bandseite_Niederhalter_senken" VarB="Channel 8^Output" AutoLink="true" Size="1"/>
+			</OwnerB>
+			<OwnerB Name="TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-2K3 (EL2808)">
+				<Link VarA="PlcTask Outputs^EAs_3100.a_FR_3100_Schlossbearbeitung_Nullkante_heben" VarB="Channel 2^Output" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^EAs_3100.a_FR_3100_Schlossbearbeitung_Nullkante_senken" VarB="Channel 3^Output" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^EAs_3100.a_FR_3100_Schlossbearbeitung_Y_Achse_Schienenklemmung_klemmen" VarB="Channel 1^Output" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^EAs_3200.a_FR_3200_Bandbearbeitung_Y_Achse_Schienenklemmung_klemmen" VarB="Channel 4^Output" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^EAs_3530.a_FR_3530_Niederhalter_Schlossseite_Niederhalter_heben" VarB="Channel 5^Output" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^EAs_3530.a_FR_3530_Niederhalter_Schlossseite_Niederhalter_senken" VarB="Channel 6^Output" AutoLink="true" Size="1"/>
+			</OwnerB>
+			<OwnerB Name="TIID^Device 1 (EtherCAT)^=3100+FS2-16T1 (Bohraggr Schlosskastenfräser)">
+				<Link VarA="PlcTask Inputs^EAs_3100.e_Bohraggr_Schlosskast^PD_1_STATUSWORT" VarB="Module 1 (Standard 16 PD)^Inputs 16 PD^PI 1" AutoLink="true"/>
+				<Link VarA="PlcTask Inputs^EAs_3100.e_Bohraggr_Schlosskast^PD_2_IST_DREHZAHL" VarB="Module 1 (Standard 16 PD)^Inputs 16 PD^PI 2" AutoLink="true"/>
+				<Link VarA="PlcTask Inputs^EAs_3100.e_Bohraggr_Schlosskast^PD_3_Status" VarB="Module 1 (Standard 16 PD)^Inputs 16 PD^PI 3" AutoLink="true"/>
+				<Link VarA="PlcTask Inputs^EAs_3100.e_Bohraggr_Schlosskast^PD_4_IST_DREHMOMENT" VarB="Module 1 (Standard 16 PD)^Inputs 16 PD^PI 4" AutoLink="true"/>
+				<Link VarA="PlcTask Inputs^EAs_3100.e_Bohraggr_Schlosskast^PD_5_IST_STROM" VarB="Module 1 (Standard 16 PD)^Inputs 16 PD^PI 5" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3100.a_Bohraggr_Schlosskast^PD_1_Steuerwort" VarB="Module 1 (Standard 16 PD)^Outputs 16 PD^PO 1" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3100.a_Bohraggr_Schlosskast^PD_2_Solldrehzahl" VarB="Module 1 (Standard 16 PD)^Outputs 16 PD^PO 2" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3100.a_Bohraggr_Schlosskast^PD_3_Sollbeschleunigung" VarB="Module 1 (Standard 16 PD)^Outputs 16 PD^PO 3" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3100.a_Bohraggr_Schlosskast^PD_4_Sollverzoegerung" VarB="Module 1 (Standard 16 PD)^Outputs 16 PD^PO 4" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3100.a_Bohraggr_Schlosskast^PD_5_Digitalausgaenge" VarB="Module 1 (Standard 16 PD)^Outputs 16 PD^PO 5" AutoLink="true"/>
+			</OwnerB>
+			<OwnerB Name="TIID^Device 1 (EtherCAT)^=3100+FS2-17T1 (Bohraggr Vorbohren)">
+				<Link VarA="PlcTask Inputs^EAs_3100.e_Bohraggr_Vorbohren^PD_1_STATUSWORT" VarB="Module 1 (Standard 16 PD)^Inputs 16 PD^PI 1" AutoLink="true"/>
+				<Link VarA="PlcTask Inputs^EAs_3100.e_Bohraggr_Vorbohren^PD_2_IST_DREHZAHL" VarB="Module 1 (Standard 16 PD)^Inputs 16 PD^PI 2" AutoLink="true"/>
+				<Link VarA="PlcTask Inputs^EAs_3100.e_Bohraggr_Vorbohren^PD_3_Status" VarB="Module 1 (Standard 16 PD)^Inputs 16 PD^PI 3" AutoLink="true"/>
+				<Link VarA="PlcTask Inputs^EAs_3100.e_Bohraggr_Vorbohren^PD_4_IST_DREHMOMENT" VarB="Module 1 (Standard 16 PD)^Inputs 16 PD^PI 4" AutoLink="true"/>
+				<Link VarA="PlcTask Inputs^EAs_3100.e_Bohraggr_Vorbohren^PD_5_IST_STROM" VarB="Module 1 (Standard 16 PD)^Inputs 16 PD^PI 5" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3100.a_Bohraggr_Vorbohren^PD_1_Steuerwort" VarB="Module 1 (Standard 16 PD)^Outputs 16 PD^PO 1" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3100.a_Bohraggr_Vorbohren^PD_2_Solldrehzahl" VarB="Module 1 (Standard 16 PD)^Outputs 16 PD^PO 2" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3100.a_Bohraggr_Vorbohren^PD_3_Sollbeschleunigung" VarB="Module 1 (Standard 16 PD)^Outputs 16 PD^PO 3" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3100.a_Bohraggr_Vorbohren^PD_4_Sollverzoegerung" VarB="Module 1 (Standard 16 PD)^Outputs 16 PD^PO 4" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3100.a_Bohraggr_Vorbohren^PD_5_Digitalausgaenge" VarB="Module 1 (Standard 16 PD)^Outputs 16 PD^PO 5" AutoLink="true"/>
+			</OwnerB>
+			<OwnerB Name="TIID^Device 1 (EtherCAT)^=3100+FS2-18T1 (Bohraggr Stulpfräser)">
+				<Link VarA="PlcTask Inputs^EAs_3100.e_Bohraggr_Stulpfraes^PD_1_STATUSWORT" VarB="Module 1 (Standard 16 PD)^Inputs 16 PD^PI 1" AutoLink="true"/>
+				<Link VarA="PlcTask Inputs^EAs_3100.e_Bohraggr_Stulpfraes^PD_2_IST_DREHZAHL" VarB="Module 1 (Standard 16 PD)^Inputs 16 PD^PI 2" AutoLink="true"/>
+				<Link VarA="PlcTask Inputs^EAs_3100.e_Bohraggr_Stulpfraes^PD_3_Status" VarB="Module 1 (Standard 16 PD)^Inputs 16 PD^PI 3" AutoLink="true"/>
+				<Link VarA="PlcTask Inputs^EAs_3100.e_Bohraggr_Stulpfraes^PD_4_IST_DREHMOMENT" VarB="Module 1 (Standard 16 PD)^Inputs 16 PD^PI 4" AutoLink="true"/>
+				<Link VarA="PlcTask Inputs^EAs_3100.e_Bohraggr_Stulpfraes^PD_5_IST_STROM" VarB="Module 1 (Standard 16 PD)^Inputs 16 PD^PI 5" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3100.a_Bohraggr_Stulpfraes^PD_1_Steuerwort" VarB="Module 1 (Standard 16 PD)^Outputs 16 PD^PO 1" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3100.a_Bohraggr_Stulpfraes^PD_2_Solldrehzahl" VarB="Module 1 (Standard 16 PD)^Outputs 16 PD^PO 2" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3100.a_Bohraggr_Stulpfraes^PD_3_Sollbeschleunigung" VarB="Module 1 (Standard 16 PD)^Outputs 16 PD^PO 3" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3100.a_Bohraggr_Stulpfraes^PD_4_Sollverzoegerung" VarB="Module 1 (Standard 16 PD)^Outputs 16 PD^PO 4" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3100.a_Bohraggr_Stulpfraes^PD_5_Digitalausgaenge" VarB="Module 1 (Standard 16 PD)^Outputs 16 PD^PO 5" AutoLink="true"/>
+			</OwnerB>
+			<OwnerB Name="TIID^Device 1 (EtherCAT)^=3200+FS2-16T1 (Bohraggr Stufenbohrer)">
+				<Link VarA="PlcTask Inputs^EAs_3200.e_Bohraggr_Stufenbohr^PD_1_STATUSWORT" VarB="Module 1 (Standard 16 PD)^Inputs 16 PD^PI 1" AutoLink="true"/>
+				<Link VarA="PlcTask Inputs^EAs_3200.e_Bohraggr_Stufenbohr^PD_2_IST_DREHZAHL" VarB="Module 1 (Standard 16 PD)^Inputs 16 PD^PI 2" AutoLink="true"/>
+				<Link VarA="PlcTask Inputs^EAs_3200.e_Bohraggr_Stufenbohr^PD_3_Status" VarB="Module 1 (Standard 16 PD)^Inputs 16 PD^PI 3" AutoLink="true"/>
+				<Link VarA="PlcTask Inputs^EAs_3200.e_Bohraggr_Stufenbohr^PD_4_IST_DREHMOMENT" VarB="Module 1 (Standard 16 PD)^Inputs 16 PD^PI 4" AutoLink="true"/>
+				<Link VarA="PlcTask Inputs^EAs_3200.e_Bohraggr_Stufenbohr^PD_5_IST_STROM" VarB="Module 1 (Standard 16 PD)^Inputs 16 PD^PI 5" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3200.a_Bohraggr_Stufenbohr^PD_1_Steuerwort" VarB="Module 1 (Standard 16 PD)^Outputs 16 PD^PO 1" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3200.a_Bohraggr_Stufenbohr^PD_2_Solldrehzahl" VarB="Module 1 (Standard 16 PD)^Outputs 16 PD^PO 2" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3200.a_Bohraggr_Stufenbohr^PD_3_Sollbeschleunigung" VarB="Module 1 (Standard 16 PD)^Outputs 16 PD^PO 3" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3200.a_Bohraggr_Stufenbohr^PD_4_Sollverzoegerung" VarB="Module 1 (Standard 16 PD)^Outputs 16 PD^PO 4" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3200.a_Bohraggr_Stufenbohr^PD_5_Digitalausgaenge" VarB="Module 1 (Standard 16 PD)^Outputs 16 PD^PO 5" AutoLink="true"/>
+			</OwnerB>
+			<OwnerB Name="TIID^Device 1 (EtherCAT)^=3200+FS2-17T1 (Bohraggr Stulpfräser)">
+				<Link VarA="PlcTask Inputs^EAs_3200.e_Bohraggr_Stulpfraes^PD_1_STATUSWORT" VarB="Module 1 (Standard 16 PD)^Inputs 16 PD^PI 1" AutoLink="true"/>
+				<Link VarA="PlcTask Inputs^EAs_3200.e_Bohraggr_Stulpfraes^PD_2_IST_DREHZAHL" VarB="Module 1 (Standard 16 PD)^Inputs 16 PD^PI 2" AutoLink="true"/>
+				<Link VarA="PlcTask Inputs^EAs_3200.e_Bohraggr_Stulpfraes^PD_3_Status" VarB="Module 1 (Standard 16 PD)^Inputs 16 PD^PI 3" AutoLink="true"/>
+				<Link VarA="PlcTask Inputs^EAs_3200.e_Bohraggr_Stulpfraes^PD_4_IST_DREHMOMENT" VarB="Module 1 (Standard 16 PD)^Inputs 16 PD^PI 4" AutoLink="true"/>
+				<Link VarA="PlcTask Inputs^EAs_3200.e_Bohraggr_Stulpfraes^PD_5_IST_STROM" VarB="Module 1 (Standard 16 PD)^Inputs 16 PD^PI 5" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3200.a_Bohraggr_Stulpfraes^PD_1_Steuerwort" VarB="Module 1 (Standard 16 PD)^Outputs 16 PD^PO 1" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3200.a_Bohraggr_Stulpfraes^PD_2_Solldrehzahl" VarB="Module 1 (Standard 16 PD)^Outputs 16 PD^PO 2" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3200.a_Bohraggr_Stulpfraes^PD_3_Sollbeschleunigung" VarB="Module 1 (Standard 16 PD)^Outputs 16 PD^PO 3" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3200.a_Bohraggr_Stulpfraes^PD_4_Sollverzoegerung" VarB="Module 1 (Standard 16 PD)^Outputs 16 PD^PO 4" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3200.a_Bohraggr_Stulpfraes^PD_5_Digitalausgaenge" VarB="Module 1 (Standard 16 PD)^Outputs 16 PD^PO 5" AutoLink="true"/>
+			</OwnerB>
+			<OwnerB Name="TIID^Device 1 (EtherCAT)^=3300+FS2-16T1 (Bohraggr Schlüsselloch unten)">
+				<Link VarA="PlcTask Inputs^EAs_3300.e_Bohraggr_Schluessel_un^PD_1_STATUSWORT" VarB="Module 1 (Standard 16 PD)^Inputs 16 PD^PI 1" AutoLink="true"/>
+				<Link VarA="PlcTask Inputs^EAs_3300.e_Bohraggr_Schluessel_un^PD_2_IST_DREHZAHL" VarB="Module 1 (Standard 16 PD)^Inputs 16 PD^PI 2" AutoLink="true"/>
+				<Link VarA="PlcTask Inputs^EAs_3300.e_Bohraggr_Schluessel_un^PD_3_Status" VarB="Module 1 (Standard 16 PD)^Inputs 16 PD^PI 3" AutoLink="true"/>
+				<Link VarA="PlcTask Inputs^EAs_3300.e_Bohraggr_Schluessel_un^PD_4_IST_DREHMOMENT" VarB="Module 1 (Standard 16 PD)^Inputs 16 PD^PI 4" AutoLink="true"/>
+				<Link VarA="PlcTask Inputs^EAs_3300.e_Bohraggr_Schluessel_un^PD_5_IST_STROM" VarB="Module 1 (Standard 16 PD)^Inputs 16 PD^PI 5" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3300.a_Bohraggr_Schluessel_un^PD_1_Steuerwort" VarB="Module 1 (Standard 16 PD)^Outputs 16 PD^PO 1" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3300.a_Bohraggr_Schluessel_un^PD_2_Solldrehzahl" VarB="Module 1 (Standard 16 PD)^Outputs 16 PD^PO 2" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3300.a_Bohraggr_Schluessel_un^PD_3_Sollbeschleunigung" VarB="Module 1 (Standard 16 PD)^Outputs 16 PD^PO 3" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3300.a_Bohraggr_Schluessel_un^PD_4_Sollverzoegerung" VarB="Module 1 (Standard 16 PD)^Outputs 16 PD^PO 4" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3300.a_Bohraggr_Schluessel_un^PD_5_Digitalausgaenge" VarB="Module 1 (Standard 16 PD)^Outputs 16 PD^PO 5" AutoLink="true"/>
+			</OwnerB>
+			<OwnerB Name="TIID^Device 1 (EtherCAT)^=3400+FS2-16T1 (Bohraggr Schlüsselloch oben)">
+				<Link VarA="PlcTask Inputs^EAs_3400.e_Bohraggr_Schluessel_ob^PD_1_STATUSWORT" VarB="Module 1 (Standard 16 PD)^Inputs 16 PD^PI 1" AutoLink="true"/>
+				<Link VarA="PlcTask Inputs^EAs_3400.e_Bohraggr_Schluessel_ob^PD_2_IST_DREHZAHL" VarB="Module 1 (Standard 16 PD)^Inputs 16 PD^PI 2" AutoLink="true"/>
+				<Link VarA="PlcTask Inputs^EAs_3400.e_Bohraggr_Schluessel_ob^PD_3_Status" VarB="Module 1 (Standard 16 PD)^Inputs 16 PD^PI 3" AutoLink="true"/>
+				<Link VarA="PlcTask Inputs^EAs_3400.e_Bohraggr_Schluessel_ob^PD_4_IST_DREHMOMENT" VarB="Module 1 (Standard 16 PD)^Inputs 16 PD^PI 4" AutoLink="true"/>
+				<Link VarA="PlcTask Inputs^EAs_3400.e_Bohraggr_Schluessel_ob^PD_5_IST_STROM" VarB="Module 1 (Standard 16 PD)^Inputs 16 PD^PI 5" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3400.a_Bohraggr_Schluessel_ob^PD_1_Steuerwort" VarB="Module 1 (Standard 16 PD)^Outputs 16 PD^PO 1" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3400.a_Bohraggr_Schluessel_ob^PD_2_Solldrehzahl" VarB="Module 1 (Standard 16 PD)^Outputs 16 PD^PO 2" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3400.a_Bohraggr_Schluessel_ob^PD_3_Sollbeschleunigung" VarB="Module 1 (Standard 16 PD)^Outputs 16 PD^PO 3" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3400.a_Bohraggr_Schluessel_ob^PD_4_Sollverzoegerung" VarB="Module 1 (Standard 16 PD)^Outputs 16 PD^PO 4" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3400.a_Bohraggr_Schluessel_ob^PD_5_Digitalausgaenge" VarB="Module 1 (Standard 16 PD)^Outputs 16 PD^PO 5" AutoLink="true"/>
+			</OwnerB>
+			<OwnerB Name="TIID^Device 1 (EtherCAT)^=3510+FS2-6T1 (Transport Schlossseite X-Achse)">
+				<Link VarA="PlcTask Inputs^EAs_3510.e_Trans_Schlossseite^PD_1_STATUSWORT" VarB="Module 1 (Standard 16 PD)^Inputs 16 PD^PI 1" AutoLink="true"/>
+				<Link VarA="PlcTask Inputs^EAs_3510.e_Trans_Schlossseite^PD_2_IST_DREHZAHL" VarB="Module 1 (Standard 16 PD)^Inputs 16 PD^PI 2" AutoLink="true"/>
+				<Link VarA="PlcTask Inputs^EAs_3510.e_Trans_Schlossseite^PD_3_Status" VarB="Module 1 (Standard 16 PD)^Inputs 16 PD^PI 3" AutoLink="true"/>
+				<Link VarA="PlcTask Inputs^EAs_3510.e_Trans_Schlossseite^PD_4_IST_DREHMOMENT" VarB="Module 1 (Standard 16 PD)^Inputs 16 PD^PI 4" AutoLink="true"/>
+				<Link VarA="PlcTask Inputs^EAs_3510.e_Trans_Schlossseite^PD_5_IST_STROM" VarB="Module 1 (Standard 16 PD)^Inputs 16 PD^PI 5" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3510.a_Trans_Schlossseite^PD_1_Steuerwort" VarB="Module 1 (Standard 16 PD)^Outputs 16 PD^PO 1" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3510.a_Trans_Schlossseite^PD_2_Solldrehzahl" VarB="Module 1 (Standard 16 PD)^Outputs 16 PD^PO 2" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3510.a_Trans_Schlossseite^PD_3_Sollbeschleunigung" VarB="Module 1 (Standard 16 PD)^Outputs 16 PD^PO 3" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3510.a_Trans_Schlossseite^PD_4_Sollverzoegerung" VarB="Module 1 (Standard 16 PD)^Outputs 16 PD^PO 4" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3510.a_Trans_Schlossseite^PD_5_Digitalausgaenge" VarB="Module 1 (Standard 16 PD)^Outputs 16 PD^PO 5" AutoLink="true"/>
+			</OwnerB>
+			<OwnerB Name="TIID^Device 1 (EtherCAT)^=3520+FS2-6T1 (Transport Bandseite X-Achse)">
+				<Link VarA="PlcTask Inputs^EAs_3520.e_Trans_Bandseite^PD_1_STATUSWORT" VarB="Module 1 (Standard 16 PD)^Inputs 16 PD^PI 1" AutoLink="true"/>
+				<Link VarA="PlcTask Inputs^EAs_3520.e_Trans_Bandseite^PD_2_IST_DREHZAHL" VarB="Module 1 (Standard 16 PD)^Inputs 16 PD^PI 2" AutoLink="true"/>
+				<Link VarA="PlcTask Inputs^EAs_3520.e_Trans_Bandseite^PD_3_Status" VarB="Module 1 (Standard 16 PD)^Inputs 16 PD^PI 3" AutoLink="true"/>
+				<Link VarA="PlcTask Inputs^EAs_3520.e_Trans_Bandseite^PD_4_IST_DREHMOMENT" VarB="Module 1 (Standard 16 PD)^Inputs 16 PD^PI 4" AutoLink="true"/>
+				<Link VarA="PlcTask Inputs^EAs_3520.e_Trans_Bandseite^PD_5_IST_STROM" VarB="Module 1 (Standard 16 PD)^Inputs 16 PD^PI 5" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3520.a_Trans_Bandseite^PD_1_Steuerwort" VarB="Module 1 (Standard 16 PD)^Outputs 16 PD^PO 1" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3520.a_Trans_Bandseite^PD_2_Solldrehzahl" VarB="Module 1 (Standard 16 PD)^Outputs 16 PD^PO 2" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3520.a_Trans_Bandseite^PD_3_Sollbeschleunigung" VarB="Module 1 (Standard 16 PD)^Outputs 16 PD^PO 3" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3520.a_Trans_Bandseite^PD_4_Sollverzoegerung" VarB="Module 1 (Standard 16 PD)^Outputs 16 PD^PO 4" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3520.a_Trans_Bandseite^PD_5_Digitalausgaenge" VarB="Module 1 (Standard 16 PD)^Outputs 16 PD^PO 5" AutoLink="true"/>
+			</OwnerB>
+			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^=3100+FS2-11M1 (X-Achse)">
+				<Link VarA="PlcTask Inputs^EAs_3100.ea_X_Achse.NcToPlc" VarB="Outputs^ToPlc" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3100.ea_X_Achse.PlcToNc" VarB="Inputs^FromPlc" AutoLink="true"/>
+			</OwnerB>
+			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^=3100+FS2-12M1 (Y-Achse)">
+				<Link VarA="PlcTask Inputs^EAs_3100.ea_Y_Achse.NcToPlc" VarB="Outputs^ToPlc" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3100.ea_Y_Achse.PlcToNc" VarB="Inputs^FromPlc" AutoLink="true"/>
+			</OwnerB>
+			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^=3100+FS2-13M1 (Z-Achse)">
+				<Link VarA="PlcTask Inputs^EAs_3100.ea_Z_Achse.NcToPlc" VarB="Outputs^ToPlc" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3100.ea_Z_Achse.PlcToNc" VarB="Inputs^FromPlc" AutoLink="true"/>
+			</OwnerB>
+			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^=3200+FS2-11M1 (X-Achse)">
+				<Link VarA="PlcTask Inputs^EAs_3200.ea_X_Achse.NcToPlc" VarB="Outputs^ToPlc" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3200.ea_X_Achse.PlcToNc" VarB="Inputs^FromPlc" AutoLink="true"/>
+			</OwnerB>
+			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^=3200+FS2-12M1 (Y-Achse)">
+				<Link VarA="PlcTask Inputs^EAs_3200.ea_Y_Achse.NcToPlc" VarB="Outputs^ToPlc" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3200.ea_Y_Achse.PlcToNc" VarB="Inputs^FromPlc" AutoLink="true"/>
+			</OwnerB>
+			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^=3200+FS2-13M1 (Z-Achse)">
+				<Link VarA="PlcTask Inputs^EAs_3200.ea_Z_Achse.NcToPlc" VarB="Outputs^ToPlc" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3200.ea_Z_Achse.PlcToNc" VarB="Inputs^FromPlc" AutoLink="true"/>
+			</OwnerB>
+			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^=3300+FS2-11M1 (X-Achse)">
+				<Link VarA="PlcTask Inputs^EAs_3300.ea_X_Achse.NcToPlc" VarB="Outputs^ToPlc" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3300.ea_X_Achse.PlcToNc" VarB="Inputs^FromPlc" AutoLink="true"/>
+			</OwnerB>
+			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^=3300+FS2-12M1 (Y-Achse)">
+				<Link VarA="PlcTask Inputs^EAs_3300.ea_Y_Achse.NcToPlc" VarB="Outputs^ToPlc" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3300.ea_Y_Achse.PlcToNc" VarB="Inputs^FromPlc" AutoLink="true"/>
+			</OwnerB>
+			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^=3400+FS2-11M1 (X-Achse)">
+				<Link VarA="PlcTask Inputs^EAs_3400.ea_X_Achse.NcToPlc" VarB="Outputs^ToPlc" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3400.ea_X_Achse.PlcToNc" VarB="Inputs^FromPlc" AutoLink="true"/>
+			</OwnerB>
+			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^=3400+FS2-12M1 (Y-Achse)">
+				<Link VarA="PlcTask Inputs^EAs_3400.ea_Y_Achse.NcToPlc" VarB="Outputs^ToPlc" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3400.ea_Y_Achse.PlcToNc" VarB="Inputs^FromPlc" AutoLink="true"/>
+			</OwnerB>
+			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^=3520+FS2-11M1 (Y-Achse)">
+				<Link VarA="PlcTask Inputs^EAs_3520.ea_Y_Achse.NcToPlc" VarB="Outputs^ToPlc" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3520.ea_Y_Achse.PlcToNc" VarB="Inputs^FromPlc" AutoLink="true"/>
+			</OwnerB>
+			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^=3540+FS2-11M1 (Y-Achse)">
+				<Link VarA="PlcTask Inputs^EAs_3540.ea_Y_Achse.NcToPlc" VarB="Outputs^ToPlc" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3540.ea_Y_Achse.PlcToNc" VarB="Inputs^FromPlc" AutoLink="true"/>
+			</OwnerB>
+		</OwnerA>
+	</Mappings>
+</TcSmItem>

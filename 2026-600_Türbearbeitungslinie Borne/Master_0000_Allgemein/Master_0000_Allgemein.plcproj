@@ -1,0 +1,655 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <FileVersion>1.0.0.0</FileVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{03709e85-0331-4e2f-9b46-b25143190b14}</ProjectGuid>
+    <SubObjectsSortedByName>true</SubObjectsSortedByName>
+    <DownloadApplicationInfo>true</DownloadApplicationInfo>
+    <WriteProductVersion>false</WriteProductVersion>
+    <GenerateTpy>false</GenerateTpy>
+    <Name>Master_0000_Allgemein</Name>
+    <ProgramVersion>3.1.4026.20</ProgramVersion>
+    <Application>{582f0622-cb1a-4434-b50b-9a7b94887da9}</Application>
+    <TypeSystem>{1b4d2b34-9cf2-467f-8eea-915bf6d69080}</TypeSystem>
+    <Implicit_Task_Info>{dc95606a-b1b3-4a14-bdfa-f5ca9ce76105}</Implicit_Task_Info>
+    <Implicit_KindOfTask>{38a71e1c-bedb-4289-b851-752e63e3f9cc}</Implicit_KindOfTask>
+    <Implicit_Jitter_Distribution>{c9c1ca56-492a-428b-93ca-9ca27954634e}</Implicit_Jitter_Distribution>
+    <LibraryReferences>{3cf2c47b-c31f-4fbc-8c30-108934cbcad5}</LibraryReferences>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="0000\Ablauf_0000.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="0000\EAs_0000.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="0000\GVL_0000.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="0000\GVL_Meldungen.TcGVL">
+      <SubType>Code</SubType>
+      <LinkAlways>true</LinkAlways>
+    </Compile>
+    <Compile Include="0000\GVL_Visu_0000.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="0000\Hardware_0000.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="1000_Allgemein\Ablauf_1000.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="1000_Allgemein\EAs_1000.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="1000_Allgemein\GVL_1000.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="1000_Allgemein\GVL_Visu_1000.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="1000_Allgemein\Hardware_1000.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="3100_Bohraggregat\Ablauf_3100.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="3100_Bohraggregat\EAs_3100.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="3100_Bohraggregat\GVL_3100.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="3100_Bohraggregat\GVL_Visu_3100.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="3100_Bohraggregat\Hardware_3100.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="3200_Bohraggregat\Ablauf_3200.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="3200_Bohraggregat\EAs_3200.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="3200_Bohraggregat\GVL_3200.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="3200_Bohraggregat\GVL_Visu_3200.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="3200_Bohraggregat\Hardware_3200.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="3300_Bohraggregat\Ablauf_3300.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="3300_Bohraggregat\EAs_3300.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="3300_Bohraggregat\GVL_3300.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="3300_Bohraggregat\GVL_Visu_3300.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="3300_Bohraggregat\Hardware_3300.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="3400_Bohraggregat\Ablauf_3400.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="3400_Bohraggregat\EAs_3400.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="3400_Bohraggregat\GVL_3400.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="3400_Bohraggregat\GVL_Visu_3400.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="3400_Bohraggregat\Hardware_3400.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="3510_Transport\Ablauf_3510.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="3510_Transport\EAs_3510.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="3510_Transport\GVL_3510.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="3510_Transport\GVL_Visu_3510.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="3510_Transport\Hardware_3510.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="3520_Transport\Ablauf_3520.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="3520_Transport\EAs_3520.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="3520_Transport\GVL_3520.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="3520_Transport\GVL_Visu_3520.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="3520_Transport\Hardware_3520.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="3530_Niederhalter\Ablauf_3530.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="3530_Niederhalter\EAs_3530.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="3530_Niederhalter\GVL_3530.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="3530_Niederhalter\GVL_Visu_3530.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="3530_Niederhalter\Hardware_3530.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="3540_Niederhalter\Ablauf_3540.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="3540_Niederhalter\EAs_3540.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="3540_Niederhalter\GVL_3540.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="3540_Niederhalter\GVL_Visu_3540.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="3540_Niederhalter\Hardware_3540.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MAIN.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PlcTask.TcTTO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\Blink\GVL_Blink.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\Blink\PRG_Blink.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\DUT_Visu_SteuerStatus.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\Meldungen\DUT_Diagnose_1000.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\Meldungen\DUT_Diagnose_2000.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\Meldungen\DUT_Diagnose_3000.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\Meldungen\DUT_Diagnose_4000.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\Meldungen\DUT_Diagnose_5000.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\Meldungen\DUT_Meldungen_0000.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\Meldungen\DUT_Diagnose_0000.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\Meldungen\DUT_Meldungen_1000.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\Meldungen\DUT_Meldungen_2000.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\Meldungen\DUT_Meldungen_3000.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\Meldungen\DUT_Meldungen_4000.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\Meldungen\DUT_Meldungen_5000.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\Rexroth FU\DUT_Rexroth_FU_PD_IN.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\Rexroth FU\DUT_Rexroth_FU_PD_OUT.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\Rexroth FU\DUT_Rexroth_FU_steuern.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\Safety\DUT_EL1918_Logic.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\Safety\E_ModeLanguage.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\Safety\ST_InfoDataConnection_1904.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\Safety\ST_InfoDataConnection_1918.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\Safety\ST_InfoDataFB.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\Safety\ST_InfoDataGroup.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\Servo\DUT_Achse_koppeln.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\Servo\DUT_Achse_Service.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\Servo\DUT_Achse_Status.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\Servo\DUT_Achse_Steuern.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\Servo\DUT_Geschwindigkeitsabgleich.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\Servo\DUT_NC_Kanal.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\Servo\DUT_PD_InOut_Achsen.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\Servo\DUT_Rexroth_Parameter.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\SEW_Movitrac\COE\st_COE_Parameter.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\SEW_Movitrac\COE\st_COE_Parameter_Out.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\SEW_Movitrac\CSV_BASE\st_CSV_Database.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\SEW_Movitrac\CSV_BASE\st_MaschParameter.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\SEW_Movitrac\DUT_SEW_FU_PD_IN.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\SEW_Movitrac\DUT_SEW_FU_PD_OUT.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\SEW_Movitrac\DUT_SEW_FU_Status.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\SEW_Movitrac\DUT_SEW_FU_Steuern.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\SEW_Movitrac\DUT_SEW_FU_Visu.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\SEW_Movitrac\DUT_SEW_Para.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\Ventil\DUT_Ventil_para.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\Ventil\DUT_Ventil_sps.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\Ventil\DUT_Ventil_VISU.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\Ventil\DUT_VorZur_visu.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\FB_Achs_Freigabe.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\FB_Anst_Vakuum.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\FB_Automatik.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\FB_Belegt.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\FB_Bereichsueberwachung.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\FB_FuStart_Fraese.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\FB_FU_Rexroth.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\FB_inRange.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\FB_Kollision.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\FB_Messachse_EL3051.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\FB_Messachse_EL5151.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\FB_Messauswertung_Hysterese.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\FB_normieren.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\FB_PneuPosition.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\FB_Schutztuer_mitBremsentest.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\FB_Toggle_Anforderung.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\FB_Toogle.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\FB_Transport.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\FB_Umrechnung.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\FB_Ventil.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\FB_Ventil_V2.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\FC_Bereichsueberwachung.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\FC_InRange.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\Func_InRange.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\FU_SEW\Movi_B\FB_SEW_MOVITRAC.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\FU_SEW\Movi_B\FB_SEW_MOVITRAC_CoE.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\FU_SEW\Movi_C\FB_SEW_MOVITRAC_C_COE.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\FU_SEW\Movi_C\FB_SEW_MOVITRAC_C_COE_18000Umin.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\FU_SEW\sub\CoE\fb_CoeDataRead.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\FU_SEW\sub\CoE\fb_CoeDataWrite.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\FU_SEW\sub\CSV Read_Write\fb_CSVBaseRead.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\FU_SEW\sub\CSV Read_Write\fb_CSVBaseWrite.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\FU_SEW\sub\CSV Read_Write\fb_OrdnerErstellen.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\FU_SEW\sub\CSV Read_Write\fb_Parameter_CSV.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\FU_SEW\sub\FB_SEW_CoE.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\IBN_Huettenhoelscher.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\Safety\FB_InfoConnection_1904.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\Safety\FB_InfoConnection_1918.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\Safety\FB_InfoEStop.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\Safety\FB_InfoGroup.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\Servos_NC\FB_Achse_NC_PTP_Beckhoff.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\Servos_NC\FB_Achse_NC_PTP_Master_Slave_v2.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\Servos_NC\FB_Achse_NC_PTP_V3.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\Servos_NC\FB_Achse_NC_PTP_V4.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\Servos_NC\FB_Achse_NC_PTP_V4_1.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\Servos_NC\FB_Achse_NC_PTP_V4_2.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\Servos_NC\FB_Achse_NC_PTP_Velo.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\Servos_NC\FB_MasterSlaveSpeedControl.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\Servos_NC\FB_Nc_Kanal.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\Servos_NC\Rexroth_Servo_Modulo.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\Zaehler\FB_Laufzeit.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\Zaehler\FB_SpindelInBearbeitung.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\Bus\Busdiagnose.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\Bus\DUT_Busdiagnose.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\Bus\DUT_Busdiagnose_Daten.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\Bus\GVL_Busdiagnose.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <PlaceholderReference Include="BASIC">
+      <DefaultResolution>BASIC, * (OSCAT)</DefaultResolution>
+      <Namespace>BASIC</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_EtherCAT">
+      <DefaultResolution>Tc2_EtherCAT, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_EtherCAT</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_MC2">
+      <DefaultResolution>Tc2_MC2, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_MC2</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_MC2_Drive">
+      <DefaultResolution>Tc2_MC2_Drive, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_MC2_Drive</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_NC">
+      <DefaultResolution>Tc2_NC, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_NC</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_Standard">
+      <DefaultResolution>Tc2_Standard, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_Standard</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_System">
+      <DefaultResolution>Tc2_System, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_System</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_Utilities">
+      <DefaultResolution>Tc2_Utilities, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_Utilities</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc3_Database">
+      <DefaultResolution>Tc3_Database, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc3_Database</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc3_Module">
+      <DefaultResolution>Tc3_Module, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc3_Module</Namespace>
+      <SystemLibrary>true</SystemLibrary>
+    </PlaceholderReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="0000" />
+    <Folder Include="1000_Allgemein" />
+    <Folder Include="3100_Bohraggregat" />
+    <Folder Include="3200_Bohraggregat" />
+    <Folder Include="3300_Bohraggregat" />
+    <Folder Include="3400_Bohraggregat" />
+    <Folder Include="3510_Transport" />
+    <Folder Include="3520_Transport" />
+    <Folder Include="3530_Niederhalter" />
+    <Folder Include="3540_Niederhalter" />
+    <Folder Include="SRT_Allgemein" />
+    <Folder Include="SRT_Allgemein\0010_Bausteine_mitDuts" />
+    <Folder Include="SRT_Allgemein\0010_Bausteine_mitDuts\Blink" />
+    <Folder Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs" />
+    <Folder Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\Meldungen" />
+    <Folder Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\Rexroth FU" />
+    <Folder Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\Safety" />
+    <Folder Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\Servo" />
+    <Folder Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\SEW_Movitrac" />
+    <Folder Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\SEW_Movitrac\COE" />
+    <Folder Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\SEW_Movitrac\CSV_BASE" />
+    <Folder Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\Ventil" />
+    <Folder Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs" />
+    <Folder Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\FU_SEW" />
+    <Folder Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\FU_SEW\Movi_B" />
+    <Folder Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\FU_SEW\Movi_C" />
+    <Folder Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\FU_SEW\sub" />
+    <Folder Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\FU_SEW\sub\CoE" />
+    <Folder Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\FU_SEW\sub\CSV Read_Write" />
+    <Folder Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\Safety" />
+    <Folder Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\Servos_NC" />
+    <Folder Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\Zaehler" />
+    <Folder Include="SRT_Allgemein\Bus" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Master_0000_Allgemein.tmc">
+      <SubType>Content</SubType>
+    </None>
+  </ItemGroup>
+  <ProjectExtensions>
+    <PlcProjectOptions>
+      <XmlArchive>
+        <Data>
+          <o xml:space="preserve" t="OptionKey">
+      <v n="Name">"&lt;ProjectRoot&gt;"</v>
+      <d n="SubKeys" t="Hashtable" ckt="String" cvt="OptionKey">
+        <v>{192FAD59-8248-4824-A8DE-9177C94C195A}</v>
+        <o>
+          <v n="Name">"{192FAD59-8248-4824-A8DE-9177C94C195A}"</v>
+          <d n="SubKeys" t="Hashtable" />
+          <d n="Values" t="Hashtable" />
+        </o>
+        <v>{29BD8D0C-3586-4548-BB48-497B9A01693F}</v>
+        <o>
+          <v n="Name">"{29BD8D0C-3586-4548-BB48-497B9A01693F}"</v>
+          <d n="SubKeys" t="Hashtable" ckt="String" cvt="OptionKey">
+            <v>NamingConventions</v>
+            <o>
+              <v n="Name">"NamingConventions"</v>
+              <d n="SubKeys" t="Hashtable" />
+              <d n="Values" t="Hashtable" />
+            </o>
+            <v>Rules</v>
+            <o>
+              <v n="Name">"Rules"</v>
+              <d n="SubKeys" t="Hashtable" />
+              <d n="Values" t="Hashtable" />
+            </o>
+          </d>
+          <d n="Values" t="Hashtable" />
+        </o>
+        <v>{40450F57-0AA3-4216-96F3-5444ECB29763}</v>
+        <o>
+          <v n="Name">"{40450F57-0AA3-4216-96F3-5444ECB29763}"</v>
+          <d n="SubKeys" t="Hashtable" />
+          <d n="Values" t="Hashtable" />
+        </o>
+        <v>{8A0FB252-96EB-4DCC-A5B4-B4804D05E2D6}</v>
+        <o>
+          <v n="Name">"{8A0FB252-96EB-4DCC-A5B4-B4804D05E2D6}"</v>
+          <d n="SubKeys" t="Hashtable" />
+          <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+            <v>WriteLineIDs</v>
+            <v>False</v>
+          </d>
+        </o>
+        <v>{8F99A816-E488-41E4-9FA3-846536012284}</v>
+        <o>
+          <v n="Name">"{8F99A816-E488-41E4-9FA3-846536012284}"</v>
+          <d n="SubKeys" t="Hashtable" />
+          <d n="Values" t="Hashtable" ckt="String" cvt="String">
+            <v>DisabledWarningIds</v>
+            <v>410,5410</v>
+          </d>
+        </o>
+        <v>{eeeeeeee-3909-4298-8022-501ac3238667}</v>
+        <o>
+          <v n="Name">"{eeeeeeee-3909-4298-8022-501ac3238667}"</v>
+          <d n="SubKeys" t="Hashtable" />
+          <d n="Values" t="Hashtable" />
+        </o>
+        <v>{F66C7017-BDD8-4114-926C-81D6D687E35F}</v>
+        <o>
+          <v n="Name">"{F66C7017-BDD8-4114-926C-81D6D687E35F}"</v>
+          <d n="SubKeys" t="Hashtable" />
+          <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+            <v>CalcActiveTransOnly</v>
+            <v>True</v>
+          </d>
+        </o>
+      </d>
+      <d n="Values" t="Hashtable" />
+    </o>
+        </Data>
+        <TypeList>
+          <Type n="Boolean">System.Boolean</Type>
+          <Type n="Hashtable">System.Collections.Hashtable</Type>
+          <Type n="OptionKey">{54dd0eac-a6d8-46f2-8c27-2f43c7e49861}</Type>
+          <Type n="String">System.String</Type>
+        </TypeList>
+      </XmlArchive>
+    </PlcProjectOptions>
+  </ProjectExtensions>
+</Project>

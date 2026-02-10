@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="DUT_EL1918_Logic" Id="{05bc814b-fd37-4087-b46f-5757f8ea4031}">
+    <Declaration><![CDATA[TYPE DUT_EL1918_Logic :
+STRUCT
+	bSignal_1			: BIT;		
+	bSignal_1_fault		: BIT;      
+	bSignal_2		    : BIT;      
+	bSignal_2_fault		: BIT;      
+	bSignal_3		    : BIT;      
+	bSignal_3_fault		: BIT;      
+	bSignal_4		    : BIT;      
+	bSignal_4_fault		: BIT;      
+	bSignal_5		    : BIT;      
+	bSignal_5_fault		: BIT;      
+	bSignal_6		    : BIT;      
+	bSignal_6_fault		: BIT;      
+	bSignal_7		    : BIT;      
+	bSignal_7_fault		: BIT;      
+	bSignal_8		    : BIT;      
+	bSignal_8_fault		: BIT;      
+	
+	bSignal_1_Err_ack	: BIT;
+	bSignal_2_Err_ack   : BIT;
+	bSignal_3_Err_ack   : BIT;
+	bSignal_4_Err_ack   : BIT;
+	bSignal_5_Err_ack   : BIT;
+	bSignal_6_Err_ack   : BIT;
+	bSignal_7_Err_ack   : BIT;
+	bSignal_8_Err_ack   : BIT;
+	               
+	
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

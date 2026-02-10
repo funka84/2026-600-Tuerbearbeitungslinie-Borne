@@ -1,0 +1,148 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <GVL Name="EAs_3100" Id="{75b265a1-cc95-4fca-beba-efbea494bd95}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+{attribute 'linkalways'} 
+VAR_GLOBAL
+
+	// Servoregler *************************************************************************************************************************************************
+
+	{attribute 'TcNcAxis':='=3100+FS2-11M1 (X-Achse)'}	
+	ea_X_Achse					: Axis_ref;				// Schnittstellen Struktur zwischen NC<->SPS
+	
+	{attribute 'TcNcAxis':='=3100+FS2-12M1 (Y-Achse)'}	
+	ea_Y_Achse					: Axis_ref;				// Schnittstellen Struktur zwischen NC<->SPS
+	
+	{attribute 'TcNcAxis':='=3100+FS2-13M1 (Z-Achse)'}	
+	ea_Z_Achse					: Axis_ref;				// Schnittstellen Struktur zwischen NC<->SPS
+
+    // Umrichter
+    //_______________________________________________________
+														  
+	 {attribute 'TcLinkTo' := '	.PD_1_STATUSWORT  		:= TIID^Device 1 (EtherCAT)^=3100+FS2-16T1 (Bohraggr Schlosskastenfräser)^Module 1 (Standard 16 PD)^Inputs 16 PD^PI 1;
+								.PD_2_IST_DREHZAHL  	:= TIID^Device 1 (EtherCAT)^=3100+FS2-16T1 (Bohraggr Schlosskastenfräser)^Module 1 (Standard 16 PD)^Inputs 16 PD^PI 2;
+								.PD_3_Status  			:= TIID^Device 1 (EtherCAT)^=3100+FS2-16T1 (Bohraggr Schlosskastenfräser)^Module 1 (Standard 16 PD)^Inputs 16 PD^PI 3;
+								.PD_4_IST_DREHMOMENT  	:= TIID^Device 1 (EtherCAT)^=3100+FS2-16T1 (Bohraggr Schlosskastenfräser)^Module 1 (Standard 16 PD)^Inputs 16 PD^PI 4;
+								.PD_5_IST_STROM  		:= TIID^Device 1 (EtherCAT)^=3100+FS2-16T1 (Bohraggr Schlosskastenfräser)^Module 1 (Standard 16 PD)^Inputs 16 PD^PI 5'}		
+		e_Bohraggr_Schlosskast	AT%I*	: DUT_SEW_FU_PD_IN; 	// Schnittstelle zwischen SPS und FU
+	 {attribute 'TcLinkTo' := '	.PD_1_Steuerwort  		:= TIID^Device 1 (EtherCAT)^=3100+FS2-16T1 (Bohraggr Schlosskastenfräser)^Module 1 (Standard 16 PD)^Outputs 16 PD^PO 1;
+								.PD_2_Solldrehzahl  	:= TIID^Device 1 (EtherCAT)^=3100+FS2-16T1 (Bohraggr Schlosskastenfräser)^Module 1 (Standard 16 PD)^Outputs 16 PD^PO 2;
+								.PD_3_Sollbeschleunigung:= TIID^Device 1 (EtherCAT)^=3100+FS2-16T1 (Bohraggr Schlosskastenfräser)^Module 1 (Standard 16 PD)^Outputs 16 PD^PO 3;
+								.PD_4_Sollverzoegerung  := TIID^Device 1 (EtherCAT)^=3100+FS2-16T1 (Bohraggr Schlosskastenfräser)^Module 1 (Standard 16 PD)^Outputs 16 PD^PO 4;
+								.PD_5_Digitalausgaenge  := TIID^Device 1 (EtherCAT)^=3100+FS2-16T1 (Bohraggr Schlosskastenfräser)^Module 1 (Standard 16 PD)^Outputs 16 PD^PO 5'}
+		a_Bohraggr_Schlosskast	AT%Q*	: DUT_SEW_FU_PD_OUT;	// Schnittstelle zwischen SPS und FU
+
+
+	 {attribute 'TcLinkTo' := '	.PD_1_STATUSWORT  		:= TIID^Device 1 (EtherCAT)^=3100+FS2-17T1 (Bohraggr Vorbohren)^Module 1 (Standard 16 PD)^Inputs 16 PD^PI 1;
+								.PD_2_IST_DREHZAHL  	:= TIID^Device 1 (EtherCAT)^=3100+FS2-17T1 (Bohraggr Vorbohren)^Module 1 (Standard 16 PD)^Inputs 16 PD^PI 2;
+								.PD_3_Status  			:= TIID^Device 1 (EtherCAT)^=3100+FS2-17T1 (Bohraggr Vorbohren)^Module 1 (Standard 16 PD)^Inputs 16 PD^PI 3;
+								.PD_4_IST_DREHMOMENT  	:= TIID^Device 1 (EtherCAT)^=3100+FS2-17T1 (Bohraggr Vorbohren)^Module 1 (Standard 16 PD)^Inputs 16 PD^PI 4;
+								.PD_5_IST_STROM  		:= TIID^Device 1 (EtherCAT)^=3100+FS2-17T1 (Bohraggr Vorbohren)^Module 1 (Standard 16 PD)^Inputs 16 PD^PI 5'}		
+		e_Bohraggr_Vorbohren		AT%I*	: DUT_SEW_FU_PD_IN; 	// Schnittstelle zwischen SPS und FU
+	 {attribute 'TcLinkTo' := '	.PD_1_Steuerwort  		:= TIID^Device 1 (EtherCAT)^=3100+FS2-17T1 (Bohraggr Vorbohren)^Module 1 (Standard 16 PD)^Outputs 16 PD^PO 1;
+								.PD_2_Solldrehzahl  	:= TIID^Device 1 (EtherCAT)^=3100+FS2-17T1 (Bohraggr Vorbohren)^Module 1 (Standard 16 PD)^Outputs 16 PD^PO 2;
+								.PD_3_Sollbeschleunigung:= TIID^Device 1 (EtherCAT)^=3100+FS2-17T1 (Bohraggr Vorbohren)^Module 1 (Standard 16 PD)^Outputs 16 PD^PO 3;
+								.PD_4_Sollverzoegerung  := TIID^Device 1 (EtherCAT)^=3100+FS2-17T1 (Bohraggr Vorbohren)^Module 1 (Standard 16 PD)^Outputs 16 PD^PO 4;
+								.PD_5_Digitalausgaenge  := TIID^Device 1 (EtherCAT)^=3100+FS2-17T1 (Bohraggr Vorbohren)^Module 1 (Standard 16 PD)^Outputs 16 PD^PO 5'}
+		a_Bohraggr_Vorbohren		AT%Q*	: DUT_SEW_FU_PD_OUT;	// Schnittstelle zwischen SPS und FU
+
+					  
+	 {attribute 'TcLinkTo' := '	.PD_1_STATUSWORT  		:= TIID^Device 1 (EtherCAT)^=3100+FS2-18T1 (Bohraggr Stulpfräser)^Module 1 (Standard 16 PD)^Inputs 16 PD^PI 1;
+								.PD_2_IST_DREHZAHL  	:= TIID^Device 1 (EtherCAT)^=3100+FS2-18T1 (Bohraggr Stulpfräser)^Module 1 (Standard 16 PD)^Inputs 16 PD^PI 2;
+								.PD_3_Status  			:= TIID^Device 1 (EtherCAT)^=3100+FS2-18T1 (Bohraggr Stulpfräser)^Module 1 (Standard 16 PD)^Inputs 16 PD^PI 3;
+								.PD_4_IST_DREHMOMENT  	:= TIID^Device 1 (EtherCAT)^=3100+FS2-18T1 (Bohraggr Stulpfräser)^Module 1 (Standard 16 PD)^Inputs 16 PD^PI 4;
+								.PD_5_IST_STROM  		:= TIID^Device 1 (EtherCAT)^=3100+FS2-18T1 (Bohraggr Stulpfräser)^Module 1 (Standard 16 PD)^Inputs 16 PD^PI 5'}		
+		e_Bohraggr_Stulpfraes	AT%I*	: DUT_SEW_FU_PD_IN; 	// Schnittstelle zwischen SPS und FU
+	 {attribute 'TcLinkTo' := '	.PD_1_Steuerwort  		:= TIID^Device 1 (EtherCAT)^=3100+FS2-18T1 (Bohraggr Stulpfräser)^Module 1 (Standard 16 PD)^Outputs 16 PD^PO 1;
+								.PD_2_Solldrehzahl  	:= TIID^Device 1 (EtherCAT)^=3100+FS2-18T1 (Bohraggr Stulpfräser)^Module 1 (Standard 16 PD)^Outputs 16 PD^PO 2;
+								.PD_3_Sollbeschleunigung:= TIID^Device 1 (EtherCAT)^=3100+FS2-18T1 (Bohraggr Stulpfräser)^Module 1 (Standard 16 PD)^Outputs 16 PD^PO 3;
+								.PD_4_Sollverzoegerung  := TIID^Device 1 (EtherCAT)^=3100+FS2-18T1 (Bohraggr Stulpfräser)^Module 1 (Standard 16 PD)^Outputs 16 PD^PO 4;
+								.PD_5_Digitalausgaenge  := TIID^Device 1 (EtherCAT)^=3100+FS2-18T1 (Bohraggr Stulpfräser)^Module 1 (Standard 16 PD)^Outputs 16 PD^PO 5'}
+		a_Bohraggr_Stulpfraes	AT%Q*	: DUT_SEW_FU_PD_OUT;	// Schnittstelle zwischen SPS und FU
+
+
+    // Eingaenge
+    //_______________________________________________________
+
+    // +FS1-3K5
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K5 (EL1809)^Channel 6^Input'}
+        e_FR_3100_Bohraggregat_1_Schlosskastenfraeser_Stillstandserkennung_Motor_steht AT %I* : BOOL; (* =FR.3100 Bohraggregat 1 (Schloßkastenfräser) Stillstandserkennung Motor steht *)
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K5 (EL1809)^Channel 7^Input'}
+        e_FR_3100_Bohraggregat_2_Vorbohren_Stillstandserkennung_Motor_steht AT %I* : BOOL; (* =FR.3100 Bohraggregat 2 (Vorbohren) Stillstandserkennung Motor steht *)
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K5 (EL1809)^Channel 8^Input'}
+        e_FR_3100_Bohraggregat_3_Stulpfraeser_Stillstandserkennung_Motor_steht AT %I* : BOOL; (* =FR.3100 Bohraggregat 3 (Stulpfräser) Stillstandserkennung Motor steht *)
+
+    // +K110-1K2
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-1K2 (EL1809)^Channel 1^Input'}
+        e_FR_3100_Schlossbearbeitung_Bohraggregat_1_Vorlegehub_ist_vorne AT %I* : BOOL; (* =FR.3100 Schloßbearbeitung Bohraggregat 1 Vorlegehub ist vorne *)
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-1K2 (EL1809)^Channel 2^Input'}
+        e_FR_3100_Schlossbearbeitung_Bohraggregat_1_Vorlegehub_ist_hinten AT %I* : BOOL; (* =FR.3100 Schloßbearbeitung Bohraggregat 1 Vorlegehub ist hinten *)
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-1K2 (EL1809)^Channel 3^Input'}
+        e_FR_3100_Schlossbearbeitung_Bohraggregat_2_Bohrhub_ist_vorne AT %I* : BOOL; (* =FR.3100 Schloßbearbeitung Bohraggregat 2 Bohrhub ist vorne *)
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-1K2 (EL1809)^Channel 4^Input'}
+        e_FR_3100_Schlossbearbeitung_Bohraggregat_2_Bohrhub_ist_hinten AT %I* : BOOL; (* =FR.3100 Schloßbearbeitung Bohraggregat 2 Bohrhub ist hinten *)
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-1K2 (EL1809)^Channel 5^Input'}
+        e_FR_3100_Schlossbearbeitung_Bohraggregat_3_Vorlegehub_ist_vorne AT %I* : BOOL; (* =FR.3100 Schloßbearbeitung Bohraggregat 3 Vorlegehub ist vorne *)
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-1K2 (EL1809)^Channel 6^Input'}
+        e_FR_3100_Schlossbearbeitung_Bohraggregat_3_Vorlegehub_ist_hinten AT %I* : BOOL; (* =FR.3100 Schloßbearbeitung Bohraggregat 3 Vorlegehub ist hinten *)
+
+    // +K110-1K4
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-1K4 (EL1104)^Channel 1^Input'}
+        e_FR_3100_Schlossbearbeitung_Nullkante_Einlauf_ist_oben AT %I* : BOOL; (* =FR.3100 Schloßbearbeitung Nullkante Einlauf ist oben *)
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-1K4 (EL1104)^Channel 2^Input'}
+        e_FR_3100_Schlossbearbeitung_Nullkante_Einlauf_ist_unten AT %I* : BOOL; (* =FR.3100 Schloßbearbeitung Nullkante Einlauf ist unten *)
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-1K4 (EL1104)^Channel 3^Input'}
+        e_FR_3100_Schlossbearbeitung_Nullkante_Auslauf_ist_oben AT %I* : BOOL; (* =FR.3100 Schloßbearbeitung Nullkante Auslauf ist oben *)
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-1K4 (EL1104)^Channel 4^Input'}
+        e_FR_3100_Schlossbearbeitung_Nullkante_Auslauf_ist_unten AT %I* : BOOL; (* =FR.3100 Schloßbearbeitung Nullkante Auslauf ist unten *)
+
+
+    // Ausgaenge
+    //_______________________________________________________
+
+    // +K110-2K1
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-2K1 (EL2809)^Channel 1^Output'}
+        a_FR_3100_Schlossbearbeitung_Bohraggregat_1_Vorlegehub_vor AT %Q* : BOOL; (* =FR.3100 Schloßbearbeitung Bohraggregat 1 Vorlegehub vor *)
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-2K1 (EL2809)^Channel 2^Output'}
+        a_FR_3100_Schlossbearbeitung_Bohraggregat_1_Vorlegehub_zurueck AT %Q* : BOOL; (* =FR.3100 Schloßbearbeitung Bohraggregat 1 Vorlegehub zurück *)
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-2K1 (EL2809)^Channel 3^Output'}
+        a_FR_3100_Schlossbearbeitung_Bohraggregat_2_Bohrhub_vor AT %Q* : BOOL; (* =FR.3100 Schloßbearbeitung Bohraggregat 2 Bohrhub vor *)
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-2K1 (EL2809)^Channel 4^Output'}
+        a_FR_3100_Schlossbearbeitung_Bohraggregat_2_Bohrhub_zurueck AT %Q* : BOOL; (* =FR.3100 Schloßbearbeitung Bohraggregat 2 Bohrhub zurück *)
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-2K1 (EL2809)^Channel 5^Output'}
+        a_FR_3100_Schlossbearbeitung_Bohraggregat_3_Vorlegehub_vor AT %Q* : BOOL; (* =FR.3100 Schloßbearbeitung Bohraggregat 3 Vorlegehub vor *)
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-2K1 (EL2809)^Channel 6^Output'}
+        a_FR_3100_Schlossbearbeitung_Bohraggregat_3_Vorlegehub_zurueck AT %Q* : BOOL; (* =FR.3100 Schloßbearbeitung Bohraggregat 3 Vorlegehub zurück *)
+
+    // +K110-2K3
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-2K3 (EL2808)^Channel 1^Output'}
+        a_FR_3100_Schlossbearbeitung_Y_Achse_Schienenklemmung_klemmen AT %Q* : BOOL; (* =FR.3100 Schloßbearbeitung Y-Achse Schienenklemmung klemmen *)
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-2K3 (EL2808)^Channel 2^Output'}
+        a_FR_3100_Schlossbearbeitung_Nullkante_heben AT %Q* : BOOL; (* =FR.3100 Schloßbearbeitung Nullkante heben *)
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-2K3 (EL2808)^Channel 3^Output'}
+        a_FR_3100_Schlossbearbeitung_Nullkante_senken AT %Q* : BOOL; (* =FR.3100 Schloßbearbeitung Nullkante senken *)
+END_VAR
+    ]]></Declaration>
+  </GVL>
+</TcPlcObject>

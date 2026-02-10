@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="DUT_Achse_Service" Id="{a7f97382-786c-4d3b-a306-a674e0137590}">
+    <Declaration><![CDATA[TYPE DUT_Achse_Service :
+STRUCT
+
+   betriebsart 			: INT ;		(*	Betriebsarten:1=Tippen,2=Position1,4=Referenzieren *)
+   plus_start 			: BOOL; 	(*	Tippen plus / Start positionierung *)
+   minus_stop 			: BOOL ;	(*	Tippen minus / Stopp positionierung *)
+   override 			: INT ;		(*	Geschwindigkeit in % *)
+   sollpos_hand 		: REAL ;	(*	Position 1 *)
+   pos_2 				: REAL ;	(*	Position 2 *)
+   zeit 				: INT ;		(*	Verweilzeit *)
+   istpos 				: REAL ;	(*	Istposition *)
+   status				: DWORD ;
+
+END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

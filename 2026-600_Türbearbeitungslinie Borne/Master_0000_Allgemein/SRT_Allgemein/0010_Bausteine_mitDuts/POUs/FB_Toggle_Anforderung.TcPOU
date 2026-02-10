@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_Toggle_Anforderung" Id="{77889459-a30e-41bc-9126-67e6efc44448}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Toggle_Anforderung
+VAR_INPUT
+in_Schaltsignal	:BOOL;
+in_Freigabe		:BOOL; 	
+END_VAR
+VAR_OUTPUT		
+out_Anforderung	:BOOL;	
+END_VAR
+VAR
+	temp_HM_Schaltsignal	:BOOL;
+	temp_Anforderung		:BOOL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+IF in_Schaltsignal AND NOT temp_HM_Schaltsignal AND in_Freigabe
+	THEN temp_Anforderung := temp_Anforderung XOR TRUE;
+ELSIF NOT in_Freigabe 
+	THEN temp_Anforderung :=FALSE;
+END_IF
+
+temp_HM_Schaltsignal := in_Schaltsignal;
+
+out_Anforderung := temp_Anforderung; 
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

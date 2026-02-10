@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="PRG_Blink" Id="{349bd2ab-8a6e-4fd8-b805-1b6e14be12ae}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM PRG_Blink
+VAR
+	t_50ms_an				:ton;
+	t_50ms_aus				:tof;
+	t_125ms_an				:ton;
+	t_125ms_aus				:tof;
+	t_250ms_an				:ton;
+	t_250ms_aus				:tof;
+	t_500ms_an				:ton;
+	t_500ms_aus				:tof;
+	t_750ms_an				:ton;
+	t_750ms_aus				:tof;
+	t_1000ms_an				:ton;
+	t_1000ms_aus			:tof;
+	t_2000ms_an				:ton;
+	t_2000ms_aus			:tof;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[	t_50ms_an(IN:=NOT t_50ms_aus.Q , PT:=T#50MS);
+	t_50ms_aus(IN:=t_50ms_an.Q , PT:=T#50MS , Q=>t_50ms);
+	
+	t_125ms_an(IN:=NOT t_125ms_aus.Q , PT:=T#125MS);
+	t_125ms_aus(IN:=t_125ms_an.Q , PT:=T#125MS , Q=>t_125ms);
+
+	t_250ms_an(IN:=NOT t_250ms_aus.Q , PT:=T#250MS);
+	t_250ms_aus(IN:=t_250ms_an.Q , PT:=T#250MS , Q=>t_250ms);
+
+	t_500ms_an(IN:=NOT t_500ms_aus.Q , PT:=T#500MS);
+	t_500ms_aus(IN:=t_500ms_an.Q , PT:=T#500MS , Q=>t_500ms);
+
+	t_750ms_an(IN:=NOT t_750ms_aus.Q , PT:=T#750MS);
+	t_750ms_aus(IN:=t_750ms_an.Q , PT:=T#750MS , Q=>t_750ms);
+
+	t_1000ms_an(IN:=NOT t_1000ms_aus.Q , PT:=T#1000MS);
+	t_1000ms_aus(IN:=t_1000ms_an.Q , PT:=T#1000MS , Q=>t_1000ms);
+
+	t_2000ms_aus(IN:=NOT t_2000ms_an.Q , PT:=T#2000MS);
+	t_2000ms_an(IN:=t_2000ms_aus.Q , PT:=T#2000MS , Q=>t_2000ms);
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

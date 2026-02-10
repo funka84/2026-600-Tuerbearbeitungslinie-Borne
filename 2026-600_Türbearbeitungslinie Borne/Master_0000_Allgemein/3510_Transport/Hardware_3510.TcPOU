@@ -1,0 +1,161 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Hardware_3510" Id="{e019c143-cdf9-4c7e-96a4-f0c51d8bdf1f}" SpecialFunc="None">
+    <Declaration><![CDATA[
+PROGRAM Hardware_3510
+VAR
+    // Servos *********************************************************************
+    //fbAchse                   	 				: FB_Achse_NC_PTP_V4_1; 
+
+    // Frequenzumrichter **********************************************************
+	fbTrans_Schlossseite							: FB_SEW_MOVITRAC_C_CoE;
+
+    // Sensorik *******************************************************************
+    fbLangsam          								: FB_Belegt;
+    fbStopp         								: FB_Belegt;
+    fbLaengsSchlossseite_Ref						: FB_Belegt;
+
+    // Ventile ********************************************************************
+    fbLaengsanschl                					: FB_Ventil_V2;
+    fbSchienenklemm               					: FB_Ventil_V2;
+
+    // ***** Hilfsmerker***********************************************************
+    (*
+        Ventile sind über den DUT_Ventil_para vorparametriert
+                ueberwachung_vor_aktiv    : BOOL := TRUE;   // 0 = Endlagenüberwachung vor deaktiviert
+                ueberwachung_zur_aktiv    : BOOL := TRUE;   // 0 = Endlagenüberwachung zurück deaktiviert
+                ausgang_vor_halten        : BOOL := FALSE;  // 1 = Ausgang immer Ein, sonst 0 in Endlage/1 nicht in Endlage
+                ausgang_zur_halten        : BOOL := FALSE;  // 1 = Ausgang immer Ein, sonst 0 in Endlage/1 nicht in Endlage
+                entprellen_vor_aktiv      : BOOL := TRUE;   // 0 = Endlage sofort überwachen wenn einmal erreicht
+                entprellen_zur_aktiv      : BOOL := TRUE;   // 0 = Endlage sofort überwachen wenn einmal erreicht
+                ueberwachungszeit_vor     : TIME := T#10S;  // Überwachungszeit in ms (0-30000ms)
+                ueberwachungszeit_zur     : TIME := T#10S;  // Überwachungszeit in ms (0-30000ms)
+                entprellungszeit_vor      : TIME := T#50MS; // Entprellungszeit in ms (0-10000ms)
+                entprellungszeit_zur      : TIME := T#50MS; // Entprellungszeit in ms (0-10000ms)
+
+        falls etwas anderes gewünscht ist, kann man gezielt für das Ventil die Parameter anpassen
+        Beispiel:   ***.para.ausgang_vor_halten := TRUE;
+                    ***.para.entprellungszeit_vor := T#100MS;
+    *)
+END_VAR
+    ]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+// Aktionen aufrufen
+//_________________________________________________
+	A_Sensorik();
+	A_Umrichter();
+	A_Ventile();
+	A_Servo();
+		  ]]></ST>
+    </Implementation>
+    <Action Name="A_Sensorik" Id="{f5beab16-1a04-4437-9743-5acffdc85692}">
+      <Implementation>
+        <ST><![CDATA[					
+// ***** Sensorik entprellen *********************************************************
+	//********************************************************************************
+fbLangsam						(	in_Sensor:=,
+									in_zeit_aus:=T#100MS,
+									in_zeit_aus:=T#100MS,
+									Q=>);
+									
+fbStopp							(	in_Sensor:=,
+									in_zeit_aus:=T#100MS,
+									in_zeit_aus:=T#100MS,
+									Q=>);
+									
+fbLaengsSchlossseite_Ref		(	in_Sensor:=,
+									in_zeit_aus:=T#100MS,
+									in_zeit_aus:=T#100MS,
+									Q=>);
+									]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="A_Servo" Id="{fff70697-4092-44ed-8a1a-0cfa0e5da105}">
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="A_Umrichter" Id="{1e7dffa0-b942-4a9e-be76-2daa42d15cf9}">
+      <Implementation>
+        <ST><![CDATA[
+// ***** Frequenzumrichter ******************************************************
+// ******************************************************************************
+				
+	GVL_Visu_3510.Trans_Schlossseite	.Para.Speed_Hand		:= 0;
+	GVL_Visu_3510.Trans_Schlossseite	.Para.Beschleunigung 	:= 0;
+	GVL_Visu_3510.Trans_Schlossseite	.Para.Verzoegerung 		:= 0;
+	GVL_Visu_3510.Trans_Schlossseite	.Para.Einheit			:= 1;
+
+	fbTrans_Schlossseite	(	PD_IN	:=EAs_3510.e_Trans_Schlossseite	,
+			IN_ReglerSperre			:=,
+			IN_SteuerStatus			:=GVL_Visu_3510.SteuerStatus,
+			IN_Ethercat_Adresse		:=,
+			IN_Ethercat_Name		:='',
+			IN_QUITTIEREN			:= GVL_0000.stoerung_quitt,
+			IN_OVERRIDE				:= GVL_Visu_0000.override,
+			PD_OUT					=> EAs_3510.a_Trans_Schlossseite	,
+			OUT_Stoerung			=> GVL_Meldungen.Meldungen_3000.Nr_008,
+			OUT_Fehlernummer		=> GVL_Meldungen.Diagnose_3000.Nr_008,
+			OUT_Status				=> GVL_3510.Trans_Schlossseite_status,
+			inout_visu				:= GVL_Visu_3510.Trans_Schlossseite	,
+			inout_steuern			:= GVL_3510.Trans_Schlossseite_steuern);
+	
+			GVL_3510.Trans_Schlossseite_steuern.vor := FALSE;
+			GVL_3510.Trans_Schlossseite_steuern.zur := FALSE;
+			GVL_3510.Trans_Schlossseite_steuern.speed := 0;
+	]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="A_Ventile" Id="{c674722c-829e-44a8-828a-026f6fd1b73f}">
+      <Implementation>
+        <ST><![CDATA[	
+// ***** Ventile *********************************************************************
+	//********************************************************************************	
+	
+	GVL_Visu_3510.Laengsanschl.para.ausgang_vor_halten:=TRUE;	
+	GVL_Visu_3510.Laengsanschl.para.ausgang_zur_halten:=TRUE;	
+	GVL_Visu_3510.Laengsanschl.para.ueberwachung_vor_aktiv:=TRUE;	
+	GVL_Visu_3510.Laengsanschl.para.ueberwachung_zur_aktiv:=TRUE;	
+	GVL_Visu_3510.Laengsanschl.para.entprellungszeit_vor:=T#50S;	
+	GVL_Visu_3510.Laengsanschl.para.entprellungszeit_zur:=T#50MS;	
+	fbLaengsanschl (		in_endlage_vor:= ,
+							in_endlage_zur:= ,
+							in_hand:=GVL_Visu_3510.SteuerStatus.hand,
+							in_auto:=GVL_Visu_3510.SteuerStatus.auto,
+							in_quit:=GVL_Visu_3510.SteuerStatus.reset 
+							OR GVL_0000.stoerung_quitt,
+							out_vor=>,
+							out_zur=>,
+							out_stoerung_vor=> GVL_Meldungen.Meldungen_3000.Nr_073,
+							out_stoerung_zur=> GVL_Meldungen.Meldungen_3000.Nr_074,
+							out_stoerung_vorzur=> GVL_Meldungen.Meldungen_3000.Nr_075,
+							inout_ansteuerung:=GVL_3510.Laengsanschl ,
+							inout_visu:=GVL_Visu_3510.Laengsanschl );
+								
+	
+	GVL_Visu_3510.Schienenklemm.para.ausgang_vor_halten:=TRUE;	
+	GVL_Visu_3510.Schienenklemm.para.ausgang_zur_halten:=TRUE;	
+	GVL_Visu_3510.Schienenklemm.para.ueberwachung_vor_aktiv:=TRUE;	
+	GVL_Visu_3510.Schienenklemm.para.ueberwachung_zur_aktiv:=TRUE;	
+	GVL_Visu_3510.Schienenklemm.para.entprellungszeit_vor:=T#500MS;	
+	GVL_Visu_3510.Schienenklemm.para.entprellungszeit_zur:=T#500MS;	
+	fbSchienenklemm(			in_endlage_vor:= EAs_3510.a_FR_3510_Transport_Schlossseite_X_Achse_Laengsanschlag_Schienenklemmung_klemmen, 
+								in_endlage_zur:= NOT EAs_3510.a_FR_3510_Transport_Schlossseite_X_Achse_Laengsanschlag_Schienenklemmung_klemmen,
+								in_hand:=GVL_Visu_3510.SteuerStatus.hand,
+								in_auto:=GVL_Visu_3510.SteuerStatus.auto,
+								in_quit:=GVL_Visu_3510.SteuerStatus.reset 
+								OR GVL_0000.stoerung_quitt,
+								out_vor=>EAs_3510.a_FR_3510_Transport_Schlossseite_X_Achse_Laengsanschlag_Schienenklemmung_klemmen,
+								out_zur=>,
+								out_stoerung_vor=> GVL_Meldungen.Meldungen_3000.Nr_088,
+								out_stoerung_zur=> GVL_Meldungen.Meldungen_3000.Nr_089,
+								out_stoerung_vorzur=> GVL_Meldungen.Meldungen_3000.Nr_090,
+								inout_ansteuerung:=GVL_3510.Schienenklemm,
+								inout_visu:=GVL_Visu_3510.Schienenklemm);
+								
+	]]></ST>
+      </Implementation>
+    </Action>
+  </POU>
+</TcPlcObject>

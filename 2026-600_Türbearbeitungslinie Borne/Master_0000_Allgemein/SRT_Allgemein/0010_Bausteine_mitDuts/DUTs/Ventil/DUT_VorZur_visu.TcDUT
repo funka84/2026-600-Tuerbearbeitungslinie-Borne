@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="DUT_VorZur_visu" Id="{6ef51b75-9a38-4d1b-9dc2-80cf1facc8ff}">
+    <Declaration><![CDATA[TYPE DUT_VorZur_visu :
+STRUCT
+
+	vor			:BOOL;		
+	zur			:BOOL;		
+
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

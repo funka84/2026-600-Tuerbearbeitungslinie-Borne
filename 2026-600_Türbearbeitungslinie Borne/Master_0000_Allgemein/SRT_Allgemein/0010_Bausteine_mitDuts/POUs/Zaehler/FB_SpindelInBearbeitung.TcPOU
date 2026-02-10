@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_SpindelInBearbeitung" Id="{617032c1-5886-4fa0-bfe2-67916ba093df}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_SpindelInBearbeitung
+VAR_INPUT
+	inStart				:BOOL;	
+	inAktiveSpindeln	:ARRAY[1..16] OF BOOL; 		// aktive Spindeln im Bohrvorgang
+END_VAR
+VAR_IN_OUT
+	inoutSpindel		:ARRAY[1..16] OF UDINT; 	// Anzahl wie oft eine Spindel benutzt wurde
+END_VAR
+VAR
+	a					: INT:=1;
+	fl_start			: r_trig;	
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[	fl_start(CLK:=inStart);
+	IF fl_start.Q
+	THEN
+		FOR a:=1 TO 16 DO
+			IF inAktiveSpindeln[a]
+			THEN
+				inoutSpindel[a]:=inoutSpindel[a]+1;
+			END_IF
+		END_FOR		
+	END_IF
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

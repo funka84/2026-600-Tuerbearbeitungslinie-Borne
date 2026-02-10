@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Hardware_1000" Id="{098e9bc3-eed4-4eec-a020-d2059415c0f5}" SpecialFunc="None">
+    <Declaration><![CDATA[
+PROGRAM Hardware_1000
+VAR
+    // Servos *********************************************************************
+    //fbAchse                    : FB_Achse_NC_PTP_V4_1; 
+
+    // Frequenzumrichter **********************************************************
+    //fbTransport                : FB_SEW_MOVITRAC_C_CoE;
+
+    // Sensorik *******************************************************************
+    //fbSensor                   : FB_Belegt;
+
+    // Ventile ********************************************************************
+    //fbVentil                   : FB_Ventil_V2;
+
+    // ***** Hilfsmerker***********************************************************
+    (*
+        Ventile sind über den DUT_Ventil_para vorparametriert
+                ueberwachung_vor_aktiv    : BOOL := TRUE;   // 0 = Endlagenüberwachung vor deaktiviert
+                ueberwachung_zur_aktiv    : BOOL := TRUE;   // 0 = Endlagenüberwachung zurück deaktiviert
+                ausgang_vor_halten        : BOOL := FALSE;  // 1 = Ausgang immer Ein, sonst 0 in Endlage/1 nicht in Endlage
+                ausgang_zur_halten        : BOOL := FALSE;  // 1 = Ausgang immer Ein, sonst 0 in Endlage/1 nicht in Endlage
+                entprellen_vor_aktiv      : BOOL := TRUE;   // 0 = Endlage sofort überwachen wenn einmal erreicht
+                entprellen_zur_aktiv      : BOOL := TRUE;   // 0 = Endlage sofort überwachen wenn einmal erreicht
+                ueberwachungszeit_vor     : TIME := T#10S;  // Überwachungszeit in ms (0-30000ms)
+                ueberwachungszeit_zur     : TIME := T#10S;  // Überwachungszeit in ms (0-30000ms)
+                entprellungszeit_vor      : TIME := T#50MS; // Entprellungszeit in ms (0-10000ms)
+                entprellungszeit_zur      : TIME := T#50MS; // Entprellungszeit in ms (0-10000ms)
+
+        falls etwas anderes gewünscht ist, kann man gezielt für das Ventil die Parameter anpassen
+        Beispiel:   ***.para.ausgang_vor_halten := TRUE;
+                    ***.para.entprellungszeit_vor := T#100MS;
+    *)
+END_VAR
+    ]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+// TODO: Hauptlogik fuer Hardware hier implementieren
+
+// Beispiel:
+// A_Bereiche();
+// A_Sensorik();
+      ]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

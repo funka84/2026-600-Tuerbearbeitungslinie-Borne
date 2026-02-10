@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <GVL Name="GVL_Visu_3100" Id="{9afb7c72-557b-4d3c-88d4-76efdafe84b2}">
+    <Declaration><![CDATA[
+VAR_GLOBAL
+    KommAnVisu                 : INT;      (* Kommunikation an die Visualisierung *)
+    KommVonVisu                : INT;      (* Kommunikation von der Visualisierung *)
+    belegt                     : BOOL;     (* true = erzeugt Dummyteil, false = keine Auswirkungen (nur Handauflage) *)
+    daten_gebucht              : BOOL;
+    SteuerStatus               : DUT_Visu_SteuerStatus;
+
+    // Frequenzumrichter
+	Bohraggr_Schlosskast		: DUT_SEW_FU_Visu; 		//#Tab: 3100 Bohraggregat #Name: Bohraggregat Schlosskasten
+	Bohraggr_Vorbohren			: DUT_SEW_FU_Visu; 		//#Tab: 3100 Bohraggregat #Name: Bohraggregat Vorbohren
+	Bohraggr_Stulpfraes			: DUT_SEW_FU_Visu; 		//#Tab: 3100 Bohraggregat #Name: Bohraggregat Stulpfräser
+
+    // Servoregler
+	X_Achse						: DUT_Achse_Service;	//#Tab: 3100 Bohraggregat #Name: X-Achse 
+	Y_Achse						: DUT_Achse_Service;	//#Tab: 3100 Bohraggregat #Name: Y-Achse 
+	Z_Achse						: DUT_Achse_Service;	//#Tab: 3100 Bohraggregat #Name: Z-Achse 
+
+    // Ventile
+     Schlosskast_Vorlegehub            			: DUT_Ventil_VISU;        //#Tab: 3100 Bohraggregat #Name: Schlosskasten Vorlegehub
+	 Vorbohren_Bohrhub        					: DUT_Ventil_VISU;        //#Tab: 3100 Bohraggregat #Name: Vorbohren Bohrhub
+     Stulpfraes_Vorlegehub 						: DUT_Ventil_VISU;        //#Tab: 3100 Bohraggregat #Name: Stulpfräser Vorlegehub
+     Nullkante 									: DUT_Ventil_VISU;        //#Tab: 3100 Bohraggregat #Name: Nullkante
+     Schienenklemm								: DUT_Ventil_VISU;        //#Tab: 3100 Bohraggregat #Name: Schienenklemmung
+
+END_VAR
+
+VAR_GLOBAL PERSISTENT
+    Schrittnummer              : INT;
+    //Kopfdaten                : DUT_Kopfdaten;
+    //Kopfdaten_default        : DUT_Kopfdaten;
+    //Jobdaten                 : DUT_Jobdaten;
+    //Jobdaten_default         : DUT_Jobdaten;
+
+    //para_Vorlage             : REAL := 0.0; //#Typ: VParam #Tab:  #Name:  #Einheit:mm #Min: 1 #Max: 100 #Format:F1
+END_VAR
+    ]]></Declaration>
+  </GVL>
+</TcPlcObject>

@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="IBN_Huettenhoelscher" Id="{22d0c263-0168-4031-b5bb-8736c32e7a93}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM IBN_Huettenhoelscher
+VAR
+	
+	IBN_verz_ein	:ton;
+	IBN_fl			:R_trig;
+	IBN_fl_ein		:R_trig;
+	IBN_Toogle		:FB_Toogle;
+	IBN_Toogle_Ab	:FB_Toogle;
+	IBN_Toogle_HM	:BOOL;
+	IBN_Toogle_HM_ab:BOOL;
+
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(*
+	EAs_1000_Allgemein
+	a_IBN_1_Lampe		AT%Q*:	BOOL	;	//	0000	/  	IBN 1
+	a_IBN_2_Hupe		AT%Q*:	BOOL	;	//	0000	/  	IBN 2																								
+	a_IBN_3_Absaugung	AT%Q*:	BOOL	;	//	0000	/  	IBN 3																								
+	a_IBN_4				AT%Q*:	BOOL	;	//	0000	/	IBN 4
+*)
+
+// IBN *****************************************************
+IBN_fl(clk:=GVL_Safety.Steuersp_ist_ein);
+IBN_fl_ein(clk:=EAs_1000_Allgemein.e_Steuer_ein);
+
+IBN_Toogle(Eingang:=IBN_fl_ein.Q
+					AND NOT GVL_Safety.Steuersp_ist_ein
+					//AND GVL_Safety.FBs_in_Run
+					AND gvl_Safety.in_Run,
+			Reset:= IBN_fl.Q
+					OR NOT EAs_1000_Allgemein.e_Steuer_aus,
+			H_Merker:=IBN_Toogle_HM);
+
+IBN_verz_ein(IN:=IBN_Toogle.Ausgang,
+			pt:=T#500MS);
+
+
+IBN_Toogle_ab(Eingang:=EAs_1000_Allgemein.e_usb_11,
+			Reset:= NOT EAs_1000_Allgemein.e_Steuer_aus,
+			H_Merker:=IBN_Toogle_HM_ab);
+
+(*			
+EAs_1000_Allgemein.a_IBN_1_Lampe:=GVL_Safety.Steuersp_ist_ein;
+EAs_1000_Allgemein.a_IBN_2_Hupe:=IBN_Toogle.Ausgang;
+
+EAs_1000_Allgemein.a_IBN_3_Absaugung:= IBN_Toogle_ab.Ausgang AND (GVL_2000_Bohr_Fraesstation.sk >= 140
+																	OR	GVL_2020_Oberbau.Bohraggregat_1_steuern.vor
+																	OR	GVL_2020_Oberbau.Bohraggregat_2_steuern.vor
+																	OR	GVL_2020_Oberbau.Fraese_rechtsd_steuern.vor
+																	OR	GVL_2020_Oberbau.Fraese_linksd_steuern.vor);
+EAs_1000_Allgemein.a_usb_11:=IBN_Toogle_ab.Ausgang;	
+*)
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

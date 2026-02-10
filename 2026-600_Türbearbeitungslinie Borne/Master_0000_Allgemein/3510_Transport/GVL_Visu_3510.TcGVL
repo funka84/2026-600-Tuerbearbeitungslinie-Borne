@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <GVL Name="GVL_Visu_3510" Id="{4fbf8656-4b4c-4d82-a6c7-93df2eeee22a}">
+    <Declaration><![CDATA[
+VAR_GLOBAL
+    KommAnVisu                 : INT;      (* Kommunikation an die Visualisierung *)
+    KommVonVisu                : INT;      (* Kommunikation von der Visualisierung *)
+    belegt                     : BOOL;     (* true = erzeugt Dummyteil, false = keine Auswirkungen (nur Handauflage) *)
+    daten_gebucht              : BOOL;
+    SteuerStatus               : DUT_Visu_SteuerStatus;
+
+    // Frequenzumrichter
+	Trans_Schlossseite			: DUT_SEW_FU_Visu; 		//#Tab: 3510 Transport #Name: Transport Schlossseite X-Achse
+
+    // Servoregler
+    //Achse                    	: DUT_Achse_Service;      //#Tab: #Name: 
+
+    // Ventile
+	 Laengsanschl        		: DUT_Ventil_VISU;      //#Tab: 3510 Transport #Name: Schlossseite Längsanschlag
+	 Schienenklemm        		: DUT_Ventil_VISU;      //#Tab: 3510 Transport #Name: Schienenklemmung
+
+END_VAR
+
+VAR_GLOBAL PERSISTENT
+    Schrittnummer              : INT;
+    //Kopfdaten                : DUT_Kopfdaten;
+    //Kopfdaten_default        : DUT_Kopfdaten;
+    //Jobdaten                 : DUT_Jobdaten;
+    //Jobdaten_default         : DUT_Jobdaten;
+
+    //para_Vorlage             : REAL := 0.0; //#Typ: VParam #Tab:  #Name:  #Einheit:mm #Min: 1 #Max: 100 #Format:F1
+END_VAR
+    ]]></Declaration>
+  </GVL>
+</TcPlcObject>

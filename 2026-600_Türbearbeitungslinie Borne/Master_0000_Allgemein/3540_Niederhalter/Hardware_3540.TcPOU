@@ -1,0 +1,134 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Hardware_3540" Id="{93c96350-8c45-425d-83a9-be49a6386380}" SpecialFunc="None">
+    <Declaration><![CDATA[
+PROGRAM Hardware_3540
+VAR
+    // Servos *********************************************************************
+	fbY_Achse										: FB_Achse_NC_PTP_Beckhoff; 
+
+    // Frequenzumrichter **********************************************************
+    //fbTransport                					: FB_SEW_MOVITRAC_C_CoE;
+
+    // Sensorik *******************************************************************
+    //fbSensor                   					: FB_Belegt;
+
+    // Ventile ********************************************************************
+    fbNiederhalter                					: FB_Ventil_V2;
+
+    // ***** Hilfsmerker***********************************************************
+    (*
+        Ventile sind über den DUT_Ventil_para vorparametriert
+                ueberwachung_vor_aktiv    : BOOL := TRUE;   // 0 = Endlagenüberwachung vor deaktiviert
+                ueberwachung_zur_aktiv    : BOOL := TRUE;   // 0 = Endlagenüberwachung zurück deaktiviert
+                ausgang_vor_halten        : BOOL := FALSE;  // 1 = Ausgang immer Ein, sonst 0 in Endlage/1 nicht in Endlage
+                ausgang_zur_halten        : BOOL := FALSE;  // 1 = Ausgang immer Ein, sonst 0 in Endlage/1 nicht in Endlage
+                entprellen_vor_aktiv      : BOOL := TRUE;   // 0 = Endlage sofort überwachen wenn einmal erreicht
+                entprellen_zur_aktiv      : BOOL := TRUE;   // 0 = Endlage sofort überwachen wenn einmal erreicht
+                ueberwachungszeit_vor     : TIME := T#10S;  // Überwachungszeit in ms (0-30000ms)
+                ueberwachungszeit_zur     : TIME := T#10S;  // Überwachungszeit in ms (0-30000ms)
+                entprellungszeit_vor      : TIME := T#50MS; // Entprellungszeit in ms (0-10000ms)
+                entprellungszeit_zur      : TIME := T#50MS; // Entprellungszeit in ms (0-10000ms)
+
+        falls etwas anderes gewünscht ist, kann man gezielt für das Ventil die Parameter anpassen
+        Beispiel:   ***.para.ausgang_vor_halten := TRUE;
+                    ***.para.entprellungszeit_vor := T#100MS;
+    *)
+END_VAR
+    ]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+// Aktionen aufrufen
+//_________________________________________________
+	A_Sensorik();
+	A_Umrichter();
+	A_Ventile();
+	A_Servo();
+		  ]]></ST>
+    </Implementation>
+    <Action Name="A_Sensorik" Id="{97c26780-db81-4ad8-99fa-84dc3356bd03}">
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="A_Servo" Id="{b85b885a-0c65-4d07-9909-799bbcc31216}">
+      <Implementation>
+        <ST><![CDATA[					
+// ***** Servoregler *****************************************************************
+	//********************************************************************************
+								
+	GVL_3540.Y_Achse_steuern.Reglersperre	:= FALSE;
+	GVL_3540.Y_Achse_steuern.Freigabe 		:= FALSE;
+	
+	fbY_Achse(
+	in_Reglersperre				:= GVL_3540.Y_Achse_steuern.Reglersperre, 
+	in_Freigabe					:= GVL_3540.Y_Achse_steuern.Freigabe,
+	in_Reset					:= GVL_Visu_3540.SteuerStatus.reset   
+								OR GVL_0000.stoerung_quitt,                      
+	in_Hand						:= GVL_Visu_3540.SteuerStatus.hand,              
+	in_Auto						:= GVL_Visu_3540.SteuerStatus.auto,                 
+	in_Auto_Override			:= GVL_Visu_0000.override,    
+	in_Auto_pos					:= , 
+	in_PosFenster				:= 0.05, 
+	in_Ref_pos					:= 0.0, 
+	in_HomingOption				:= , 
+	in_EndlageRef				:= , 
+	in_DirRef					:= , 
+	in_PosEa					:= ,                                       
+	out_ist_pos					=> GVL_3540.Y_Achse_status.ist_pos, 
+	out_in_pos					=> GVL_3540.Y_Achse_status.in_pos,   
+	out_ziel_pos				=> GVL_3540.Y_Achse_status.ziel_pos, 
+	out_nicht_ref				=> GVL_3540.Y_Achse_status.nicht_ref,      
+	out_bremse					=> GVL_3540.Y_Achse_status.bremse,           
+	out_Achs_Status				=> GVL_3540.Y_Achse_status.Achs_Status,  
+	inout_NC					:= EAs_3540.ea_Y_Achse, 
+	inout_service				:= GVL_Visu_3540.Y_Achse, 
+	inout_Ref_start				:= GVL_3540.Y_Achse_steuern.Ref_start, 
+	inout_Auto_start			:= GVL_3540.Y_Achse_steuern.Auto_start, 
+	inout_Auto_stop				:= GVL_3540.Y_Achse_steuern.Auto_stop);
+	
+	GVL_Meldungen.Diagnose_3000.Nr_043	:= fbY_Achse.out_Achs_ErrorID;	
+	GVL_Meldungen.Meldungen_3000.Nr_043 := fbY_Achse.out_Achs_Error OR fbY_Achse.out_FB_Error OR fbY_Achse.out_Achs_ErrorID <> 0;		
+	GVL_Meldungen.Meldungen_3000.Nr_044 := FALSE;
+	GVL_Meldungen.Meldungen_3000.Nr_045 := FALSE;
+	]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="A_Umrichter" Id="{a5590549-6dfd-4d9b-833d-d4f3c2ed87fa}">
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="A_Ventile" Id="{0d257c6c-b0c4-4e72-b1c2-bc3f1f479a83}">
+      <Implementation>
+        <ST><![CDATA[	
+// ***** Ventile *********************************************************************
+	//********************************************************************************	
+	
+	GVL_Visu_3540.Niederhalter.para.ausgang_vor_halten:=TRUE;	
+	GVL_Visu_3540.Niederhalter.para.ausgang_zur_halten:=TRUE;	
+	GVL_Visu_3540.Niederhalter.para.ueberwachung_vor_aktiv:=TRUE;	
+	GVL_Visu_3540.Niederhalter.para.ueberwachung_zur_aktiv:=TRUE;	
+	GVL_Visu_3540.Niederhalter.para.entprellungszeit_vor:=T#50S;	
+	GVL_Visu_3540.Niederhalter.para.entprellungszeit_zur:=T#50MS;	
+	fbNiederhalter (		in_endlage_vor:= EAs_3540.e_FR_3540_Niederhalter_Bandseite_Niederhalter_Einlauf_ist_oben
+							AND EAs_3540.e_FR_3540_Niederhalter_Bandseite_Niederhalter_Auslauf_ist_oben,
+							in_endlage_zur:= EAs_3540.e_FR_3540_Niederhalter_Bandseite_Niederhalter_Einlauf_ist_unten
+							AND EAs_3540.e_FR_3540_Niederhalter_Bandseite_Niederhalter_Auslauf_ist_unten,
+							in_hand:=GVL_Visu_3540.SteuerStatus.hand,
+							in_auto:=GVL_Visu_3540.SteuerStatus.auto,
+							in_quit:=GVL_Visu_3540.SteuerStatus.reset 
+							OR GVL_0000.stoerung_quitt,
+							out_vor=>EAs_3540.a_FR_3540_Niederhalter_Bandseite_Niederhalter_heben,
+							out_zur=>EAs_3540.a_FR_3540_Niederhalter_Bandseite_Niederhalter_senken,
+							out_stoerung_vor=> GVL_Meldungen.Meldungen_3000.Nr_079,
+							out_stoerung_zur=> GVL_Meldungen.Meldungen_3000.Nr_080,
+							out_stoerung_vorzur=> GVL_Meldungen.Meldungen_3000.Nr_081,
+							inout_ansteuerung:=GVL_3540.Niederhalter ,
+							inout_visu:=GVL_Visu_3540.Niederhalter );
+								
+	]]></ST>
+      </Implementation>
+    </Action>
+  </POU>
+</TcPlcObject>

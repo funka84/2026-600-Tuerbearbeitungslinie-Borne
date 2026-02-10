@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="DUT_Geschwindigkeitsabgleich" Id="{25adf5e4-91fe-4dd6-ad28-831b2a652b64}">
+    <Declaration><![CDATA[TYPE DUT_Geschwindigkeitsabgleich :
+STRUCT
+bStart_Abgleich		 	:BOOL;
+bEingabe_Quitt			:BOOL;
+
+rSolllaenge_Master 		:LREAL;
+rSolllaenge_Slave_1 	:LREAL;
+rSolllaenge_Slave_2 	:LREAL;
+rSolllaenge_Slave_3		:LREAL;
+rGemesseneLaenge 		:LREAL;
+rSollspeed				:LREAL;
+
+iStatusButton			:INT;		// 0= Grau 1= Grün 2= Rot
+iTransportriemenID		:INT;		// 1= Unterbau 2=Abfall 3= Nullkante  4= Losseite
+
+
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Func_InRange" Id="{b8543b1a-e673-418b-9c50-ee94aa129029}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION Func_InRange : Bool
+VAR_INPUT
+	IstPos 	:REAL;
+	SollPos	:REAL;
+	Fenster	:REAL := 0.5;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[ Func_InRange := 	IstPos > SollPos - Fenster
+ 					AND IstPos < SollPos + Fenster;]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

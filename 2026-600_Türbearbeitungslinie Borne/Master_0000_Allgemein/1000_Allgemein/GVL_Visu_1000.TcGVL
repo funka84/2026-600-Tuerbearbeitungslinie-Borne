@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <GVL Name="GVL_Visu_1000" Id="{aba57690-49d7-4df9-981c-20cb69fdaf30}">
+    <Declaration><![CDATA[
+VAR_GLOBAL
+    KommAnVisu                 : INT;      (* Kommunikation an die Visualisierung *)
+    KommVonVisu                : INT;      (* Kommunikation von der Visualisierung *)
+    belegt                     : BOOL;     (* true = erzeugt Dummyteil, false = keine Auswirkungen (nur Handauflage) *)
+    daten_gebucht              : BOOL;
+    SteuerStatus               : DUT_Visu_SteuerStatus;
+
+    // Frequenzumrichter
+    //transport                : DUT_SEW_FU_Visu;       //#Tab:  #Name: 
+
+    // Servoregler
+    //Achse                    : DUT_Achse_Service;      //#Tab: #Name: 
+
+    // Ventile
+    //Ventil                   : DUT_Ventil_VISU;        //#Tab: #Name: 
+
+END_VAR
+
+VAR_GLOBAL PERSISTENT
+    Schrittnummer              : INT;
+    //Kopfdaten                : DUT_Kopfdaten;
+    //Kopfdaten_default        : DUT_Kopfdaten;
+    //Jobdaten                 : DUT_Jobdaten;
+    //Jobdaten_default         : DUT_Jobdaten;
+
+    //para_Vorlage             : REAL := 0.0; //#Typ: VParam #Tab:  #Name:  #Einheit:mm #Min: 1 #Max: 100 #Format:F1
+END_VAR
+    ]]></Declaration>
+  </GVL>
+</TcPlcObject>

@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <GVL Name="GVL_Meldungen" Id="{110a3483-d025-4a39-9c60-e594eb68ca11}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+VAR_GLOBAL
+	
+	Meldungen_0000				: DUT_Meldungen_0000;
+	Meldungen_1000				: DUT_Meldungen_1000;
+//	Meldungen_2000				: DUT_Meldungen_2000;
+	Meldungen_3000				: DUT_Meldungen_3000;
+//	Meldungen_4000				: DUT_Meldungen_4000;
+//	Meldungen_5000				: DUT_Meldungen_5000;
+//	Meldungen_6000				: DUT_Meldungen_6000;
+//	Meldungen_7000				: DUT_Meldungen_7000;
+//	Meldungen_8000				: DUT_Meldungen_8000;
+
+	
+	Diagnose_0000				: DUT_Diagnose_0000;
+	Diagnose_1000				: DUT_Diagnose_1000;
+//	Diagnose_2000				: DUT_Diagnose_2000;
+	Diagnose_3000				: DUT_Diagnose_3000;
+//	Diagnose_4000				: DUT_Diagnose_4000;
+//	Diagnose_5000				: DUT_Diagnose_5000;
+//	Diagnose_6000				: DUT_Diagnose_6000;
+//	Diagnose_7000				: DUT_Diagnose_7000;
+//	Diagnose_8000				: DUT_Diagnose_8000;
+	
+
+	Stoerung_0000				:BOOL;	// Störung steht an
+	Information_0000			:BOOL;	// Information steht an
+	Warnung_0000				:BOOL;	// Warnung steht an
+	
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>

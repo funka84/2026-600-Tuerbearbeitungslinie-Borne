@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="DUT_Achse_Status" Id="{c3f68928-4d0e-4939-8974-da57b6a3dff2}">
+    <Declaration><![CDATA[TYPE DUT_Achse_Status :
+STRUCT
+	ist_pos				: REAL;				(*  aktuelle ist Position  *)                          
+	in_pos				: BOOL;				(*  Achse in Position (Soll=IST + - Positionsfenster) *)
+	ziel_pos			: REAL;				(*  Aktuelle Zielposition der Achse *)
+	nicht_ref			: BOOL;				(*  Achse ist nicht referenziert  *)                  
+    bremse				: BOOL;				(*  Bremse lösen *)                                     
+	Achs_Status			: ST_AxisStatus;	(* 	aktueller Achsstatus *)
+	Drehmoment_aktiv	: BOOL;				(*	Betriebsart Drehmoment aktiv	*)                   
+	Drehmoment_erreicht	: BOOL;				(*	Drehmoment erreicht	*)        
+	Bremsentest_notwendig	: BOOL;            
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

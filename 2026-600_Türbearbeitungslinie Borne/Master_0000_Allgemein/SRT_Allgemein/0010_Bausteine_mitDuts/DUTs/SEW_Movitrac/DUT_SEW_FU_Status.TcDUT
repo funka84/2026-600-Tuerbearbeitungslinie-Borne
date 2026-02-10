@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="DUT_SEW_FU_Status" Id="{1f513098-0aae-4e3f-aaa2-e2da0c109609}">
+    <Declaration><![CDATA[TYPE DUT_SEW_FU_Status :
+STRUCT
+
+	nicht_bereit		:BOOL;	(* Umrichter ist nicht betriebsbereit *)
+	ist_drehzahl		:REAL;	(* aktuelle Drehzahl *)
+	ist_drehzahl_90		:BOOL;	(* 90% der Soll Drehzahl erreicht *)
+	antriebAktiv		:BOOL;	(* Dreht mehr als 1 rpm*)
+	ist_strom			:REAL;	(* aktueller Strom *)
+	ist_drehmoment		:REAL;	(* aktuelles Drehmoment *)
+END_STRUCT
+END_TYPE
+
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

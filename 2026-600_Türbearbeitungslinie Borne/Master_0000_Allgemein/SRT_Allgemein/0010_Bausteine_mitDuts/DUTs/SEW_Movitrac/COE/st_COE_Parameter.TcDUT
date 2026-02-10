@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="st_COE_Parameter" Id="{c8d5586f-4654-4fa8-bfbd-62e9a5fbeac3}">
+    <Declaration><![CDATA[TYPE st_COE_Parameter :
+STRUCT
+	sName		: STRING(22);
+	nSubIndex 	 : BYTE;
+   	nIndex   		 : WORD;
+	nWert		: DWORD;
+	nLength		: UDINT;
+	nZugriff		: BYTE:= 0;	(* 0 = lesen| 1 = schreiben | 2 = lesen und schreiben | 3 = ende *)
+	nFaktor		: LREAL	:=	1;
+END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

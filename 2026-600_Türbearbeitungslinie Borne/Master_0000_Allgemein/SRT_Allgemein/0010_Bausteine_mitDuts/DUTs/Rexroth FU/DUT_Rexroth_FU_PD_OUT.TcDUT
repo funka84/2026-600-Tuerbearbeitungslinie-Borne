@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="DUT_Rexroth_FU_PD_OUT" Id="{7faa69ed-d1a2-4447-acf7-be25fed09547}">
+    <Declaration><![CDATA[TYPE DUT_Rexroth_FU_PD_OUT :
+STRUCT
+	PD_1_Steuerwort		:WORD;	(* Eingangsprozessdatenwort 1 *)
+	PD_2_Solldrehzahl	:UINT;	(* Eingangsprozessdatenwort 2 *)
+	PD_3_Rampe			:WORD;	(* Eingangsprozessdatenwort 3 *)
+	Reglerfreigabe		:BOOL;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

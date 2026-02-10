@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <GVL Name="GVL_Visu_3200" Id="{b12335f6-4346-4a15-a634-78ce2ce9b6df}">
+    <Declaration><![CDATA[
+VAR_GLOBAL
+    KommAnVisu                 : INT;      (* Kommunikation an die Visualisierung *)
+    KommVonVisu                : INT;      (* Kommunikation von der Visualisierung *)
+    belegt                     : BOOL;     (* true = erzeugt Dummyteil, false = keine Auswirkungen (nur Handauflage) *)
+    daten_gebucht              : BOOL;
+    SteuerStatus               : DUT_Visu_SteuerStatus;
+
+    // Frequenzumrichter
+	Bohraggr_Stufenbohr			: DUT_SEW_FU_Visu; 		//#Tab: 3200 Bohraggregat #Name: Bohraggregat Stufenbohrer
+	Bohraggr_Stulpfraes			: DUT_SEW_FU_Visu; 		//#Tab: 3200 Bohraggregat #Name: Bohraggregat Stulpfräser
+
+    // Servoregler
+	X_Achse						: DUT_Achse_Service;	//#Tab: 3200 Bohraggregat #Name: X-Achse 
+	Y_Achse						: DUT_Achse_Service;	//#Tab: 3200 Bohraggregat #Name: Y-Achse 
+	Z_Achse						: DUT_Achse_Service;	//#Tab: 3200 Bohraggregat #Name: Z-Achse 
+
+    // Ventile
+	 Vorbohren_Bohrhub        	: DUT_Ventil_VISU;        //#Tab: 3200 Bohraggregat #Name: Vorbohren Bohrhub
+     Stulpfraes_Vorlegehub 		: DUT_Ventil_VISU;        //#Tab: 3200 Bohraggregat #Name: Stulpfräser Vorlegehub
+     Pusher						: DUT_Ventil_VISU;        //#Tab: 3200 Bohraggregat #Name: Pusher 
+     Schienenklemm				: DUT_Ventil_VISU;        //#Tab: 3200 Bohraggregat #Name: Schienenklemmung
+
+END_VAR
+
+VAR_GLOBAL PERSISTENT
+    Schrittnummer              : INT;
+    //Kopfdaten                : DUT_Kopfdaten;
+    //Kopfdaten_default        : DUT_Kopfdaten;
+    //Jobdaten                 : DUT_Jobdaten;
+    //Jobdaten_default         : DUT_Jobdaten;
+
+    //para_Vorlage             : REAL := 0.0; //#Typ: VParam #Tab:  #Name:  #Einheit:mm #Min: 1 #Max: 100 #Format:F1
+END_VAR
+    ]]></Declaration>
+  </GVL>
+</TcPlcObject>

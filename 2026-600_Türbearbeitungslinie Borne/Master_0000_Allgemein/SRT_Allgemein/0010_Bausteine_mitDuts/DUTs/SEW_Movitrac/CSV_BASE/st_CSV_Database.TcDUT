@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="st_CSV_Database" Id="{5ba9dfd4-ff4e-4df8-b681-d6ef58bf6a92}">
+    <Declaration><![CDATA[TYPE st_CSV_Database :
+STRUCT
+	sCSV_Column1	:	STRING;
+	sCSV_Column2	:	STRING;
+	sCSV_Column3	:	STRING;
+	sCSV_Column4	:	STRING;
+	sCSV_Column5	:	STRING;
+	sCSV_Column6	:	STRING;
+	sCSV_Column7	:	STRING;
+	sCSV_Column8	:	STRING;
+	sCSV_Column9	:	STRING;
+	sCSV_Column10	:	STRING;
+	(*sCSV_Column11	:	STRING;
+	sCSV_Column12	:	STRING;
+	sCSV_Column13	:	STRING;
+	sCSV_Column14	:	STRING;
+	sCSV_Column15	:	STRING;
+	sCSV_Column16	:	STRING;
+	sCSV_Column17	:	STRING;
+	sCSV_Column18	:	STRING;
+	sCSV_Column19	:	STRING;
+	sCSV_Column20	:	STRING;*)
+END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

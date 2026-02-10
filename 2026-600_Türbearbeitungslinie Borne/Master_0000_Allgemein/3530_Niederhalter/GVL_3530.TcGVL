@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <GVL Name="GVL_3530" Id="{4062938a-f634-43e6-89ab-f3b76517178d}">
+    <Declaration><![CDATA[
+VAR_GLOBAL
+    // Achsen ***************************************************
+    //Achse_steuern                     : DUT_Achse_Steuern;
+    //Achse_status                      : DUT_Achse_Status;
+
+    // Frequenzumrichter ****************************************
+    //transport_steuern                 : DUT_SEW_FU_Steuern;
+    //transport_status                  : DUT_SEW_FU_Status;
+
+    // Ventile **************************************************
+    Niederhalter          				: DUT_Ventil_sps;
+
+    // interne Variablen ****************************************
+    sk_Freigabe                         : BOOL;
+    sk                                  : INT;
+    transport_einfoerdern_bereit        : BOOL;
+    transport_ausfoerdern_bereit        : BOOL;
+
+    Tuer_Anwahl                         : BOOL;   // Signal Tür Anwahl, Tür soll geöffnet werden
+    Tuer_Freigabe                       : BOOL;   // Signal Tür Freigabe, Tür kann geöffnet werden
+END_VAR
+    ]]></Declaration>
+  </GVL>
+</TcPlcObject>

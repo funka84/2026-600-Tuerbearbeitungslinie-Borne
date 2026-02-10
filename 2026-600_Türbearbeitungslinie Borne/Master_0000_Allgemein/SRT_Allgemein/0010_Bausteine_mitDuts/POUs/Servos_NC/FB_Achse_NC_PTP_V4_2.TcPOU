@@ -1,0 +1,632 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_Achse_NC_PTP_V4_2" Id="{29521c21-19cb-4684-9b20-529cd51abfca}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Achse_NC_PTP_V4_2
+(*
+	Ansteuerung einer Achse über die NC (PTP)
+	Autor O.E.
+	Erstellt xx.xx.2017
+	Version 1.0 	
+	
+	Update 01.09.2022
+	Version 2.0 - zusätzlche InOut-Schnittstelle um direkt mit dem Regler zu komunizieren
+				- das Referenziere/Absolutmaßsetzen wird im Regler gemacht
+                   da das Homing bei Beckhoff (Nullpunktverschiebung) nur temporär ist	
+				- Bremsentest im programm ergänzt
+	
+	Update 14.06.2024
+	Version 3.0	- Auslesen der Software Endlagen aus der NC und langsames tippen vor den Endlagen
+				- in_Reglersperre = Vorschubfreigabe MC-Power
+				- in_Freigabe = Wenn false, dann wird die Achsbewegung gestoppt (Positionieren und Tippen) MC_Halt
+				- Augabe der aktuellen Zielposition, Abhängig davon, ob die Achse in Bewegung ist, oder steht 
+		
+	Update 25.11.2025 - Andreas Funk
+	Version 4.0	- Methoden Aufruf Automatik Position anfahren
+				- SoE Reset automatisch wenn Regler in Fehlerzustand ist
+					
+*)
+
+VAR_INPUT
+	in_max_Velo				: REAL;						(*	maximale Geschwindigkeit - Anwendereinheit z.B. xx mm/s *)
+	in_Reglersperre			: BOOL;						(*  Software-Freigabe für die Achse  *)
+	in_Freigabe				: BOOL;						(*  Freigabe JogMode und Positionieren *)
+	in_Reset				: BOOL;						(*  Achs Reset  *)
+	in_Hand					: BOOL;						(*  Handbetrieb  *)
+	in_Auto					: BOOL;						(*  Automatikbetrieb  *)
+	in_Auto_Override		: INT;						(*  in %  *)
+	in_PosFenster			: REAL;						(*  Positionsfenster Achse in Position  *)
+	in_Ref_pos				: REAL;						(*  Referenz-Wert der gesetzt werden soll  *)
+	in_Bremse_PassQuitt		: BOOL;						(*	Passwort geschützes Bit aus der Visu zum Quittieren des Bremsentests, wenn der Test ..mal fehlgeschlagen ist	*)
+	in_Endschalter_Min		: BOOL;						// AF - Reglerfreigabe für Fahrt negativ
+	in_Endschalter_Max		: BOOL;						// AF - Reglerfreigabefür Fahrt positiv
+	in_Normal_Drehmoment	: REAL := 100.0;			// AF - Drehmoment für den normalen Betrieb
+END_VAR
+VAR_OUTPUT
+	out_ist_pos					: REAL;						(*  aktuelle ist Position  *)
+	out_in_pos					: BOOL;						(*  Achse in Position (Soll=IST + - Positionsfenster) *)
+	out_ziel_pos				: REAL;						(* aktuelle Zielposition *)
+	out_nicht_ref				: BOOL;						(*  Achse ist nicht referenziert  *)
+	out_bremse					: BOOL;						(*  Bremse lösen *)
+	out_Achs_Status				: ST_AxisStatus;			(* 	aktueller Achsstatus *)
+	out_Achs_Error				: BOOL;						(*  Achs Fehler *)
+	out_Achs_ErrorID			: DINT;						(*  Achs Fehler ID *) 
+	out_FB_Error				: BOOL;						(*  FB Fehler - intern *)
+	out_FB_ErrorID				: DWORD;					(*  FB Fehler ID - intern *) 
+	out_Bremsentest_Fehler		: BOOL;						(*	Bremsentestfehlerhaft *)
+	out_Bremsentest_Fehler_3	: BOOL;						(*	Bremsentestfehlerhaft mehr als 3 mal fehlgeschlagen, Instandhalter informieren*)
+	out_Bremsentest_Status		: DINT;						(*	0=alles ok, 1=Haltemoment zu gering, 2=Öffnungstest fehlerhaft, 3=...  *) 
+	out_Bremsentest_notwendig	: BOOL;                       
+	
+END_VAR
+VAR_IN_OUT
+	inout_NC				: AXIS_REF;					(*  Schnittstelle zwischen der SPS und der NC  *)												
+	inout_rexroth			: DUT_PD_InOut_Achsen;		(*  Schnittstelle zwischen der SPS und dem Regler  *)												
+	inout_service			: DUT_Achse_Service;		(*  Eingangs-Variablen für den Servicebetrieb	 *)
+	inout_Ref_start			: BOOL;						(*  Achse start referenzieren  *)
+	inout_Auto_pos			: REAL;						(*  Auto Sollwert *)
+	inout_Auto_start		: BOOL;						(*  Achse start Positionieren *)
+	inout_Auto_stop			: BOOL;						(*  Achse stopp Positionieren *)
+	inout_Bremsentest_Start	: BOOL;						(*	Bremsentest starten *)
+END_VAR
+
+VAR
+	FB_ReadPos				: MC_ReadActualPosition;	(*  Aktuelle Istposition auslesen *)
+	FB_ReadErrorID			: MC_ReadAxisError;			(*  FehlerID der Achse auslesen  *)
+	FB_ReadStatus			: MC_ReadStatus;
+	FB_POWER				: MC_POWER;					(*  Leistung ein-/ausschalten  *)
+	FB_RESET				: MC_RESET;					(*  Achse resetten *)
+	FB_Stop					: MC_Halt;					(*  Achse anhalten  *)
+	FB_Jog					: MC_Jog;					(*  Achse tippen  *)
+	FB_Move					: MC_MoveAbsolute;			(*  Achse positionieren  *)
+	FB_Move_Seq_1			: MC_MoveAbsolute;
+	FB_Move_Seq_2			: MC_MoveAbsolute;
+	FB_Read_Parameter		: MC_ReadParameterSet;
+	FB_Set_Position			: MC_SetPosition;
+	FB_SoeReset				: Tc2_MC2_Drive.FB_SoEReset;
+	start_seq				: BOOL;						(*  Start Merker Pos1<-> Pos 2 *)
+	ton_verweil				: ton;
+	ton_verzoegert			: tof;
+	temp_in_pos_plus		: BOOL;
+	temp_in_pos_minus		: BOOL;
+	verz_reset				: ton;
+	fl_start				: R_trig;					(* Start als Flanke auswerten und den Zähler erhöhen *)
+	bremsentest_ver			: ton;						(* Verzögerungszeit zum Auswerten *)
+	AnzahlVersuche			: INT;
+	Achsparameter			: ST_AxisParameterSet;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// ***** Achs Status aktualisieren *******************************************************************************************
+	//************************************************************************************************************************
+	inout_NC();
+
+	out_Achs_Status	:= FB_ReadStatus.Status;
+	out_Achs_Error	:= FB_ReadErrorID.AxisErrorID > 0;
+
+	IF out_Achs_Error 
+		OR out_FB_Error
+		OR in_reset
+	THEN
+		inout_Auto_start:=FALSE;
+		inout_Auto_stop:=FALSE;
+	END_IF
+	
+	if not inout_rexroth.S0145_steuerword.5 then
+		inout_rexroth.S0092_drehmoment_grenzwert := REAL_TO_UINT(in_Normal_Drehmoment * 10);
+	end_if
+// ***** Aktuelle Zielposition ***********************************************************************************************
+	//************************************************************************************************************************
+	IF inout_nc.Status.Moving
+	THEN
+		out_ziel_pos := LREAL_TO_REAL(inout_NC.NcToPlc.TargetPos);
+	ELSIF in_auto
+		AND inout_auto_start
+	THEN
+		out_ziel_pos := inout_Auto_pos;
+	ELSIF in_hand
+		AND inout_service.betriebsart = 2				
+			AND inout_service.plus_start
+	THEN
+		out_ziel_pos := inout_service.sollpos_hand;	
+	END_IF	
+	
+// Freigabe positionieren ****************************************************************************************************
+	//************************************************************************************************************************
+	IF NOT in_Freigabe
+	THEN
+		inout_Auto_start 	:= FALSE;
+		FB_Move.Execute		:= FALSE;
+	END_IF	
+	
+// ***** Bremsentest starten *************************************************************************************************
+	//************************************************************************************************************************
+	out_Bremsentest_notwendig:= inout_rexroth.P0539_status_bremse.8; (* P-0-0539.8, Status Zeitintervall des Bremsentests  *)
+	inout_rexroth.S0145_steuerword.2 := inout_Bremsentest_Start	(* P-0-0541, C2100 Kommando Haltesystemüberwachung *)
+											AND inout_NC.Status.NotMoving;
+	fl_start(clk:=inout_Bremsentest_Start);
+	IF fl_start.q
+	THEN
+		AnzahlVersuche:=AnzahlVersuche+1;	
+	END_IF
+	
+		// ***** Bremsentest Zeitverzögert auswerten *********************************************************************************	
+			// ***********************************************************************************************************************
+			bremsentest_ver(IN:=inout_rexroth.S0145_steuerword.2, pt:= T#4S);
+			
+		// ***** Bremsentest iO ******************************************************************************************************
+			// ***********************************************************************************************************************
+			IF bremsentest_ver.Q
+				AND inout_rexroth.P0539_status_bremse.1 (* P-0-0539.1 - Status der Haltebremsenüberwachung *)
+				AND inout_rexroth.P0539_status_bremse.2 (* P-0-0539.2 - Prüfstatus "Bremsenöffnung"  *)
+				AND inout_rexroth.P0539_status_bremse.3 (* P-0-0539.3 - Prüfstatus "Haltemoment"  *)
+			THEN
+				inout_rexroth.S0145_steuerword.2:=FALSE;
+				inout_Bremsentest_Start:=FALSE;
+				AnzahlVersuche:=0;
+				out_Bremsentest_Status:=0;
+			END_IF
+		// ***** Test niO und einen Fehler ausgeben ********************************************************************************** 
+			// ***********************************************************************************************************************
+			IF  bremsentest_ver.Q
+					AND NOT inout_rexroth.P0539_status_bremse.2 (* P-0-0539.2 - Prüfstatus "Bremsenöffnung"  *)
+			THEN
+				out_Bremsentest_Status:=0;
+				inout_Bremsentest_Start:=FALSE;
+			END_IF
+		
+			IF  bremsentest_ver.Q
+					AND NOT inout_rexroth.P0539_status_bremse.3 (* P-0-0539.3 - Prüfstatus "Haltemoment"  *)
+			THEN
+				out_Bremsentest_Status:=0;
+				inout_Bremsentest_Start:=FALSE;
+			END_IF
+			
+			IF out_Bremsentest_Status<>0
+			THEN
+				out_Bremsentest_Fehler:=TRUE;
+				ELSE
+					out_Bremsentest_Fehler:=FALSE;
+			END_IF
+		// ***** Quttierung nach einem Fehler ****************************************************************************************
+			// ***********************************************************************************************************************
+			IF AnzahlVersuche>=4
+			THEN
+				out_Bremsentest_Fehler_3:=TRUE;
+			END_IF
+			IF (in_Bremse_PassQuitt 
+					OR (AnzahlVersuche<4))
+				AND in_Reset
+			THEN
+				IF in_Bremse_PassQuitt
+					AND AnzahlVersuche>=4  
+				THEN
+					AnzahlVersuche:=0;
+				END_IF
+				out_Bremsentest_Fehler_3:=FALSE;
+				out_Bremsentest_Status:=0;
+				inout_Bremsentest_Start:=FALSE;
+			END_IF
+		
+// ***** Hand Betriebsart /Geschwindigkeit zurücksetzen***********************************************************************
+	//************************************************************************************************************************
+	IF NOT in_Hand
+	THEN
+		inout_service.betriebsart	:= 0;
+		inout_service.override		:= 0;
+	END_IF
+
+// ***** Sollposition / Geschwindigkeit umkopieren ***************************************************************************
+	//************************************************************************************************************************
+	IF in_hand
+	THEN
+		FB_Move.Position		:= inout_service.sollpos_hand;
+		FB_Power.Override		:= INT_TO_LREAL(inout_service.override);
+		FB_Move.Velocity		:= in_max_velo;
+		FB_Jog.Velocity			:= in_max_velo;
+		fb_Move_seq_1.Velocity 	:= in_max_velo;
+		fb_Move_seq_2.Velocity 	:= in_max_velo;
+		fb_Move_seq_1.Position	:= inout_service.sollpos_hand;
+		fb_Move_seq_2.Position	:= inout_service.pos_2;
+		
+		inout_rexroth.S0145_steuerword.5 := FALSE;
+	ELSE
+		FB_Move.Position		:= inout_Auto_pos;
+		FB_Power.Override		:= INT_TO_LREAL(in_Auto_Override);
+		FB_Move.Velocity		:= in_max_velo;
+		FB_Jog.Velocity			:= 0.0;
+	END_IF
+	
+	
+// ***** Reset ***************************************************************************************************************
+	//************************************************************************************************************************
+	inout_rexroth.S0145_steuerword.0:=in_Reset;	// S-0-0099 - C0500 Reset Zustandsklasse 1 l
+
+	FB_SoeReset(Axis := inout_NC, Execute := in_Reset OR FB_SoeReset.Busy);
+
+	IF in_Reset
+		AND (out_FB_Error
+		OR out_Achs_Error) 
+		OR ( in_Hand
+				AND inout_service.betriebsart=0
+				AND inout_service.minus_stop ) 
+	THEN
+		FB_Reset.Execute	:= inout_NC.NcToPlc.CoupleState <> 3; // Achse ist kein Slave
+		FB_Stop.Execute		:= FALSE;
+		FB_Move.Execute		:= FALSE;
+		out_FB_Error		:= FALSE;
+		out_FB_ErrorID		:= 0;
+	END_IF
+
+	verz_reset(	in:= FB_Reset.Execute,
+				pt:= T#200MS);
+	IF verz_reset.Q
+	THEN
+		FB_Reset.Execute := FALSE;
+	END_IF
+
+// ***** Achse stoppen *******************************************************************************************************
+	//************************************************************************************************************************
+	IF (in_Hand
+			AND inout_service.minus_stop
+			AND inout_service.betriebsart <> 1)
+		OR inout_Auto_stop
+		OR (NOT in_Freigabe
+			AND inout_NC.Status.Moving
+			AND inout_NC.NcToPlc.CoupleState <> 3) // Achse ist keine Slave Achse
+		OR FB_Move.CommandAborted
+		OR FB_Move.Error
+		OR out_Achs_Error 
+	THEN
+		FB_STOP.Execute				:= TRUE;
+		FB_Move.Execute				:= FALSE;
+		start_seq 					:= FALSE;
+		inout_service.plus_start 	:= FALSE;	
+	END_IF                             
+                                       
+	IF (FB_STOP.Execute                
+		AND FB_STOP.Done)              
+	THEN                               
+		inout_Auto_stop				:= FALSE;
+		FB_STOP.Execute				:= FALSE;
+		inout_service.minus_stop  	:= FALSE;
+	END_IF
+
+// ***** Referenzieren *******************************************************************************************************
+	//************************************************************************************************************************
+// Achse referenzieren - Absolutwert setzen
+	inout_rexroth.S0052_ref_pos:=TRUNC(in_Ref_pos*10000.0);
+	
+	inout_rexroth.S0145_steuerword.1	:= NOT FB_Power.Enable
+						AND ((in_Hand
+								AND inout_service.betriebsart=4
+								AND inout_service.plus_start)
+							OR (in_Auto
+								AND inout_Ref_start));
+
+	IF inout_service.betriebsart=4
+		AND (inout_rexroth.S0052_ref_pos = TRUNC(out_ist_pos*10000.0))
+	THEN
+		inout_service.plus_start:=FALSE;	
+	END_IF
+// ***** Achse positionieren *************************************************************************************************
+	//************************************************************************************************************************
+	IF ((in_Hand
+			AND inout_service.betriebsart = 2				
+			AND inout_service.plus_start)		
+		OR (in_auto
+			AND inout_Auto_start))
+		AND NOT FB_Move.Done
+		AND NOT FB_Move.busy
+		AND NOT out_Achs_Error // optimierung 01.10.2020
+		AND NOT out_Bremsentest_Fehler
+		AND in_Freigabe
+	THEN
+		FB_Move.Execute:=TRUE;	
+	END_IF
+
+	IF (FB_Move.Execute
+		AND FB_Move.Done)
+		OR out_Achs_Error
+	THEN
+		FB_Move.Execute				:=FALSE;
+		inout_Auto_start			:=FALSE;
+		inout_service.plus_start 	:=FALSE;
+	END_IF
+	
+	IF inout_service.betriebsart = 2
+		AND (FB_Move.Execute
+		AND FB_Move.Done)
+	THEN 
+		FB_Move.Execute := FALSE;
+	END_IF
+// ***** Handbetrieb - Achse POS1<->POS 2 ************************************************************************************
+	//************************************************************************************************************************
+	IF  in_hand
+		AND inout_service.betriebsart = 3
+		AND inout_service.plus_start
+	THEN 
+		start_seq := TRUE;
+	END_IF
+
+// ***** Handbetrieb - Achse tippen ******************************************************************************************
+	//************************************************************************************************************************
+	IF in_Hand
+		AND inout_service.betriebsart=1
+		AND NOT FB_Jog.CommandAborted
+		AND NOT FB_Jog.Error
+		AND NOT out_Bremsentest_Fehler
+		AND in_Freigabe
+	THEN
+		FB_Jog.JogForward	:= inout_service.plus_start 
+								AND inout_nc.NcToPlc.ActPos < (Achsparameter.fEncSoftEndMax - in_PosFenster);
+		FB_Jog.JogBackwards	:= inout_service.minus_stop
+								AND inout_nc.NcToPlc.ActPos > (Achsparameter.fEncSoftEndMin + in_PosFenster);
+		
+		// Geschwindigkeit tippen vor den Endlagen reduzieren
+			// letzer 1% des Fahrwegs
+		IF (FB_Jog.JogForward 
+			AND inout_nc.NcToPlc.ActPos 
+				> Achsparameter.fEncSoftEndMax - ((Achsparameter.fEncSoftEndMax - Achsparameter.fEncSoftEndMin) * 0.01))
+			
+			OR (FB_Jog.JogBackwards
+				AND inout_nc.NcToPlc.ActPos  
+					< Achsparameter.fEncSoftEndMin + ((Achsparameter.fEncSoftEndMax - Achsparameter.fEncSoftEndMin) * 0.01))
+					
+			AND FB_Power.Override > 5
+		THEN
+			FB_Power.Override := 5;
+			
+			// letzten 5% des Fahrwegs
+		ELSIF (FB_Jog.JogForward 
+			AND inout_nc.NcToPlc.ActPos 
+				> Achsparameter.fEncSoftEndMax - ((Achsparameter.fEncSoftEndMax - Achsparameter.fEncSoftEndMin) * 0.05))
+			
+			OR (FB_Jog.JogBackwards
+				AND inout_nc.NcToPlc.ActPos  
+					< Achsparameter.fEncSoftEndMin + ((Achsparameter.fEncSoftEndMax - Achsparameter.fEncSoftEndMin) * 0.05))
+					
+			AND FB_Power.Override > 10	
+		THEN
+			FB_Power.Override := 10;
+		END_IF
+	ELSE
+		FB_Jog.JogForward	:= FALSE;
+		FB_Jog.JogBackwards	:= FALSE;
+	END_IF
+	
+// ***** Aufruf der FB´s  ****************************************************************************************************
+	//************************************************************************************************************************
+	 ACT_Achse_NC_PTP();	
+				
+// ***** Bremse lösen ********************************************************************************************************
+	//************************************************************************************************************************
+	ton_verzoegert.IN 	:= FB_ReadStatus.Status.HasJob; 
+	ton_verzoegert.pt 	:= T#2S;
+	ton_verzoegert();
+	out_bremse			:= ton_verzoegert.Q;
+	
+// ***** Achse in Position ***************************************************************************************************
+	//************************************************************************************************************************
+	out_in_pos := FB_ReadStatus.Status.InTargetPosition
+					AND ((out_ist_pos >= (inout_Auto_pos - in_PosFenster))
+					AND (out_ist_pos <= (inout_Auto_pos + in_PosFenster)));
+					
+// ***** Achse Referenzert ***************************************************************************************************
+	//************************************************************************************************************************
+	out_nicht_ref:=	 inout_rexroth.S0144_statusword.0;	//NOT FB_ReadStatus.Status.Homed;
+
+// ***** FB Fehler auswerten und ausgeben ************************************************************************************
+	//************************************************************************************************************************
+	IF FB_Jog.Error
+		AND FB_Jog.ErrorID > 0
+	THEN
+		out_FB_Error	:= TRUE;
+		out_FB_ErrorID	:= FB_Jog.ErrorID;
+		
+	ELSIF FB_Move.Error
+		AND FB_Move.ErrorID>0
+	THEN
+		FB_Move.Execute	:= FALSE;
+		out_FB_Error	:= TRUE;
+		out_FB_ErrorID	:= FB_Move.ErrorID;
+		
+	ELSIF FB_Stop.Error
+		AND FB_Stop.ErrorID>0
+	THEN	
+		FB_Stop.Execute	:= FALSE;
+		out_FB_Error	:= TRUE;
+		out_FB_ErrorID	:= FB_Stop.ErrorID;
+		
+	ELSIF FB_Reset.Error
+		AND FB_Reset.ErrorID>0
+	THEN
+		FB_Reset.Execute	:= FALSE;
+		out_FB_Error		:= TRUE;
+		out_FB_ErrorID		:= FB_Reset.ErrorID;
+	END_IF			
+
+					
+// ***** Servicetasten zurück setzen ************************************************************************************
+	//************************************************************************************************************************
+	IF inout_service.betriebsart <> 1
+		AND inout_service.betriebsart <> 4
+	THEN
+		inout_service.plus_start := FALSE;				
+		inout_service.minus_stop := FALSE;				
+	END_IF
+	
+	inout_Auto_start := FALSE;				
+					
+					
+					]]></ST>
+    </Implementation>
+    <Action Name="ACT_Achse_NC_PTP" Id="{e1370058-1248-40f0-81ee-583beaa8bb5d}">
+      <Implementation>
+        <ST><![CDATA[	
+	FB_ReadErrorID(	Axis:=inout_NC,
+					Enable:=TRUE,
+					AxisErrorID=>);
+	out_achs_ErrorID:= DWORD_TO_DINT(FB_ReadErrorID.AxisErrorID);	
+	
+	
+	FB_ReadPos(		Axis:=inout_NC,
+					Enable:=TRUE,
+					Position=> ,
+					Position=> );				
+				
+	out_ist_pos:=inout_service.istpos:=LREAL_TO_REAL(FB_ReadPos.Position);
+	
+	FB_Read_Parameter(	Parameter:= Achsparameter, 
+						Axis:= inout_NC, 
+						Execute:= in_Reglersperre, 
+						Done=> , 
+						Busy=> , 
+						Error=> , 
+						ErrorID=> );
+			
+	FB_ReadStatus(	Axis:=inout_NC,
+					Enable:=TRUE);
+				
+	FB_Power.Enable:=in_Reglersperre AND (inout_service.betriebsart<>4	OR inout_ref_start);	
+	FB_Power.Enable_Negative := FB_Power.Enable AND in_Endschalter_Min;
+	FB_Power.Enable_Positive :=	FB_Power.Enable	AND in_Endschalter_Max;
+				
+	FB_Power(	Axis:=inout_NC,
+				Enable:=,
+				Enable_Positive:=,
+				Enable_Negative:=,
+				Override:=,
+				BufferMode:=MC_Aborting,
+				Options:=	);
+				
+	FB_Reset(	Axis:=inout_NC,
+				Execute:=	);
+				
+	FB_Stop(	Axis:=inout_NC,
+				Execute:=,
+				Deceleration:=0,				(* Bei einem Wert von 0 wirkt die mit dem letzten Move-Kommando parametrierte Verzögerung *)
+				Jerk:=0,						(* Bei einem Wert von 0 wirkt der mit dem letzten Move-Kommando parametrierte Ruck *)		
+				BufferMode:= MC_Aborting);		 // Wichtig !!!!				
+																		
+	FB_Move(	Axis:=inout_NC,
+				Execute:=,
+				Position:=,
+				Velocity:=,
+				Acceleration:=0,				(* Beschleunigung, bei einem Wert von 0 wirkt die Standardbeschleunigung aus der Achskonfiguration im System Manager *)
+				Deceleration:=0,				(* Verzögerung, bei einem Wert von 0 wirkt die Standardverzögerung aus der Achskonfiguration im System Manager *)
+				Jerk:=0, 						(* Ruck, bei einem Wert von 0 wirkt der Standardruck aus der Achskonfiguration im System Manager *)
+				BufferMode:= MC_Buffered);		
+									
+	FB_Jog(		Axis:=inout_NC,
+				JogForward:=,
+				JogBackwards:=,
+				Mode:= MC_JOGMODE_STANDARD_SLOW, //MC_JOGMODE_CONTINOUS,
+				Position:=,						(* nicht in diesem Mode notwendig *)
+				Velocity:=,
+				Acceleration:=0,				(* Beschleunigung, bei einem Wert von 0 wirkt die Standardbeschleunigung aus der Achskonfiguration im System Manager *)
+				Deceleration:=0,				(* Verzögerung, bei einem Wert von 0 wirkt die Standardverzögerung aus der Achskonfiguration im System Manager *)
+				Jerk:=0 );						(* Ruck, bei einem Wert von 0 wirkt der Standardruck aus der Achskonfiguration im System Manager *)
+
+	
+	ton_verweil(in:= (NOT fb_move_seq_1.active 
+						AND NOT fb_move_seq_2.active
+						AND inout_service.betriebsart=3),
+				pt:= INT_TO_TIME(inout_service.zeit));
+				
+	FB_Move_Seq_1(
+				Execute:= 	(start_seq 
+								AND NOT fb_move_seq_2.busy 
+								AND ton_verweil.Q),
+				Position:= 			,
+				Velocity:= 			,
+				Acceleration:= ,				(* Beschleunigung, bei einem Wert von 0 wirkt die Standardbeschleunigung aus der Achskonfiguration im System Manager *)
+				Deceleration:= ,			 	(* Verzögerung, bei einem Wert von 0 wirkt die Standardverzögerung aus der Achskonfiguration im System Manager *)
+				Jerk:=,							(* Ruck, bei einem Wert von 0 wirkt der Standardruck aus der Achskonfiguration im System Manager *) 
+				BufferMode:= MC_Buffered,
+				Options:= ,
+				Axis:=inout_NC,
+				Done=>				,
+				Busy=> 				,
+				Active=> 			,
+				CommandAborted=> 	,
+				Error=> 			,
+				ErrorID=> 			);
+
+
+	FB_Move_Seq_2(
+				Execute:= 		(start_seq	
+								AND fb_move_seq_1.done
+								AND ton_verweil.Q),
+				Position:= 		,
+				Velocity:= 			,
+				Acceleration:= ,				(* Beschleunigung, bei einem Wert von 0 wirkt die Standardbeschleunigung aus der Achskonfiguration im System Manager *)
+				Deceleration:= ,				(* Verzögerung, bei einem Wert von 0 wirkt die Standardverzögerung aus der Achskonfiguration im System Manager *)
+				Jerk:= ,						(* Ruck, bei einem Wert von 0 wirkt der Standardruck aus der Achskonfiguration im System Manager *)
+				BufferMode:= MC_Buffered,
+				Options:= ,
+				Axis:= inout_NC,
+				Done=>				,
+				Busy=> 				,
+				Active=> 			,
+				CommandAborted=> 	,
+				Error=> 			,
+				ErrorID=> 			);
+]]></ST>
+      </Implementation>
+    </Action>
+    <Method Name="M_AutoPos" Id="{d0206799-2218-4923-b3e4-f3ac328db7ab}">
+      <Declaration><![CDATA[METHOD M_AutoPos : BOOL
+VAR_INPUT
+	SollPos		:REAL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[	
+	// Drehmomentgrenze deaktivieren
+	inout_rexroth.S0145_steuerword.5 := FALSE;
+
+	if not inout_rexroth.S0144_statusword.6 then
+		FB_Move.Options.IgnorePositionMonitoring := false;
+		
+		inout_Auto_pos := SollPos;
+		inout_Auto_start := TRUE;
+	
+		IF out_in_pos 
+		AND Func_InRange(IstPos := inout_NC.NcToPlc.ActPos, SollPos := inout_Auto_pos, Fenster := in_PosFenster) 
+		THEN
+			M_AutoPos := TRUE;
+		END_IF 
+		
+	end_if]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_AutoTorque" Id="{d0af9521-f7f4-41fb-9b78-17cc3a601dc5}">
+      <Declaration><![CDATA[METHOD M_AutoTorque : BOOL
+VAR_INPUT
+	SollPos	: REAL;
+	Torque	: REAL;  // Prozentwert
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[	
+	inout_rexroth.S0145_steuerword.5 := TRUE;
+	if inout_rexroth.S0144_statusword.6 then
+		FB_Move.Options.IgnorePositionMonitoring := true;
+		inout_rexroth.S0092_drehmoment_grenzwert := REAL_TO_UINT(Torque * 10);
+	
+		inout_Auto_pos := SollPos;
+		inout_Auto_start := TRUE;
+	
+		IF (out_in_pos 
+		AND Func_InRange(IstPos := inout_NC.NcToPlc.ActPos, SollPos := inout_Auto_pos, Fenster := in_PosFenster))
+		OR inout_rexroth.S0144_statusword.5
+		THEN
+			M_AutoTorque := TRUE;
+		END_IF 
+	
+	end_if
+]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

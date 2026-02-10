@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <GVL Name="GVL_Blink" Id="{17dc54a6-79d7-4692-a948-4e31d046bba6}">
+    <Declaration><![CDATA[{attribute 'Tc2GvlVarNames'}
+VAR_GLOBAL
+	t_50ms				:BOOL; // Blinktakt - 50ms an, 50ms aus
+	t_125ms				:BOOL; // Blinktakt - 250ms an, 250ms aus
+	t_250ms				:BOOL; // Blinktakt - 250ms an, 250ms aus
+	t_500ms				:BOOL; // Blinktakt - 500ms an, 500ms aus
+	t_750ms				:BOOL; // Blinktakt - 750ms an, 750ms aus
+	t_1000ms			:BOOL; // Blinktakt - 1000ms an, 1000ms aus
+	t_2000ms			:BOOL; // Blinktakt - 2000ms an, 2000ms aus
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>

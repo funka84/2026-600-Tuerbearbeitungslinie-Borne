@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="st_MaschParameter" Id="{f393c68a-71b9-4f47-922b-801bb8ebd6ba}">
+    <Declaration><![CDATA[TYPE st_MaschParameter :
+STRUCT
+	sName		:STRING;
+
+	bWert		:BOOL;
+	nWert		:LREAL;
+	tWert		:TIME;
+END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

@@ -1,0 +1,210 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_FU_Rexroth" Id="{95e9f1f7-1612-4093-ada6-4c78aa388238}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_FU_Rexroth
+VAR_INPUT
+	in_PD					:DUT_Rexroth_FU_PD_IN;
+	in_NotHalt				:BOOL;	// 1=NotHalt aktiv
+	in_Reset				:BOOL;	
+	in_Auto_vor				:BOOL;	
+	in_Auto_zur				:BOOL;	
+	in_Auto_Drehzahl		:UINT;	
+	in_Nenndrehzahl			:UINT;	
+	in_Hand					:BOOL;	
+END_VAR
+VAR_OUTPUT
+	out_PD					:DUT_Rexroth_FU_PD_OUT;
+	out_Stoerung			:BOOL;	(* Umrichter meldet Störung *)
+	out_Nicht_Bereit		:BOOL;	(* Umrichter ist nicht betriebsbereit *)
+	out_Drehzahl_Ist		:INT;	(* aktuelle Drehzahl *)
+	out_ist_90				:BOOL;	(* 90% der Soll Drehzahl erreicht *)
+	out_Fehlernummer		:BYTE;	(* Fehlernummer *)
+	out_Dreht				:BOOL;
+END_VAR
+
+VAR_IN_OUT
+	inout_Visu_steuern			:DUT_SEW_FU_Visu;	(* Visu Steuerstruktur + *)
+END_VAR
+
+VAR
+	VERZ_90_OK			:ton;
+END_VAR
+
+VAR_TEMP
+	RECHTSLAUF				:BOOL;
+	LINKSLAUF				:BOOL;
+	TEMP_V					:REAL;
+	TEMP_DREHZAHL_SOLL		:REAL;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+(* Steuerwort --------------------------------------------------------------------*)
+(*
+Bit		Wert	Bedeutung
+15…8 	-		Fehlercode
+	--------------------------------------------------------------------------------
+7		1		Fehler
+		0		kein Fehler
+	--------------------------------------------------------------------------------
+6		1		Begrenzung Überstrom
+		0		Normal
+	--------------------------------------------------------------------------------
+5		1		Begrenzung Überspannung
+		0		Normal
+	--------------------------------------------------------------------------------
+4		1		Verzögerung
+		0		keine Verzögerung
+	--------------------------------------------------------------------------------
+3		1		Beschleunigung
+		0		keine Beschleunigung
+	--------------------------------------------------------------------------------
+2		1		Tippbetrieb
+		0		kein Tippbetrieb
+	--------------------------------------------------------------------------------
+1		1		Start
+		0		Stop
+	--------------------------------------------------------------------------------
+0		1		Rückwärts
+		0		Vorwärts
+*)
+
+ //Störung *************************************************************************
+	//out_Fehlernummer :=in_PD.PD_1_STATUSWORT.B1;
+
+	IF NOT in_PD.PD_1_STATUSWORT.7 
+	THEN
+		out_Fehlernummer :=0;
+	END_IF
+
+	out_Stoerung	:=in_PD.PD_1_STATUSWORT.7 ;
+// Bereit ***************************************************************************
+	out_Nicht_Bereit:=in_PD.PD_1_STATUSWORT.7
+						OR in_PD.PD_1_STATUSWORT.6
+						OR in_PD.PD_1_STATUSWORT.5;
+//Ausgabe ISt-Drehzahl***************************************************************
+	out_Drehzahl_Ist				 :=WORD_TO_INT(in_PD.PD_2_IST_DREHZAHL)*(in_Nenndrehzahl/1000);
+	
+	inout_Visu_steuern.istdrehzahl	:=WORD_TO_INT(in_PD.PD_2_IST_DREHZAHL)*(in_Nenndrehzahl/1000);
+
+	out_Dreht:=out_Drehzahl_Ist>10;
+
+//	VERZ_90_OK(in:=out_Dreht AND out_PD.PD_1_Steuerwort.0,
+//						pt:=T#9S);	
+//	out_ist_90:=VERZ_90_OK.Q;	//ABS(out_Drehzahl_Ist) >ABS((temp_drehzahl_soll/100*90))
+	out_ist_90:=ABS(out_Drehzahl_Ist) >ABS((temp_drehzahl_soll/100*90));
+
+	
+//Rechtslauf Hand-Automatik (mit Drehrichtungstausch)******************************************
+	rechtslauf := ((inout_Visu_steuern.plus_start 
+						AND in_HAnd)
+				  OR(in_auto_vor 
+						AND NOT IN_HAND ));
+		
+//Linkslauf Hand-Automatik (mit Drehrichtungstausch)****************************************
+	linkslauf:=((inout_Visu_steuern.minus_stop 
+						AND IN_HAND)
+				  OR(in_auto_zur 
+						AND NOT IN_HAND ));
+	
+//Geschwindigkeit umkopieren************************************************************
+	IF IN_HAND 
+	THEN 
+		temp_v := inout_Visu_steuern.override/(in_Nenndrehzahl/1000);
+		ELSE 
+			temp_v := in_Auto_Drehzahl/(in_Nenndrehzahl/1000);
+	END_IF
+	
+//Drehzahl ermitteln*************************************************************************
+	temp_drehzahl_soll:= temp_v;
+
+	IF temp_drehzahl_soll >= in_Nenndrehzahl
+		THEN temp_drehzahl_soll:=in_Nenndrehzahl;
+	END_IF
+
+// -------------------------------------------------------------------------------------------
+	// ---------------------------------------------------------------------------------------
+	// Prozessdaten schreiben
+	
+	//Vorgabe Soll-Drehzahl--------------------------------------------------------------------
+	out_PD.PD_2_solldrehzahl :=TO_UINT(temp_drehzahl_soll);
+
+	//	Startbefehl----------------------------------------------------------------------------
+	out_PD.PD_1_Steuerwort.0 := NOT in_NotHalt
+								AND (linkslauf OR rechtslauf); 
+	//	Tippbetrieb	----------------------------------------------------------------------------							
+	out_PD.PD_1_Steuerwort.1 := NOT in_NotHalt
+								AND IN_HAND
+								AND inout_Visu_steuern.betriebsart=1;
+	//	Vorwärts(0)/Rückwerts(1)----------------------------------------------------------------
+	out_PD.PD_1_Steuerwort.2 := ((linkslauf 
+										AND NOT in_Hand)                                                     
+									OR IN_HAND   
+										AND inout_Visu_steuern.betriebsart<>1                      
+										AND (inout_Visu_steuern.minus_stop)) ;                     
+	//	Stopp gemäß Parameter-------------------------------------------------------------------
+	out_PD.PD_1_Steuerwort.3 := NOT linkslauf                                                   
+								AND NOT rechtslauf;                                             
+	//	Not-Aus (Not-Aus Rampe)	----------------------------------------------------------------
+	out_PD.PD_1_Steuerwort.4 := in_NotHalt;                                                  
+	//	Reset                                                                                   
+	out_PD.PD_1_Steuerwort.5 := IN_RESET;                                                       
+	//	Stop Beschl./Verz. mit internen Rampen--------------------------------------------------
+	out_PD.PD_1_Steuerwort.6 := FALSE;                                                          
+	//	Steuerwort aktivieren-------------------------------------------------------------------
+	out_PD.PD_1_Steuerwort.7 := TRUE;                                                           
+	//	Austrudeln------------------------------------------------------------------------------
+	out_PD.PD_1_Steuerwort.8 := FALSE;                                                          
+	//	Reserve---------------------------------------------------------------------------------
+	out_PD.PD_1_Steuerwort.9  := FALSE;
+	out_PD.PD_1_Steuerwort.10 := FALSE;
+	out_PD.PD_1_Steuerwort.11 := FALSE;
+	out_PD.PD_1_Steuerwort.12 := FALSE;
+	out_PD.PD_1_Steuerwort.13 := FALSE;
+	out_PD.PD_1_Steuerwort.14 := FALSE;
+	out_PD.PD_1_Steuerwort.15 := FALSE;
+	
+(* Steuerwort --------------------------------------------------------------------*)
+(*
+Bit		Wert	Bedeutung
+15…9 	-		Reserviert
+	--------------------------------------------------------------------------------
+8		1		Austrudeln
+		0		Inaktiv
+	--------------------------------------------------------------------------------
+7		1		Steuerwort aktiv
+		0		Inaktiv
+	--------------------------------------------------------------------------------
+6		1		Stopp Beschl./Verz. aktiv (stoppt den internen Beschleunigungs-/Verzögerungsrampengenerator)
+		0		Inaktiv
+	--------------------------------------------------------------------------------
+5		1		Fehler Rücksetzen aktiv
+		0		Inaktiv
+	--------------------------------------------------------------------------------
+4		1		Not-Aus aktiv
+		0		Inaktiv
+	--------------------------------------------------------------------------------
+3		1		Stopp gemäß Parametereinstellung
+		0		Inaktiv
+	--------------------------------------------------------------------------------
+2		1		Rückwärts
+		0		Vorwärts
+	--------------------------------------------------------------------------------
+1		1		Tippbetrieb aktiv (Schrittrichtung bestimmt durch Bit 2)
+		0		Inaktiv
+	--------------------------------------------------------------------------------
+0		1		Startbefehl aktiv
+		0		Inaktiv
+
+*)
+
+
+
+
+
+
+
+
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

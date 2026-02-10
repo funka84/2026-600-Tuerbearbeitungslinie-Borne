@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="DUT_Ventil_VISU" Id="{2de4f2f2-eea3-44e6-a682-2ca6577d15fa}">
+    <Declaration><![CDATA[TYPE DUT_Ventil_VISU :
+STRUCT
+	hand_vor				:BOOL;	//Hand vorfahren
+	hand_zur				:BOOL;	//Hand zurückfahren
+	reset					:BOOL;	//intern gespeicherte Startsignale löschen
+	service					:BOOL;	//1 = ALLE Überwachungen deaktiviert
+	status					:BYTE;	//0=??? 1=vor 2=ist vor 3=fehler vor 4=zur 5=ist zur 6=Fehler zur 7=Fehler vor zur
+	para					:DUT_Ventil_para;
+END_STRUCT
+END_TYPE	
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="DUT_Achse_koppeln" Id="{d2292559-ceb0-43bf-82c5-06a008ae1896}">
+    <Declaration><![CDATA[TYPE DUT_Achse_koppeln :
+STRUCT
+	
+	koppeln				:BOOL;
+	entkoppeln			:BOOL;
+	
+	busy				:BOOL;
+	gekoppelt			:BOOL;
+	Err_Schiefstand		:BOOL;
+	Warn_Schiefstand	:BOOL;
+	max_dif				:REAL:=10;
+	
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

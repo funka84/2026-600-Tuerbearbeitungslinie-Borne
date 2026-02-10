@@ -1,0 +1,221 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Busdiagnose" Id="{aa787b82-7154-4af0-9ec7-142ff8c1b892}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Busdiagnose
+VAR_INPUT
+			
+	
+END_VAR
+VAR_OUTPUT
+	
+END_VAR
+VAR_IN_OUT
+Bus:DUT_Busdiagnose;
+END_VAR
+VAR
+{attribute 'tc_no_symbol'}
+StatesLesen : FB_ecGetAllSlaveStates;
+{attribute 'tc_no_symbol'}
+AddressenLesen : FB_EcGetConfSlaves;
+{attribute 'tc_no_symbol'}
+TopologieLesen: FB_EcGetSlaveTopologyInfo;
+{attribute 'tc_no_symbol'}
+AnzahlEtherCatDevices: FB_EcGetSlaveCount;
+{attribute 'tc_no_symbol'}
+Slaveslesen: FB_EcGetScannedSlaves;
+{attribute 'tc_no_symbol'}
+States	 : ARRAY [0..ec_Max_Slaves] OF ST_EcSlaveState;
+{attribute 'tc_no_symbol'}
+StatesAlt	 : ARRAY [0..ec_Max_Slaves] OF ST_EcSlaveState;
+{attribute 'tc_no_symbol'}
+Config	 : ARRAY [0..ec_Max_Slaves] OF ST_EcSlaveConfigData;
+{attribute 'tc_no_symbol'}
+Topology	 : ARRAY [0..ec_Max_Slaves] OF ST_TopologyDataEx;
+{attribute 'tc_no_symbol'}
+Slaves	 : ARRAY [0..ec_Max_Slaves] OF ST_EcSlaveScannedData;
+{attribute 'tc_no_symbol'}
+lesen :BOOL;
+{attribute 'tc_no_symbol'}
+
+{attribute 'tc_no_symbol'}
+busy:BOOL;
+{attribute 'tc_no_symbol'}
+error:BOOL;
+{attribute 'tc_no_symbol'}
+errorId: UDINT;
+{attribute 'tc_no_symbol'}
+Slave: UINT;
+
+{attribute 'tc_no_symbol'}	
+busy2:BOOL;
+{attribute 'tc_no_symbol'}
+error2:BOOL;
+{attribute 'tc_no_symbol'}
+errorID2: UDINT;
+{attribute 'tc_no_symbol'}
+Slaves2: UINT;
+
+{attribute 'tc_no_symbol'}	
+busy3:BOOL;
+{attribute 'tc_no_symbol'}
+error3:BOOL;
+{attribute 'tc_no_symbol'}
+errorID3: UDINT;
+{attribute 'tc_no_symbol'}
+Slaves3: UINT;
+
+{attribute 'tc_no_symbol'}	
+busy4:BOOL;
+{attribute 'tc_no_symbol'}
+error4:BOOL;
+{attribute 'tc_no_symbol'}
+errorID4: UDINT;
+{attribute 'tc_no_symbol'}
+Slaves4: UINT;
+
+{attribute 'tc_no_symbol'}	
+busy5:BOOL;
+{attribute 'tc_no_symbol'}
+error5:BOOL;
+{attribute 'tc_no_symbol'}
+errorID5: UDINT;
+{attribute 'tc_no_symbol'}
+Slaves5: UINT;
+
+{attribute 'tc_no_symbol'}	
+zyklen : INT;
+{attribute 'tc_no_symbol'}
+i: UDINT;
+{attribute 'tc_no_symbol'}	
+AnzahlFehler :UINT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+
+AnzahlEtherCatDevices(
+	sNetId:= F_CreateAmsNetId(nIds:=  bus.AmsNetId), 
+	bExecute:= lesen, 
+	tTimeout:=T#500MS , 
+	bBusy=> busy4 , 
+	bError=> error4, 
+	nErrId=>errorID4 , 
+	nSlaves=> Bus.AnzahlTeilnehmer);
+
+StatesLesen(
+	sNetId:= F_CreateAmsNetId(nIds:=  bus.AmsNetId),
+	pStateBuf:= ADR(States), 
+	cbBufLen:= SIZEOF(States), 
+	bExecute:= lesen, 
+	tTimeout:= T#500MS, 
+	bBusy=>busy , 
+	bError=> error, 
+	nErrId=> errorId, 
+	nSlaves=> Slave
+ );
+ 
+ AddressenLesen(
+	sNetId:=F_CreateAmsNetId(nIds:=  bus.AmsNetId), 
+	pArrEcConfSlaveInfo:= ADR(Config) , 
+	cbBufLen:= SIZEOF(Config), 
+	bExecute:= lesen, 
+	tTimeout:=  T#500MS, 
+	bBusy=> busy2, 
+	bError=> error2,
+	nErrorId=> errorID2, 
+	nSlaves=> Slaves2);
+	
+TopologieLesen(
+	sNetId:= F_CreateAmsNetId(nIds:=  bus.AmsNetId), 
+	pAddrBuf:= ADR(Topology) , 
+	cbBufLen:= SIZEOF(Topology), 
+	bExecute:= lesen, 
+	tTimeout:= T#500MS, 
+	bBusy=> busy3, 
+	bError=> error3,
+	nErrId=> errorID3, 
+	nSlaves=> Slaves3);
+	
+	Slaveslesen(sNetId:= F_CreateAmsNetId(nIds:=  bus.AmsNetId), 
+	pArrEcScannedSlaveInfo := ADR(slaves) , 
+	cbBufLen:= SIZEOF(slaves), 
+	bExecute:= lesen, 
+	tTimeout:= T#500MS, 
+	bBusy=> busy5, 
+	bError=> error5,
+	nErrorId=> errorID5, 
+	nSlaves=> Slaves5);
+	
+	zyklen := zyklen + 1;
+	
+	IF zyklen >= 100 THEN
+		zyklen := 0;
+		lesen := NOT lesen;
+	END_IF
+	
+	IF Bus.AnzahlTeilnehmer > SIZEOF(Bus.Daten) THEN
+		Bus.AnzahlTeilnehmer := SIZEOF(Bus.Daten);
+		END_IF
+		
+	IF  Bus.AnzahlTeilnehmer > 0 AND lesen AND Config[0].sType <> ''
+AND NOT busy
+AND NOT busy2
+AND NOT busy3
+AND NOT busy4
+//AND NOT busy5
+
+ THEN
+		FOR i := 0 TO  Bus.AnzahlTeilnehmer-1 DO
+			
+			Bus.Daten[i].adresse := Config[i].nAddr;
+			Bus.Daten[i].deviceState := States[i].deviceState;
+			Bus.Daten[i].linkState := States[i].linkState;
+			Bus.Daten[i].Name := Config[i].sName;
+			Bus.Daten[i].PortA := Topology[i].stPhysicalAddr.portA;
+			Bus.Daten[i].PortB := Topology[i].stPhysicalAddr.portB;
+			Bus.Daten[i].PortC := Topology[i].stPhysicalAddr.portC;
+			Bus.Daten[i].PortD := Topology[i].stPhysicalAddr.portD;
+			Bus.Daten[i].productCode := Config[i].stSlaveIdentity.productCode;
+			Bus.Daten[i].revisionNo := Config[i].stSlaveIdentity.revisionNo;
+			Bus.Daten[i].serialnNo := Config[i].stSlaveIdentity.serialNo;
+			Bus.Daten[i].Typ := Config[i].nDevType;
+			Bus.Daten[i].TypName := Config[i].sType;
+			
+		END_FOR
+	
+
+	FOR i := 0 TO  Bus.AnzahlTeilnehmer-1 DO
+		IF States[i].deviceState <> StatesAlt[i].deviceState
+			OR States[i].linkState <> StatesAlt[i].linkState
+			THEN
+			IF Bus.Update = 100 THEN
+				Bus.Update :=0;
+			ELSE				
+				Bus.Update :=Bus.Update+ 1;
+				EXIT;
+			END_IF	
+		END_IF			
+	END_FOR
+	
+	AnzahlFehler := 0;
+	FOR i := 0 TO  Bus.AnzahlTeilnehmer-1 DO
+		StatesAlt[i].deviceState := States[i].deviceState;
+			StatesAlt[i].linkState := States[i].linkState;
+			IF StatesAlt[i].deviceState <> 8 //OR StatesAlt[i].linkState <> 36
+				THEN
+					AnzahlFehler := AnzahlFehler + 1;
+					
+			END_IF		
+	END_FOR
+	//Bus.AnzahlFehler := Bus.AnzahlFehler - 234;
+	IF AnzahlFehler <=0 THEN
+		AnzahlFehler := 0;
+		ELSE
+			AnzahlFehler := AnzahlFehler ;//-233;
+		END_IF
+	END_IF
+	bus.AnzahlFehler := AnzahlFehler;
+Bus.FehlerfreiAktiv := NOT error AND NOT error2 AND NOT error3 AND NOT error4;]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

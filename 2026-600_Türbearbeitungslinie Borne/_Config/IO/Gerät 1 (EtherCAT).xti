@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<TcSmItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2012/07/TcSmProject" TcSmVersion="1.0" TcVersion="3.1.4026.20" ClassName="CDevEtherCATDef" SubType="111">
+	<Device Id="1" DevType="111" DevFlags="#x0003" AmsPort="28673" AmsNetId="169.254.68.135.2.1" RemoteName="Gerät 1 (EtherCAT)" InfoImageId="2">
+		<Name>__FILENAME__</Name>
+		<AddressInfo>
+			<Pnp>
+				<DeviceDesc></DeviceDesc>
+				<DeviceName></DeviceName>
+				<DeviceData>000000000000</DeviceData>
+			</Pnp>
+		</AddressInfo>
+		<Image Id="1" AddrType="9" ImageType="3">
+			<Name>Prozessabbild</Name>
+		</Image>
+		<Image Id="4" AddrType="10" ImageType="3">
+			<Name>Prozessabbild-2</Name>
+		</Image>
+		<Box File="+FS1-3K1 (BK1120).xti" Id="1">
+			<EtherCAT PortABoxInfo="#x00ffffff"/>
+		</Box>
+		<Box File="+K110-1K1 (BK1120).xti" Id="7">
+			<EtherCAT PortABoxInfo="#x02000001"/>
+		</Box>
+		<Box File="=3100+FS2-16T1 (Bohraggr Schlosskastenfräser).xti" Id="3">
+			<EtherCAT PortABoxInfo="#x02000007"/>
+		</Box>
+		<Box File="=3100+FS2-17T1 (Bohraggr Vorbohren).xti" Id="20">
+			<EtherCAT PortABoxInfo="#x01000003"/>
+		</Box>
+		<Box File="=3100+FS2-18T1 (Bohraggr Stulpfräser).xti" Id="21">
+			<EtherCAT PortABoxInfo="#x01000014"/>
+		</Box>
+		<Box File="=3200+FS2-16T1 (Bohraggr Stufenbohrer).xti" Id="22">
+			<EtherCAT PortABoxInfo="#x01000015"/>
+		</Box>
+		<Box File="=3200+FS2-17T1 (Bohraggr Stulpfräser).xti" Id="23">
+			<EtherCAT PortABoxInfo="#x01000016"/>
+		</Box>
+		<Box File="=3300+FS2-16T1 (Bohraggr Schlüsselloch unten).xti" Id="24">
+			<EtherCAT PortABoxInfo="#x01000017"/>
+		</Box>
+		<Box File="=3400+FS2-16T1 (Bohraggr Schlüsselloch oben).xti" Id="25">
+			<EtherCAT PortABoxInfo="#x01000018"/>
+		</Box>
+		<Box File="=3510+FS2-6T1 (Transport Schlossseite X-Achse).xti" Id="26">
+			<EtherCAT PortABoxInfo="#x01000019"/>
+		</Box>
+		<Box File="=3520+FS2-6T1 (Transport Bandseite X-Achse).xti" Id="27">
+			<EtherCAT PortABoxInfo="#x0100001a"/>
+		</Box>
+		<Box File="=0300+FS2-13T1.xti" Id="28">
+			<EtherCAT PortABoxInfo="#x0100001b"/>
+		</Box>
+		<Box File="=0300+FS2-14T1.xti" Id="29">
+			<EtherCAT PortABoxInfo="#x0100001c"/>
+		</Box>
+		<Box File="=0300+FS2-15T1.xti" Id="30">
+			<EtherCAT PortABoxInfo="#x0100001d"/>
+		</Box>
+		<Box File="=0300+FS2-16T1.xti" Id="31">
+			<EtherCAT PortABoxInfo="#x0100001e"/>
+		</Box>
+		<Box File="=0300+FS2-17T1.xti" Id="32">
+			<EtherCAT PortABoxInfo="#x0100001f"/>
+		</Box>
+		<Box File="=0300+FS2-18T1.xti" Id="33">
+			<EtherCAT PortABoxInfo="#x01000020"/>
+		</Box>
+		<EtherCAT DcSyncMode="3"/>
+	</Device>
+</TcSmItem>

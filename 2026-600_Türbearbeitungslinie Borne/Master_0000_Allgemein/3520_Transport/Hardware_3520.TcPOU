@@ -1,0 +1,187 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Hardware_3520" Id="{a71e7d01-6449-486d-b42b-4e706346e57c}" SpecialFunc="None">
+    <Declaration><![CDATA[
+PROGRAM Hardware_3520
+VAR
+    // Servos *********************************************************************
+	fbY_Achse										: FB_Achse_NC_PTP_Beckhoff; 
+
+    // Frequenzumrichter **********************************************************
+	fbTrans_Bandseite								: FB_SEW_MOVITRAC_C_CoE;
+
+    // Sensorik *******************************************************************
+    fbLaengsBandseite_Ref							: FB_Belegt;
+
+    // Ventile ********************************************************************
+    fbLaengsanschl                					: FB_Ventil_V2;
+    fbSchienenklemm                					: FB_Ventil_V2;
+
+    // ***** Hilfsmerker***********************************************************
+    (*
+        Ventile sind über den DUT_Ventil_para vorparametriert
+                ueberwachung_vor_aktiv    : BOOL := TRUE;   // 0 = Endlagenüberwachung vor deaktiviert
+                ueberwachung_zur_aktiv    : BOOL := TRUE;   // 0 = Endlagenüberwachung zurück deaktiviert
+                ausgang_vor_halten        : BOOL := FALSE;  // 1 = Ausgang immer Ein, sonst 0 in Endlage/1 nicht in Endlage
+                ausgang_zur_halten        : BOOL := FALSE;  // 1 = Ausgang immer Ein, sonst 0 in Endlage/1 nicht in Endlage
+                entprellen_vor_aktiv      : BOOL := TRUE;   // 0 = Endlage sofort überwachen wenn einmal erreicht
+                entprellen_zur_aktiv      : BOOL := TRUE;   // 0 = Endlage sofort überwachen wenn einmal erreicht
+                ueberwachungszeit_vor     : TIME := T#10S;  // Überwachungszeit in ms (0-30000ms)
+                ueberwachungszeit_zur     : TIME := T#10S;  // Überwachungszeit in ms (0-30000ms)
+                entprellungszeit_vor      : TIME := T#50MS; // Entprellungszeit in ms (0-10000ms)
+                entprellungszeit_zur      : TIME := T#50MS; // Entprellungszeit in ms (0-10000ms)
+
+        falls etwas anderes gewünscht ist, kann man gezielt für das Ventil die Parameter anpassen
+        Beispiel:   ***.para.ausgang_vor_halten := TRUE;
+                    ***.para.entprellungszeit_vor := T#100MS;
+    *)
+END_VAR
+    ]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+// Aktionen aufrufen
+//_________________________________________________
+	A_Sensorik();
+	A_Umrichter();
+	A_Ventile();
+	A_Servo();
+		  ]]></ST>
+    </Implementation>
+    <Action Name="A_Sensorik" Id="{22fbc7d6-e0a4-457a-a568-4e621d78c96a}">
+      <Implementation>
+        <ST><![CDATA[					
+// ***** Sensorik entprellen *********************************************************
+	//********************************************************************************
+fbLaengsBandseite_Ref			(	in_Sensor:=,
+									in_zeit_aus:=T#100MS,
+									in_zeit_aus:=T#100MS,
+									Q=>);
+									]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="A_Servo" Id="{f9623b89-0d74-43ef-98ec-4a573354f38a}">
+      <Implementation>
+        <ST><![CDATA[					
+// ***** Servoregler *****************************************************************
+	//********************************************************************************
+								
+	GVL_3520.Y_Achse_steuern.Reglersperre	:= FALSE;
+	GVL_3520.Y_Achse_steuern.Freigabe 		:= FALSE;
+	
+	fbY_Achse(
+	in_Reglersperre				:= GVL_3520.Y_Achse_steuern.Reglersperre, 
+	in_Freigabe					:= GVL_3520.Y_Achse_steuern.Freigabe,
+	in_Reset					:= GVL_Visu_3520.SteuerStatus.reset   
+								OR GVL_0000.stoerung_quitt,                      
+	in_Hand						:= GVL_Visu_3520.SteuerStatus.hand,              
+	in_Auto						:= GVL_Visu_3520.SteuerStatus.auto,                 
+	in_Auto_Override			:= GVL_Visu_0000.override,    
+	in_Auto_pos					:= , 
+	in_PosFenster				:= 0.05, 
+	in_Ref_pos					:= 0.0, 
+	in_HomingOption				:= , 
+	in_EndlageRef				:= , 
+	in_DirRef					:= , 
+	in_PosEa					:= ,                                       
+	out_ist_pos					=> GVL_3520.Y_Achse_status.ist_pos, 
+	out_in_pos					=> GVL_3520.Y_Achse_status.in_pos,   
+	out_ziel_pos				=> GVL_3520.Y_Achse_status.ziel_pos, 
+	out_nicht_ref				=> GVL_3520.Y_Achse_status.nicht_ref,      
+	out_bremse					=> GVL_3520.Y_Achse_status.bremse,           
+	out_Achs_Status				=> GVL_3520.Y_Achse_status.Achs_Status,  
+	inout_NC					:= EAs_3520.ea_Y_Achse, 
+	inout_service				:= GVL_Visu_3520.Y_Achse, 
+	inout_Ref_start				:= GVL_3520.Y_Achse_steuern.Ref_start, 
+	inout_Auto_start			:= GVL_3520.Y_Achse_steuern.Auto_start, 
+	inout_Auto_stop				:= GVL_3520.Y_Achse_steuern.Auto_stop);
+	
+	GVL_Meldungen.Diagnose_3000.Nr_040	:= fbY_Achse.out_Achs_ErrorID;	
+	GVL_Meldungen.Meldungen_3000.Nr_040 := fbY_Achse.out_Achs_Error OR fbY_Achse.out_FB_Error OR fbY_Achse.out_Achs_ErrorID <> 0;		
+	GVL_Meldungen.Meldungen_3000.Nr_041 := FALSE;
+	GVL_Meldungen.Meldungen_3000.Nr_042 := FALSE;
+]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="A_Umrichter" Id="{522fece5-80e5-48ed-8290-1abc930881e5}">
+      <Implementation>
+        <ST><![CDATA[
+// ***** Frequenzumrichter ******************************************************
+// ******************************************************************************
+				
+	GVL_Visu_3520.Trans_Bandseite	.Para.Speed_Hand		:= 0;
+	GVL_Visu_3520.Trans_Bandseite	.Para.Beschleunigung 	:= 0;
+	GVL_Visu_3520.Trans_Bandseite	.Para.Verzoegerung 		:= 0;
+	GVL_Visu_3520.Trans_Bandseite	.Para.Einheit			:= 1;
+
+	fbTrans_Bandseite	(	PD_IN	:=EAs_3520.e_Trans_Bandseite	,
+			IN_ReglerSperre			:=,
+			IN_SteuerStatus			:=GVL_Visu_3510.SteuerStatus,
+			IN_Ethercat_Adresse		:=,
+			IN_Ethercat_Name		:='',
+			IN_QUITTIEREN			:= GVL_0000.stoerung_quitt,
+			IN_OVERRIDE				:= GVL_Visu_0000.override,
+			PD_OUT					=> EAs_3520.a_Trans_Bandseite	,
+			OUT_Stoerung			=> GVL_Meldungen.Meldungen_3000.Nr_009,
+			OUT_Fehlernummer		=> GVL_Meldungen.Diagnose_3000.Nr_009,
+			OUT_Status				=> GVL_3520.Trans_Bandseite_status,
+			inout_visu				:= GVL_Visu_3520.Trans_Bandseite	,
+			inout_steuern			:= GVL_3520.Trans_Bandseite_steuern);
+	
+			GVL_3520.Trans_Bandseite_steuern.vor := FALSE;
+			GVL_3520.Trans_Bandseite_steuern.zur := FALSE;
+			GVL_3520.Trans_Bandseite_steuern.speed := 0;
+	]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="A_Ventile" Id="{cfc652a1-06e8-4437-b49e-d3c4645bbdb3}">
+      <Implementation>
+        <ST><![CDATA[	
+// ***** Ventile *********************************************************************
+	//********************************************************************************	
+	
+	GVL_Visu_3520.Laengsanschl.para.ausgang_vor_halten:=TRUE;	
+	GVL_Visu_3520.Laengsanschl.para.ausgang_zur_halten:=TRUE;	
+	GVL_Visu_3520.Laengsanschl.para.ueberwachung_vor_aktiv:=TRUE;	
+	GVL_Visu_3520.Laengsanschl.para.ueberwachung_zur_aktiv:=TRUE;	
+	GVL_Visu_3520.Laengsanschl.para.entprellungszeit_vor:=T#50S;	
+	GVL_Visu_3520.Laengsanschl.para.entprellungszeit_zur:=T#50MS;	
+	fbLaengsanschl (		in_endlage_vor:= EAs_3520.e_FR_3520_Transport_Bandseite_Laengsanschlag_oben,
+							in_endlage_zur:= EAs_3520.e_FR_3520_Transport_Bandseite_Laengsanschlag_unten,
+							in_hand:=GVL_Visu_3520.SteuerStatus.hand,
+							in_auto:=GVL_Visu_3520.SteuerStatus.auto,
+							in_quit:=GVL_Visu_3520.SteuerStatus.reset 
+							OR GVL_0000.stoerung_quitt,
+							out_vor=>EAs_3520.a_FR_3520_Transport_Bandseite_Laengsanschlag_heben,
+							out_zur=>EAs_3520.a_FR_3520_Transport_Bandseite_Laengsanschlag_senken,
+							out_stoerung_vor=> GVL_Meldungen.Meldungen_3000.Nr_076,
+							out_stoerung_zur=> GVL_Meldungen.Meldungen_3000.Nr_077,
+							out_stoerung_vorzur=> GVL_Meldungen.Meldungen_3000.Nr_078,
+							inout_ansteuerung:=GVL_3520.Laengsanschl ,
+							inout_visu:=GVL_Visu_3520.Laengsanschl );
+								
+	
+	GVL_Visu_3520.Schienenklemm.para.ausgang_vor_halten:=TRUE;	
+	GVL_Visu_3520.Schienenklemm.para.ausgang_zur_halten:=TRUE;	
+	GVL_Visu_3520.Schienenklemm.para.ueberwachung_vor_aktiv:=TRUE;	
+	GVL_Visu_3520.Schienenklemm.para.ueberwachung_zur_aktiv:=TRUE;	
+	GVL_Visu_3520.Schienenklemm.para.entprellungszeit_vor:=T#500MS;	
+	GVL_Visu_3520.Schienenklemm.para.entprellungszeit_zur:=T#500MS;	
+	fbSchienenklemm(			in_endlage_vor:= EAs_3520.a_FR_3520_Transport_Bandseite_Laengsanschlag_Clamp_X_axis_rail_clamp, 
+								in_endlage_zur:= NOT EAs_3520.a_FR_3520_Transport_Bandseite_Laengsanschlag_Clamp_X_axis_rail_clamp,
+								in_hand:=GVL_Visu_3520.SteuerStatus.hand,
+								in_auto:=GVL_Visu_3520.SteuerStatus.auto,
+								in_quit:=GVL_Visu_3520.SteuerStatus.reset 
+								OR GVL_0000.stoerung_quitt,
+								out_vor=>EAs_3520.a_FR_3520_Transport_Bandseite_Laengsanschlag_Clamp_X_axis_rail_clamp,
+								out_zur=>,
+								out_stoerung_vor=> GVL_Meldungen.Meldungen_3000.Nr_091,
+								out_stoerung_zur=> GVL_Meldungen.Meldungen_3000.Nr_092,
+								out_stoerung_vorzur=> GVL_Meldungen.Meldungen_3000.Nr_093,
+								inout_ansteuerung:=GVL_3520.Schienenklemm,
+								inout_visu:=GVL_Visu_3520.Schienenklemm);
+								
+	]]></ST>
+      </Implementation>
+    </Action>
+  </POU>
+</TcPlcObject>

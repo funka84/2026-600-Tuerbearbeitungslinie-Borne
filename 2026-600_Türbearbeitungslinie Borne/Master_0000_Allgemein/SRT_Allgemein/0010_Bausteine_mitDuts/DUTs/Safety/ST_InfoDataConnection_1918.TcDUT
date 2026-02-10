@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="ST_InfoDataConnection_1918" Id="{adb08096-8488-4314-bbbd-a7c08707a4d4}">
+    <Declaration><![CDATA[TYPE ST_InfoDataConnection_1918 :
+STRUCT
+	usiMapState		: USINT;
+	usiMapDiag		: USINT;
+	bSignals_1		: BIT;
+	bSignals_1_fault: BIT;
+	bSignals_2		: BIT;
+	bSignals_2_fault: BIT;
+	bSignals_3		: BIT;
+	bSignals_3_fault: BIT;
+	bSignals_4		: BIT;
+	bSignals_4_fault: BIT;
+	bSignals_5		: BIT;
+	bSignals_5_fault: BIT;
+	bSignals_6		: BIT;
+	bSignals_6_fault: BIT;
+	bSignals_7		: BIT;
+	bSignals_7_fault: BIT;
+	bSignals_8		: BIT;
+	bSignals_8_fault: BIT;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

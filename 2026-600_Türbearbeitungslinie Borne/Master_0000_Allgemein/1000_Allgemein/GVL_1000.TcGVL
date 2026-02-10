@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <GVL Name="GVL_1000" Id="{98950ee5-df82-4f7f-b50a-a09e461366c9}">
+    <Declaration><![CDATA[
+VAR_GLOBAL
+    // Achsen ***************************************************
+    //Achse_steuern                     : DUT_Achse_Steuern;
+    //Achse_status                      : DUT_Achse_Status;
+
+    // Frequenzumrichter ****************************************
+    //transport_steuern                 : DUT_SEW_FU_Steuern;
+    //transport_status                  : DUT_SEW_FU_Status;
+
+    // Ventile **************************************************
+    //Ventil                            : DUT_Ventil_sps;
+
+    // interne Variablen ****************************************
+    sk_Freigabe                         : BOOL;
+    sk                                  : INT;
+    transport_einfoerdern_bereit        : BOOL;
+    transport_ausfoerdern_bereit        : BOOL;
+
+    Tuer_Anwahl                         : BOOL;   // Signal Tür Anwahl, Tür soll geöffnet werden
+    Tuer_Freigabe                       : BOOL;   // Signal Tür Freigabe, Tür kann geöffnet werden
+	
+	
+	Master_AmsNetId						:T_AmsNetID	:='172.16.1.000.1.1';		// Net id des EC- Masters
+	TC_AmsNetId							:T_AmsNetID :='172.16.1.227.1.1';      	//	Net id des TwincatSystems
+END_VAR
+    
+
+{attribute 'qualified_only'}
+VAR_GLOBAL CONSTANT
+	MaxCOEParam							:INT := 92;
+	MAX_CSV_BASE_ROWS 					:INT := 92;
+	iMaxEC								:INT := 0;								// Anzahl der verbauten EtherCat Klemmen
+	MaxECDevices						:INT := 0;
+	                                    
+	ibn0								: BOOL;									// Am Ende müssen alle QUerverweise gelöscht werden
+	ibn1								: BOOL := TRUE;							// Am Ende müssen alle QUerverweise gelöscht werden
+		
+END_VAR
+]]></Declaration>
+  </GVL>
+</TcPlcObject>

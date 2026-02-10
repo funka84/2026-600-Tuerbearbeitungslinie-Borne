@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_Kollision" Id="{677e8d1e-baa2-4346-a0cd-23fc76c897ae}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Kollision
+VAR_INPUT	
+	Achse_1				:AXIS_REF;      (*| - Achse1 <-----> Achse2 +  | *)
+	Achse_2				:AXIS_REF;
+	min_Abstand			:REAL;
+END_VAR
+VAR_OUTPUT
+	Achse_1_stop		:BOOL;
+	Achse_2_stop		:BOOL;
+	
+END_VAR
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(* Achse 1 überwachen *)
+Achse_1_stop:=(Achse_1.NcToPlc.ActPos > (Achse_2.NcToPlc.ActPos-min_Abstand))
+				AND NOT  Achse_1.Status.NegativeDirection; (* negative Richtung ist ok, um frei zufahren *)
+(* Achse 2 überwachen *)
+Achse_2_stop:=(Achse_2.NcToPlc.ActPos < (Achse_1.NcToPlc.ActPos+min_Abstand))
+				AND NOT  Achse_2.Status.PositiveDirection;
+
+				
+				
+				
+				]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

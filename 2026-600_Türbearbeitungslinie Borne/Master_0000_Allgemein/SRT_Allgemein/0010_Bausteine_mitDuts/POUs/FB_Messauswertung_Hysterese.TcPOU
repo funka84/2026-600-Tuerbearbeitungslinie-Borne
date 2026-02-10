@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_Messauswertung_Hysterese" Id="{89f93c0c-27de-4ab8-8e6e-d7f685db9b5d}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Messauswertung_Hysterese
+VAR_INPUT
+	in_Beruhigungszeit 		:TIME;
+	in_Timeoutzeit			:TIME;
+	in_Messwert				:REAL;
+	in_Hysterese			:REAL;
+	in_Bedingung			:BOOL;
+	in_Reset				:BOOL;
+END_VAR
+VAR_OUTPUT
+	out_Messergebnis	:REAL;
+	out_Timeoutfehler	:BOOL;
+END_VAR
+VAR
+	gespeichert				:BOOL	:=FALSE;
+	intern_maxwert			:REAL;
+	intern_minwert			:REAL;
+	intern_messwert			:REAL;
+
+	
+	Ton_Timeout			:Tc2_Standard.TON;
+	Ton_Beruhigung		:Tc2_Standard.TON;
+	
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF in_Bedingung AND NOT Ton_Beruhigung.Q 
+THEN
+	Ton_Timeout.IN:=TRUE;
+ELSE
+	Ton_Timeout.IN:=FALSE;
+END_IF;
+
+Ton_Beruhigung(PT:=in_Beruhigungszeit);
+Ton_Timeout(PT:=in_Timeoutzeit);
+
+IF in_Bedingung AND NOT gespeichert
+	THEN 
+	intern_messwert:=in_Messwert;
+	gespeichert:=TRUE; 
+END_IF
+
+IF NOT in_Bedingung OR
+	in_Reset
+	THEN
+	gespeichert:=FALSE;
+END_IF
+
+intern_maxwert := intern_messwert + in_Hysterese;
+intern_minwert := intern_messwert - in_Hysterese;
+
+
+
+IF in_Messwert > intern_minwert
+	AND in_Messwert < intern_maxwert
+THEN
+	Ton_Beruhigung.IN:=TRUE;
+ELSE
+	Ton_Beruhigung.IN:=FALSE;	
+END_IF
+
+//Ausgänge zuweisen
+out_Timeoutfehler:=Ton_Timeout.Q;
+
+IF Ton_Beruhigung.Q
+	THEN
+	out_Messergebnis:=in_Messwert;
+	ELSE
+	out_Messergebnis:=0;	
+END_IF]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

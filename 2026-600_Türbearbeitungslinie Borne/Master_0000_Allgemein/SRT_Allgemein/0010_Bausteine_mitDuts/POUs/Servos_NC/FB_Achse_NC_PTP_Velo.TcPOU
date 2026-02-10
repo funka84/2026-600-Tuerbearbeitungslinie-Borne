@@ -1,0 +1,320 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_Achse_NC_PTP_Velo" Id="{cdd425f7-8700-4bf7-8271-a95958f03229}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Achse_NC_PTP_Velo
+(*
+	Ansteuerung einer Achse über die NC (PTP)
+	Autor O.E.
+	Erstellt xx.xx.2017
+	Version 1.0 	
+	
+	Update 01.09.2022
+	Version 2.0 - zusätzlche InOut-Schnittstelle um direkt mit dem Regler zu komunizieren
+				- das Referenziere/Absolutmaßsetzen wird im Regler gemacht
+                   da das Homing bei Beckhoff (Nullpunktverschiebung) nur temporär ist	
+				- Bremsentest im programm ergänzt
+	
+	Update 14.06.2024
+	Version 3.0	- Auslesen der Software Endlagen aus der NC und langsames tippen vor den Endlagen
+				- in_Reglersperre = Vorschubfreigabe MC-Power
+				- in_Freigabe = Wenn false, dann wird die Achsbewegung gestoppt (Positionieren und Tippen) MC_Halt
+				- Augabe der aktuellen Zielposition, Abhängig davon, ob die Achse in Bewegung ist, oder steht 
+			
+	Update 02.12.2024
+	Version MoveVelocity
+			
+*)
+
+VAR_INPUT
+	in_max_Velo				: REAL;						(*	maximale Geschwindigkeit - Anwendereinheit z.B. xx mm/s *)
+	in_Reglersperre			: BOOL;						(*  Software-Freigabe für die Achse  *)
+	in_Freigabe				: BOOL;						(*  Freigabe JogMode und Positionieren *)
+	in_Reset				: BOOL;						(*  Achs Reset  *)
+	in_Hand					: BOOL;						(*  Handbetrieb  *)
+	in_Auto					: BOOL;						(*  Automatikbetrieb  *)
+	in_Auto_Override		: INT;						(*  in %  *)
+	in_Auto_Speed			:REAL;
+END_VAR
+VAR_OUTPUT
+	out_Achs_Status				: ST_AxisStatus;		(* 	aktueller Achsstatus *)
+	out_Achs_Error				: BOOL;					(*  Achs Fehler *)
+	out_Achs_ErrorID			: DINT;					(*  Achs Fehler ID *) 
+	out_FB_Error				: BOOL;					(*  FB Fehler - intern *)
+	out_FB_ErrorID				: DWORD;				(*  FB Fehler ID - intern *) 
+	out_velo_erreicht			: BOOL;
+	
+END_VAR
+VAR_IN_OUT
+	inout_NC				: AXIS_REF;					(*  Schnittstelle zwischen der SPS und der NC  *)												
+	inout_rexroth			: DUT_PD_InOut_Achsen;		(*  Schnittstelle zwischen der SPS und dem Regler  *)												
+	inout_service			: DUT_Achse_Service;		(*  Eingangs-Variablen für den Servicebetrieb	 *)
+	inout_Auto_Velo_start	: BOOL;						(*  Achse start Endlosfahrt *)
+	inout_Auto_stop			: BOOL;						(*  Achse stopp Positionieren *)
+END_VAR
+
+VAR
+	FB_ReadErrorID			: MC_ReadAxisError;			(*  FehlerID der Achse auslesen  *)	
+	FB_ReadStatus			: MC_ReadStatus;	
+	FB_POWER				: MC_POWER;					(*  Leistung ein-/ausschalten  *)	
+	FB_RESET				: MC_RESET;					(*  Achse resetten *)	
+	FB_Stop					: MC_Stop;					(*  Achse anhalten  *)	
+	FB_Jog					: MC_Jog;					(*  Achse tippen  *)
+	FB_Move_velo			: MC_MoveVelocity;			(*  Achse positionieren  *)
+
+	FB_Read_Parameter		: MC_ReadParameterSet;
+	
+	verz_reset				: ton;
+
+	test					: BOOL;
+	
+	tempNotMoving: BOOL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// ***** Achs Status aktualisieren *******************************************************************************************
+	//************************************************************************************************************************
+	inout_NC();
+	
+	out_Achs_Status	:= FB_ReadStatus.Status;
+	
+	out_Achs_Error	:= FB_ReadErrorID.AxisErrorID > 0;
+	
+	axisisnotmoving( nStateDWord := inout_NC.NcToPLC.StateDWord,
+					AxisIsNotMoving=>tempNotMoving);	
+			
+	out_velo_erreicht:= NOT FB_ReadStatus.StandStill
+						AND NOT tempNotMoving
+						AND FB_ReadStatus.ConstantVelocity
+						AND INOUT_NC.NcToPlc.ActVelo >= in_Auto_Speed * 0.9;
+	
+// Freigabe positionieren ****************************************************************************************************
+	//************************************************************************************************************************
+	IF NOT in_Freigabe
+	THEN
+		inout_Auto_velo_start 			:= FALSE;
+		FB_Move_velo.Execute			:= FALSE;
+	END_IF	
+	
+// ***** Hand Betriebsart /Geschwindigkeit zurücksetzen***********************************************************************
+	//************************************************************************************************************************
+	IF NOT in_Hand
+	THEN
+		inout_service.betriebsart	:= 0;
+		inout_service.override		:= 0;
+	END_IF
+
+// ***** Sollposition / Geschwindigkeit umkopieren ***************************************************************************
+	//************************************************************************************************************************
+	IF in_hand
+	THEN
+		FB_Power.Override		:= INT_TO_LREAL(inout_service.override);
+		FB_Move_Velo.Velocity	:= in_max_velo;
+		FB_Jog.Velocity			:= in_max_velo;
+	ELSE
+		FB_Power.Override		:= INT_TO_LREAL(in_Auto_Override);
+		FB_Move_Velo.Velocity	:= in_Auto_Speed*1000/60;
+		FB_Jog.Velocity			:= 0.0;
+	END_IF
+	
+	
+// ***** Reset ***************************************************************************************************************
+	//************************************************************************************************************************
+	inout_rexroth.S0145_steuerword.0			:=in_Reset;	// S-0-0099 - C0500 Reset Zustandsklasse 1 l
+	IF in_Reset
+		AND (out_FB_Error
+		OR out_Achs_Error) 
+		OR ( in_Hand
+				AND inout_service.betriebsart=0
+				AND inout_service.minus_stop ) 
+	THEN
+		FB_Reset.Execute	:= TRUE; //inout_NC.NcToPlc.CoupleState <> 3; // Achse ist kein Slave
+		FB_Stop.Execute		:= FALSE;
+		FB_Move_velo.Execute:= FALSE;
+		out_FB_Error		:= FALSE;
+		out_FB_ErrorID		:= 0;
+		out_FB_ErrorID		:= 0;
+	END_IF
+
+	verz_reset(	in:= FB_Reset.Execute,
+				pt:= T#200MS);
+	IF verz_reset.Q
+	THEN
+		FB_Reset.Execute := FALSE;
+	END_IF
+
+// ***** Achse stoppen *******************************************************************************************************
+	//************************************************************************************************************************
+	IF (in_Hand
+			AND inout_service.minus_stop
+			AND inout_service.betriebsart <> 1)
+		OR inout_Auto_stop
+		OR (NOT in_Freigabe
+			AND inout_NC.Status.Moving
+			AND inout_NC.NcToPlc.CoupleState <> 3) // Achse ist keine Slave Achse
+		OR FB_Move_Velo.CommandAborted
+		OR FB_Move_Velo.Error
+		OR out_Achs_Error 
+	THEN
+		FB_STOP.Execute				:= TRUE;
+		FB_Move_Velo.Execute		:= FALSE;
+		inout_service.plus_start 	:= FALSE;	
+	END_IF                             
+                                       
+	IF (FB_STOP.Execute                
+		AND FB_STOP.Done)              
+	THEN                               
+		FB_STOP.Execute				:= FALSE;
+	END_IF
+		
+	IF NOT FB_STOP.Execute	
+	THEN
+		inout_service.minus_stop  	:= FALSE;
+		inout_Auto_stop				:= FALSE;	
+	END_IF
+
+// ***** Achse Starten *******************************************************************************************************
+	//************************************************************************************************************************
+	IF (in_auto
+			AND inout_Auto_Velo_start)
+		AND NOT FB_Stop.Done
+		AND NOT FB_Stop.busy
+		AND NOT out_Achs_Error // optimierung 01.10.2020
+		AND in_Freigabe
+	THEN
+		FB_Move_Velo.Execute:=TRUE;	
+	END_IF
+
+	IF (FB_Move_Velo.Execute
+		AND FB_Move_Velo.busy)
+		OR out_Achs_Error
+		OR (NOT inout_auto_velo_start AND IN_AUTO)
+	THEN
+		FB_Move_Velo.Execute				:=FALSE;
+		inout_Auto_velo_start			:=FALSE;
+		inout_Auto_stop				:=TRUE;
+	END_IF
+	
+// ***** Handbetrieb - Achse tippen ******************************************************************************************
+	//************************************************************************************************************************
+	IF in_Hand
+		AND inout_service.betriebsart=1
+		AND NOT FB_Jog.CommandAborted
+		AND NOT FB_Jog.Error
+		AND in_Freigabe
+	THEN
+		FB_Jog.JogForward	:= inout_service.plus_start ;
+		FB_Jog.JogBackwards	:= inout_service.minus_stop;
+		ELSE
+			FB_Jog.JogForward	:= FALSE;
+			FB_Jog.JogBackwards	:= FALSE;
+	END_IF
+	
+// ***** Aufruf der FB´s  ****************************************************************************************************
+	//************************************************************************************************************************
+	 ACT_Achse_NC_PTP();	
+				
+// ***** FB Fehler auswerten und ausgeben ************************************************************************************
+	//************************************************************************************************************************
+	IF FB_Jog.Error
+		AND FB_Jog.ErrorID > 0
+	THEN
+		out_FB_Error	:= TRUE;
+		out_FB_ErrorID	:= FB_Jog.ErrorID;
+				
+	ELSIF FB_Stop.Error
+		AND FB_Stop.ErrorID>0
+	THEN	
+		FB_Stop.Execute	:= FALSE;
+		out_FB_Error	:= TRUE;
+		out_FB_ErrorID	:= FB_Stop.ErrorID;
+		
+	ELSIF FB_Move_velo.Error
+		AND FB_Move_velo.ErrorID>0
+	THEN	
+		FB_Stop.Execute	:= FALSE;
+		out_FB_Error	:= TRUE;
+		out_FB_ErrorID	:= FB_Move_velo.ErrorID;
+		
+	ELSIF FB_Reset.Error
+		AND FB_Reset.ErrorID>0
+	THEN
+		FB_Reset.Execute	:= FALSE;
+		out_FB_Error		:= TRUE;
+		out_FB_ErrorID		:= FB_Reset.ErrorID;	
+	END_IF			
+
+// ***** Servicetasten zurück setzen ************************************************************************************
+	//************************************************************************************************************************
+	IF inout_service.betriebsart <> 1
+	THEN
+		inout_service.plus_start := FALSE;				
+		inout_service.minus_stop := FALSE;				
+	END_IF
+	
+	IF NOT in_Hand
+	THEN
+		inout_service.betriebsart := 0;
+	END_IF				
+	
+	inout_Auto_velo_start 	:= FALSE;	
+	inout_Auto_stop			:= FALSE;			
+					
+					
+					]]></ST>
+    </Implementation>
+    <Action Name="ACT_Achse_NC_PTP" Id="{24a9cff5-e9c6-40a5-a8e7-7516cf72f214}">
+      <Implementation>
+        <ST><![CDATA[	
+	FB_ReadErrorID(	Axis:=inout_NC,
+					Enable:=TRUE,
+					AxisErrorID=>);
+
+	out_achs_ErrorID	:= DWORD_TO_DINT(FB_ReadErrorID.AxisErrorID);	
+									
+	FB_ReadStatus(	Axis:=inout_NC,
+					Enable:=TRUE);
+				
+	FB_Power(	Axis:=inout_NC,
+				Enable:=in_Reglersperre ,
+				Enable_Positive:=in_Reglersperre,
+				Enable_Negative:=in_Reglersperre ,
+				Override:=,
+				BufferMode:= MC_Aborting ,
+				Options:=	);
+				
+	FB_Reset(	Axis:=inout_NC,
+				Execute:=	);
+				
+	FB_Stop(	Axis:=inout_NC,
+				Execute:=,
+				Deceleration:=0,				(* Bei einem Wert von 0 wirkt die mit dem letzten Move-Kommando parametrierte Verzögerung *)
+				Jerk:=0,						(* Bei einem Wert von 0 wirkt der mit dem letzten Move-Kommando parametrierte Ruck *)		
+				//BufferMode:= MC_Aborting,
+				CommandAborted  => test);		 // Wichtig !!!!				
+																		
+
+	FB_Move_Velo(	Axis:=inout_NC,
+					Execute:=,
+					Velocity:=,
+					direction:=MC_Positive_Direction,
+					Acceleration:=0,				(* Beschleunigung, bei einem Wert von 0 wirkt die Standardbeschleunigung aus der Achskonfiguration im System Manager *)
+					Deceleration:=0,				(* Verzögerung, bei einem Wert von 0 wirkt die Standardverzögerung aus der Achskonfiguration im System Manager *)
+					Jerk:=0, 						(* Ruck, bei einem Wert von 0 wirkt der Standardruck aus der Achskonfiguration im System Manager *)
+					BufferMode:= MC_Blendinglow,
+					
+					InVelocity=> );		
+									
+	FB_Jog(		Axis:=inout_NC,
+				JogForward:=,
+				JogBackwards:=,
+				Mode:= MC_JOGMODE_STANDARD_SLOW, //MC_JOGMODE_CONTINOUS,
+				Position:=,						(* nicht in diesem Mode notwendig *)
+				Velocity:=,
+				Acceleration:=0,				(* Beschleunigung, bei einem Wert von 0 wirkt die Standardbeschleunigung aus der Achskonfiguration im System Manager *)
+				Deceleration:=0,				(* Verzögerung, bei einem Wert von 0 wirkt die Standardverzögerung aus der Achskonfiguration im System Manager *)
+				Jerk:=0 );						(* Ruck, bei einem Wert von 0 wirkt der Standardruck aus der Achskonfiguration im System Manager *)
+	]]></ST>
+      </Implementation>
+    </Action>
+  </POU>
+</TcPlcObject>

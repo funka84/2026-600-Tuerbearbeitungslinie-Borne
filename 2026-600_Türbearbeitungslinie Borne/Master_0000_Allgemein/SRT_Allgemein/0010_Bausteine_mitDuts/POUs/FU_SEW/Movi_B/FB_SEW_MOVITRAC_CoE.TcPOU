@@ -1,0 +1,552 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_SEW_MOVITRAC_CoE" Id="{5c1fe16d-1b2d-45e0-adb4-77788520fbbf}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_SEW_MOVITRAC_CoE
+VAR_INPUT
+	in_Name					:STRING;
+	in_EtherCatAdresse		:UINT;
+	in_PD					:DUT_SEW_FU_PD_IN;
+	in_Reglersperre			:BOOL;	(* 1= Regler sperren *)
+	in_Dreh_Tausch			:BOOL;	(* Drehrichtung tauschen *)
+	in_SteuerStatus			:DUT_Visu_SteuerStatus;
+	in_Auto_steuern			:DUT_SEW_FU_Steuern;	(*  SPS Steuerstruktur *)
+
+	V_Faktor				:REAL;	(* Drehzahlbezug (z.B. bei 1500 sec-1  /  30m/min  =  Faktor 50) *)
+END_VAR
+
+VAR_OUTPUT
+	out_PD					:DUT_SEW_FU_PD_OUT;
+	out_Stoerung			:BOOL;	(* Umrichter meldet Störung *)
+	out_Status				:DUT_SEW_FU_Status;
+	out_Fehlernummer		:BYTE;	(* Fehlernummer *)
+
+	//OUT_WARNUNG				:BOOL;
+END_VAR
+
+VAR_IN_OUT
+		inout_Visu_steuern			:DUT_SEW_FU_Visu;	(* Visu Steuerstruktur + *)
+END_VAR
+
+VAR
+	reglersperre			:BOOL;	(* BIT 0: Reglersperre 0 = Freigabe 1 = Regler sperren, Bremse aktivieren *)
+	freigabe_stop			:BOOL;	(* BIT 1: Freigabe/Schnellstopp 0 = Schnellstopp 1 = Freigabe *)
+	freigabe_halt			:BOOL;	(* BIT 2: Freigabe/Halt 0 = Halt an Integratorrampe oder Prozess-Rampe 1 = Freigabe *)
+	reserve_3_1				:BOOL;	(* BIT 3: Reserviert (Reservierte Bits sind generell auf Null zu setzen!) *)
+	reserve_4_1				:BOOL;	(* BIT 4: Reserviert (Reservierte Bits sind generell auf Null zu setzen!) *)
+	reserve_5_1				:BOOL;	(* BIT 5: Reserviert (Reservierte Bits sind generell auf Null zu setzen!) *)
+	reset					:BOOL;	(* Bit 6: Reset 0 = nicht aktiv 0 -> 1 = anstehende Störung zurücksetzen *)
+	reserve_7_1				:BOOL;	(* BIT 7: Reserviert (Reservierte Bits sind generell auf Null zu setzen!) *)
+	drehrichtung_motorpoti	:BOOL;	(* BIT 8: Drehrichtung für Motorpoti 0 = Drehrichtung RECHTS 1 = Drehrichtung LINKS *)
+	motorpoti_auf			:BOOL;	(* BIT 9 und 10: Motorpoti Hochlauf,Motorpoti Tieflauf 0 0 = keine Änderung *)
+	motorpoti_ab			:BOOL;	(*  1 0 = ab 0 1 = auf 1 1 = keine Änderung *)
+	n11_n21					:BOOL;	(* BIT 11 und 12:Anwahl der internen Festsollwerte0 0 = Drehzahl-Sollwert über Prozess-Ausgangsdatenwort 2 *)
+	n12_n22					:BOOL;	(* 0 1 = interner Sollwert n11 (n21) *)
+	sollwert_umschaltung	:BOOL;	(* BIT 13: Festsollwert-Umschaltung 0 = Festsollwerte des aktivn Parameter über Bit 11/12 anwählbar 1 = Festsollwerte des anderen Parameter anwählbar *)
+	reserve_14				:BOOL;	(* BIT 14: Reserviert (Reservierte Bits sind generell auf Null zu setzen!) *)
+	reserve_15				:BOOL;	(* BIT 14: Reserviert (Reservierte Bits sind generell auf Null zu setzen!) *)
+	DREHZAHL				:REAL;
+	RECHTSLAUF				:BOOL;
+	LINKSLAUF				:BOOL;
+	TEMP_V					:REAL;
+	TEMP_IST_DREHZAHL_DINT	:DINT;
+	TEMP_DREHZAHL			:REAL;
+	TEMP_DREHZAHL_SOLL		:REAL;
+	endstufe_freigeben		:BOOL;	(* BIT 0: Endstufe freigegeben 0 = Endstufe ist gesperrt (hochohmig) 1 = Endstufe ist freigegeben *)
+	umrichter_bb			:BOOL;	(* BIT 1: Umrichter betriebsbereit 0 = Umrichter nicht betriebsbereit (z. B. Fehler) 1 = Umrichter betriebsbereit *)
+	pa_daten_freigeben		:BOOL;	(* BIT 2: PA-Daten freigegeben 0 = PA-Daten gesperrt 1 = PA-Daten freigegeben *)
+	reserve_3				:BOOL;	(*  Reserve Bit ist immer auf null zusetzen *)
+	reserve_4				:BOOL;	(*  Reserve Bit ist immer auf null zusetzen *)
+	stoerung				:BOOL;	(*  BIT 5: Störung/Warnung 0 = keine Störung/Warnung 1 = Störung/Warnung liegt an *)
+	reserver_6				:BOOL;	(*  Reserve Bit ist immer auf null zusetzen *)
+	fehlernummer			:BYTE;	(*  Byte 2: Gerätezustand/ Fehlernummer *)
+	steuerbyte_1			:BYTE;
+	steuerbyte_2			:BYTE;
+END_VAR
+
+VAR
+	hand_aktiv				: BOOL;
+	auto_aktiv				: BOOL;
+	reset_aktiv				: BOOL;
+	CoE_ReadAndWrite		: FB_SEW_CoE;
+	pFL_lesen				:R_TRIG;
+	pFL_schreiben			:R_TRIG;
+	
+	tofRead: TON;
+	aktuellLesen: BOOL;
+	LesenErfolgreich: BOOL;
+	LesenFehlgeschlagen: BOOL;
+	aktuellSchreiben: BOOL;
+	SchreibenErfolgreich: BOOL;
+	SchreibenFehlgeschlagen: BOOL;
+	tofLesenErfolgreich: TOF;
+	tofLesenFehlgeschlagen: TOF;
+	tofSchreibenErfolgreich: TOF;
+	tofSchreibenFehlgeschlagen: TOF;
+	keinTimerAktiv: BOOL;
+	pFL_btnSchreiben: R_Trig;
+	r_Trig: INT;
+	pFL_btnLesen: R_TRIG;
+	nFL_CoEBetriabsart: F_Trig;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[ReadStatuswort();
+
+hand_aktiv:= in_SteuerStatus.hand;
+auto_aktiv:= in_SteuerStatus.auto_aktiv;
+reset_aktiv:=in_SteuerStatus.reset;
+
+
+(*Fehlermeldung auswerten und rangieren : Ist das Fehlerbit gesetzt, so wird die Fehlernummer ausgegeben.
+  Liegt kein Fehler vor, so wird eine Null ausgegeben.*)	
+ 	IF stoerung 
+	THEN  
+		OUT_FEHLERNUMMER :=fehlernummer;
+	END_IF
+	
+	IF NOT stoerung 
+	THEN
+		OUT_FEHLERNUMMER :=0;
+	END_IF
+
+//Setzten des Bits FU-Betriebbereit********************************************
+	IF umrichter_bb 
+	THEN  
+		out_Status.nicht_bereit := FALSE;
+		ELSE
+			out_Status.nicht_bereit :=TRUE;
+	END_IF
+
+//Setzen des Bits FU-Störung********************************************
+	IF stoerung 
+		//AND NOT umrichter_bb
+	THEN 
+		OUT_STOERUNG := TRUE;
+		ELSE 
+			OUT_STOERUNG := FALSE;
+	END_IF
+//Setzen das Bit Warnung*************************************************
+	//IF umrichter_bb
+	//	 AND stoerung
+	//THEN 
+	//	OUT_Warnung :=TRUE;
+	// 	ELSE 
+	//		OUT_warnung:=FALSE;
+ 	//END_IF
+//Ausgabe ISt-Drehzahl***************************************************
+	TEMP_IST_DREHZAHL_DINT :=INT_TO_DINT(WORD_TO_INT(in_PD.PD_2_IST_DREHZAHL));
+	DREHZAHL := DINT_TO_REAL(TEMP_IST_DREHZAHL_DINT);	
+	
+	IF IN_DREH_TAUSCH
+	THEN 
+		out_Status.ist_drehzahl := (DREHZAHL*0.2)*(-1);
+		ELSE
+			out_Status.ist_drehzahl := DREHZAHL*0.2;
+	END_IF
+	
+	inout_Visu_steuern.istdrehzahl:=out_Status.ist_drehzahl / v_faktor;
+	
+//Rechtslauf Hand-Automatik (mit Drehrichtungstausch)******************************************
+
+
+	IF ((NOT IN_DREH_TAUSCH  
+			AND	((inout_Visu_steuern.plus_start AND hand_aktiv)
+				OR(in_Auto_steuern.vor AND auto_aktiv )))
+ 		 OR ( IN_DREH_TAUSCH
+			AND((inout_Visu_steuern.minus_stop AND hand_aktiv)
+				OR(in_Auto_steuern.zur AND auto_aktiv ))))
+	 THEN 
+		rechtslauf:= TRUE;
+	 	ELSE 
+			rechtslauf:= FALSE;
+	 END_IF
+
+//Linkslauf Hand-Automatik (mit Drehrichtungstausch)****************************************
+
+
+	IF ((NOT IN_DREH_TAUSCH  
+			AND ((inout_Visu_steuern.minus_stop AND hand_aktiv)
+				OR(in_Auto_steuern.zur AND auto_aktiv )))
+  		OR ( IN_DREH_TAUSCH
+			AND ((inout_Visu_steuern.plus_start AND hand_aktiv)
+					OR(in_Auto_steuern.vor AND auto_aktiv )))) 
+  	THEN 
+		linkslauf:= TRUE;
+		ELSE 
+			linkslauf:= FALSE;
+	END_IF
+
+//Geschwindigkeit umkopieren************************************************************
+	IF hand_aktiv 
+	THEN 
+		temp_v := inout_Visu_steuern.override;
+	ELSE 
+		temp_v := in_Auto_steuern.speed;
+	END_IF
+//Drehzahl ermitteln*************************************************************************
+	temp_drehzahl_soll:= v_faktor*temp_v;
+
+	IF temp_drehzahl_soll >= 6553.0
+		THEN temp_drehzahl_soll:=6553.0;
+	END_IF
+
+	out_Status.ist_drehzahl_90:=ABS(out_Status.ist_drehzahl) >ABS((temp_drehzahl_soll/100*90));	
+	out_Status.antriebAktiv:=ABS(out_Status.ist_drehzahl)>1;
+//Vorgabe Soll-Drehzahl***********************************************************************
+	IF linkslauf
+	THEN 
+		out_PD.PD_2_solldrehzahl :=DWORD_TO_WORD (REAL_TO_DWORD (temp_drehzahl := ((temp_drehzahl_soll/0.2)*-1)));
+		ELSE 
+			 out_PD.PD_2_solldrehzahl :=DWORD_TO_WORD (REAL_TO_DWORD (temp_drehzahl := (temp_drehzahl_soll/0.2)));
+	END_IF
+
+//Vorgabe Soll-Rampe***************************************************************************
+//	out_PD.PD_3_rampe :=INT_TO_WORD(in_Auto_steuern.rampe);
+
+//Reglersperre setzen**************************************************************************
+	reglersperre:=IN_Reglersperre;
+	freigabe_stop:=NOT IN_Reglersperre;
+
+//Antrieb starten ,stoppen mit Rampe************************************************************
+	IF rechtslauf 
+		OR linkslauf
+	THEN 
+		freigabe_halt := TRUE;
+		ELSE
+			freigabe_halt := FALSE;
+	END_IF
+
+//Fehler /Störung löschen*************************************************************************
+	IF reset_aktiv 
+	THEN 
+		reset:= TRUE;
+	ELSE 
+			reset:= FALSE;
+	END_IF
+
+
+WriteSteuerwort();
+CoE();
+
+
+
+
+
+
+]]></ST>
+    </Implementation>
+    <Action Name="CoE" Id="{da44c84b-f024-4fb8-b883-b1e917567660}">
+      <Implementation>
+        <ST><![CDATA[//-------------------------------------
+//Bausteinaufruf CoE
+//-------------------------------------	
+CoE_ReadAndWrite(I_sBMK:=in_Name,
+				I_nEcSlaveAddr:=in_EtherCatAdresse,
+				I_bReset:= inout_Visu_steuern.betriebsart<>5);
+				
+Status_CoE();
+
+//-------------------------------------
+//Button zurücksetzen
+//-------------------------------------	
+pFL_btnLesen(CLK:=inout_Visu_steuern.plus_start);
+pFL_btnSchreiben(CLK:=inout_Visu_steuern.minus_stop);
+nFL_CoEBetriabsart(CLK:=inout_Visu_steuern.betriebsart=5);
+
+IF pFL_btnLesen.Q
+THEN
+	inout_Visu_steuern.minus_stop:=FALSE;
+	CoE_ReadAndWrite.I_bStartWriteFromCSV:=FALSE;
+END_IF
+
+IF pFL_btnSchreiben.Q
+THEN
+	inout_Visu_steuern.plus_start:=FALSE;
+	CoE_ReadAndWrite.I_bStartRead:=FALSE;
+END_IF
+
+IF nFL_CoEBetriabsart.Q
+THEN
+	inout_Visu_steuern.minus_stop:=FALSE;
+	inout_Visu_steuern.plus_start:=FALSE;
+	CoE_ReadAndWrite.I_bStartWriteFromCSV:=FALSE;
+	CoE_ReadAndWrite.I_bStartRead:=FALSE;
+END_IF
+
+//-------------------------------------
+//FU->CSV
+//-------------------------------------	
+// Start Lesen			
+IF inout_Visu_steuern.betriebsart = 5
+	AND pFL_btnLesen.Q
+THEN
+	CoE_ReadAndWrite.I_bStartRead:=TRUE;
+END_IF
+
+
+
+//-------------------------------------
+//CSV->FU
+//-------------------------------------
+//Start Schreiben
+IF inout_Visu_steuern.betriebsart = 5
+	AND inout_Visu_steuern.minus_stop
+THEN
+	CoE_ReadAndWrite.I_bStartWriteFromCSV:=TRUE;
+END_IF
+
+//Button zurücksetzen
+IF CoE_ReadAndWrite.Q_bBusy
+	OR CoE_ReadAndWrite.Q_bError
+THEN
+	inout_Visu_steuern.plus_start:=FALSE;
+	inout_Visu_steuern.minus_stop:=FALSE;
+END_IF
+
+//-------------------------------------
+//Status zuweisen und Start zurücksetzen
+//-------------------------------------
+//Timer
+tofLesenErfolgreich			(PT:=T#3S);
+tofLesenFehlgeschlagen		(PT:=T#3S);
+tofSchreibenErfolgreich		(PT:=T#3S);
+tofSchreibenFehlgeschlagen	(PT:=T#3S);
+
+//Aktuellen Status oder Timer Starten
+IF aktuellLesen								//akteuell Lesen
+THEN
+	inout_Visu_steuern.diagnose:=300;
+ELSIF
+	aktuellSchreiben						//aktuell Schreiben
+THEN
+	inout_Visu_steuern.diagnose:=306;
+ELSIF	
+	LesenErfolgreich						//Lesen erfolgreich
+THEN
+	tofLesenErfolgreich.IN:=TRUE;
+	CoE_ReadAndWrite.I_bStartRead:=FALSE;
+ELSIF
+	LesenFehlgeschlagen						//Lesen fehlgeschlagen
+THEN
+	tofLesenFehlgeschlagen.IN:=TRUE;
+
+ELSIF
+	SchreibenErfolgreich					//Schreiben erfolgreich
+THEN
+	tofSchreibenErfolgreich.IN :=TRUE;
+	CoE_ReadAndWrite.I_bStartWriteFromCSV:=FALSE;
+ELSIF
+	SchreibenFehlgeschlagen					//Schreiben fehlgeschlagen
+THEN
+	tofSchreibenFehlgeschlagen.IN :=TRUE;
+ELSIF
+	keinTimerAktiv
+	AND inout_Visu_steuern.betriebsart = 5
+THEN
+	inout_Visu_steuern.diagnose:=0;
+END_IF
+
+//Status von Timer und Timer zurücksetzen
+IF tofLesenErfolgreich.Q				//TOF Lesen erfolgreich
+THEN
+	tofLesenErfolgreich.IN:=FALSE;
+	inout_Visu_steuern.diagnose:=301;
+END_IF
+
+IF tofLesenFehlgeschlagen.Q				//TOF Lesen fehlgeschlagen
+THEN
+	CoE_ReadAndWrite.I_bStartRead:=FALSE;
+	tofLesenFehlgeschlagen.IN:=FALSE;
+	inout_Visu_steuern.diagnose:=302;
+END_IF
+
+IF tofSchreibenErfolgreich.Q			//TOF Schreiben erfolgreich
+THEN
+	tofSchreibenErfolgreich.IN:=FALSE;
+	inout_Visu_steuern.diagnose:=307;
+END_IF
+
+IF tofSchreibenFehlgeschlagen.Q			//TOF Schreiben fehlgeschlagen
+THEN
+	CoE_ReadAndWrite.I_bStartWriteFromCSV:=FALSE;	
+	tofSchreibenFehlgeschlagen.IN:=FALSE;
+	inout_Visu_steuern.diagnose:=308;
+END_IF
+
+keinTimerAktiv:= NOT (	tofLesenErfolgreich.Q
+					 OR tofLesenFehlgeschlagen.Q	
+					 OR tofSchreibenErfolgreich.Q
+					 OR tofSchreibenFehlgeschlagen.Q);
+]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="ReadStatuswort" Id="{2a2b8216-fa60-4d56-a32d-e15c53a7a51a}">
+      <Implementation>
+        <ST><![CDATA[//Statuswort auslesen*****************************************************************************************
+	endstufe_freigeben 	:= BIT_OF_dWORD(in:= in_PD.PD_1_STATUSWORT, N:= 0);
+	umrichter_bb 		:= BIT_OF_dWORD(in:= in_PD.PD_1_Statuswort, N:= 1);
+	pa_daten_freigeben	:= BIT_OF_DWORD(in:= in_PD.PD_1_Statuswort, N:= 2);
+	reserve_3			:= BIT_OF_DWORD(in:= in_PD.PD_1_Statuswort, N:= 3);
+	reserve_4			:= BIT_OF_DWORD(in:= in_PD.PD_1_Statuswort, N:= 4);
+	stoerung			:= BIT_OF_DWORD(in:= in_PD.PD_1_Statuswort, N:= 5);
+	reserver_6 			:= BIT_OF_DWORD(in:= in_PD.PD_1_Statuswort, N:= 6);
+	fehlernummer		:= BYTE_OF_DWORD(in:= in_PD.PD_1_Statuswort, N:= 1);
+(*Statuswort  --------------------------------------------------------------------
+	BIT 0: Endstufe freigegeben
+	0 = Endstufe ist gesperrt (hochohmig)
+	1 = Endstufe ist freigegeben
+	--------------------------------------------------------------------------------
+	BIT 1: Umrichter betriebsbereit
+	0 = Umrichter nicht betriebsbereit (z. B. Fehler)
+	1 = Umrichter betriebsbereit
+	--------------------------------------------------------------------------------
+	BIT 2: PA-Daten freigegeben
+	0 = PA-Daten gesperrt
+	1 = PA-Daten freigegeben
+	--------------------------------------------------------------------------------
+	BIT 5: Störung/Warnung
+	0 = keine Störung/Warnung
+	1 = Störung/Warnung liegt an
+	--------------------------------------------------------------------------------
+	BYTE 2: Gerätezustand/ Fehlernummer
+	--------------------------------------------------------------------------------*)]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="Status_CoE" Id="{8180c71c-0a6d-49db-92e1-30ae2e6eff11}">
+      <Implementation>
+        <ST><![CDATA[//300;Lese Parameter aus FU...
+aktuellLesen:= CoE_ReadAndWrite.I_bStartRead
+				AND NOT CoE_ReadAndWrite.I_bStartWriteFromCSV
+				AND CoE_ReadAndWrite.Q_bBusy 
+				AND NOT CoE_ReadAndWrite.Q_bError
+				AND NOT CoE_ReadAndWrite.Q_bCSVDone
+				AND NOT CoE_ReadAndWrite.Q_bWriteDone
+				AND keinTimerAktiv;
+	
+//301;Lese Parameter aus FU erfolgreich
+
+LesenErfolgreich:= NOT CoE_ReadAndWrite.I_bStartRead
+				AND NOT CoE_ReadAndWrite.I_bStartWriteFromCSV
+				AND NOT CoE_ReadAndWrite.Q_bBusy 
+				AND NOT CoE_ReadAndWrite.Q_bError
+				AND CoE_ReadAndWrite.Q_bCSVDone
+				AND NOT CoE_ReadAndWrite.Q_bWriteDone
+				AND keinTimerAktiv;
+				
+//302;Lese Parameter aus FU fehlgeschlagen
+
+LesenFehlgeschlagen:=  CoE_ReadAndWrite.I_bStartRead
+				AND NOT CoE_ReadAndWrite.I_bStartWriteFromCSV
+				AND NOT CoE_ReadAndWrite.Q_bBusy 
+				AND  CoE_ReadAndWrite.Q_bError
+				AND NOT CoE_ReadAndWrite.Q_bCSVDone
+				AND NOT CoE_ReadAndWrite.Q_bWriteDone
+				AND keinTimerAktiv;
+				
+//306;Schreibe Parameter in FU...
+
+aktuellSchreiben:= NOT CoE_ReadAndWrite.I_bStartRead
+				AND CoE_ReadAndWrite.I_bStartWriteFromCSV
+				AND CoE_ReadAndWrite.Q_bBusy 
+				AND NOT CoE_ReadAndWrite.Q_bError
+				AND NOT CoE_ReadAndWrite.Q_bCSVDone
+				AND NOT CoE_ReadAndWrite.Q_bWriteDone
+				AND keinTimerAktiv;
+
+//307;Schreibe Parameter in FU erfolgreich
+
+SchreibenErfolgreich:= NOT CoE_ReadAndWrite.I_bStartRead
+				AND NOT CoE_ReadAndWrite.I_bStartWriteFromCSV
+				AND NOT CoE_ReadAndWrite.Q_bBusy 
+				AND NOT CoE_ReadAndWrite.Q_bError
+				AND NOT CoE_ReadAndWrite.Q_bCSVDone
+				AND CoE_ReadAndWrite.Q_bWriteDone
+				AND keinTimerAktiv;
+				
+//308;Schreibe Parameter in FU fehlgeschlagen
+
+SchreibenFehlgeschlagen:= NOT CoE_ReadAndWrite.I_bStartRead
+				AND CoE_ReadAndWrite.I_bStartWriteFromCSV
+				AND NOT CoE_ReadAndWrite.Q_bBusy 
+				AND  CoE_ReadAndWrite.Q_bError
+				AND NOT CoE_ReadAndWrite.Q_bCSVDone
+				AND NOT CoE_ReadAndWrite.Q_bWriteDone
+				AND keinTimerAktiv;]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="WriteSteuerwort" Id="{033191aa-201e-4854-8007-f69e826bd7ee}">
+      <Implementation>
+        <ST><![CDATA[//Steuerwort schreiben
+	steuerbyte_1	:= BYTE_OF_BIT(
+	B0:= reglersperre, 
+	B1:= freigabe_stop , 
+	B2:= freigabe_halt, 
+	B3:= reserve_3_1, 
+	B4:= reserve_4_1, 
+	B5:= reserve_5_1, 
+	B6:= reset, 
+	B7:= reserve_7_1);
+	
+	steuerbyte_2 :=BYTE_OF_BIT(
+	B0:= drehrichtung_motorpoti , 
+	B1:= motorpoti_auf, 
+	B2:= motorpoti_ab, 
+	B3:= n11_n21, 
+	B4:= n12_n22	 , 
+	B5:= sollwert_umschaltung, 
+	B6:= reserve_14  , 
+	B7:= reserve_15);
+    out_PD.PD_1_Steuerwort :=WORD_OF_BYTE(B1:= steuerbyte_2 , B0:=steuerbyte_1 );
+	
+(* Steuerwort --------------------------------------------------------------------
+	BIT 0: Reglersperre
+	0 = Freigabe
+	1 = Regler sperren, Bremse aktivieren
+	--------------------------------------------------------------------------------
+	BIT 1: Freigabe/Schnellstopp
+	0 = Schnellstopp
+	1 = Freigabe
+	--------------------------------------------------------------------------------
+	BIT 2: Freigabe/Halt
+	0 = Halt an Integratorrampe oder Prozess-Rampe
+	1 = Freigabe
+	--------------------------------------------------------------------------------
+	BIT 3: Reserviert (Reservierte Bits sind generell auf Null zu setzen!)
+	--------------------------------------------------------------------------------
+	BIT 4: Reserviert (Reservierte Bits sind generell auf Null zu setzen!)
+	--------------------------------------------------------------------------------
+	BIT 5: Reserviert (Reservierte Bits sind generell auf Null zu setzen!)
+	--------------------------------------------------------------------------------
+	BIT 6: Reset
+	0 = nicht aktiv
+	0 -> 1 = anstehende Störung zurücksetzen
+	--------------------------------------------------------------------------------
+	BIT 7: Reserviert (Reservierte Bits sind generell auf Null zu setzen!)
+	--------------------------------------------------------------------------------
+	BIT 8: Drehrichtung für Motorpoti
+	0 = Drehrichtung RECHTS
+	1 = Drehrichtung LINKS
+	--------------------------------------------------------------------------------
+	BIT 10 und 9: Motorpoti Hochlauf,Motorpoti Tieflauf
+	0 0 = keine Änderung
+	1 0 = ab
+	0 1 = auf
+	1 1 = keine Änderung
+	--------------------------------------------------------------------------------
+	BIT 12 und 11:Anwahl der internen Festsollwerte
+	n11...n13 bzw. n21...n23
+	0 0 = Drehzahl-Sollwert über Prozess-Ausgangsdatenwort 2
+	0 1 = interner Sollwert n11 (n21)
+	1 0 = interner Sollwert n12 (n22)
+	1 1 = interner Sollwert n13 (n23)
+	--------------------------------------------------------------------------------
+	BIT 13: Festsollwert-Umschaltung
+	0 = Festsollwerte des aktivn Parametersatzes über Bit 11/12 anwählbar
+	1 = Festsollwerte des anderen Parametersatzes über Bit 11/12 anwählbar
+	--------------------------------------------------------------------------------
+	BIT 14: Reserviert (Reservierte Bits sind generell auf Null zu setzen!)
+	--------------------------------------------------------------------------------
+	BIT 15: Reserviert (Reservierte Bits sind generell auf Null zu setzen!*)]]></ST>
+      </Implementation>
+    </Action>
+  </POU>
+</TcPlcObject>

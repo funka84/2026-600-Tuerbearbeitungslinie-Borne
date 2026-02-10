@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="DUT_Ventil_para" Id="{03690952-f2ee-413d-a582-717a9497a7d2}">
+    <Declaration><![CDATA[TYPE DUT_Ventil_para :
+STRUCT
+	ueberwachung_vor_aktiv	:BOOL:=TRUE;	//0 = Endlagenüberwachung vor deaktiviert
+	ueberwachung_zur_aktiv	:BOOL:=TRUE;	//0 = Endlagenüberwachung zurück deaktiviert
+	ausgang_vor_halten		:BOOL:=FALSE;	//1 = Ausgang immer Ein, sonst 0 in Endlage/1 nicht in Endlage
+	ausgang_zur_halten		:BOOL:=FALSE;	//1 = Ausgang immer Ein, sonst 0 in Endlage/1 nicht in Endlage
+	entprellen_vor_aktiv	:BOOL:=TRUE;	//0 = Endlage sofort überwachen wenn einmal erreicht
+	entprellen_zur_aktiv	:BOOL:=TRUE;	//0 = Endlage sofort überwachen wenn einmal erreicht
+	ueberwachungszeit_vor	:TIME:=T#10S;	//Überwachungszeit in ms (0-30000ms)
+	ueberwachungszeit_zur	:TIME:=T#10S;	//Überwachungszeit in ms (0-30000ms)
+	entprellungszeit_vor	:TIME:=T#50MS;	//Entprellungszeit in ms (0-10000ms)
+	entprellungszeit_zur	:TIME:=T#50MS;	//Entprellungszeit in ms (0-10000ms)
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

@@ -1,0 +1,201 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_Transport" Id="{61ebdb9d-ec9f-48ce-86d9-cd576af29d8e}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Transport
+VAR_INPUT
+	in_Rueckwaerts			:BOOL;
+	in_frg_Ablauf				:BOOL;
+	in_Einlaufsperre		:BOOL;
+	in_Auslaufsperre		:BOOL;
+	in_Einlaufsensor		:BOOL;
+	in_Auslaufsensor		:BOOL;
+	in_Schleichsensor		:BOOL;		
+	in_frg_nachfolgend	:BOOL;
+	in_kom_von_Visu		:INT;
+	in_speed					:INT;
+	in_speed_slow			:INT;
+	in_Laufzeit_Einlauf	:TIME;
+	in_Laufzeit_Auslauf	:TIME;
+	in_Dauer_Suchfahrt	:INT;
+END_VAR
+VAR_OUTPUT
+out_frg_vorhergehend	:BOOL;
+out_kom_an_Visu			:INT;
+out_Laufzeitfehler_Einlauf :BOOL;
+out_Laufzeitfehler_Auslauf:BOOL;
+END_VAR
+
+VAR_IN_OUT
+inout_steuern				:DUT_SEW_FU_Steuern_alt;
+inout_status				:DUT_SEW_FU_Status_alt;
+inout_Schrittkette		:INT;
+END_VAR
+
+VAR
+pFl_schleich							:F_TRIG;
+
+nFl_Auslauf							:R_TRIG;
+nFl_Einlauf								:R_TRIG;;
+
+sk											:INT;
+intern_dauer_Suchfahrt 		:TIME;
+ton_daten_ungueltig				:TON;
+ton_Suchfahrt							:TON;
+ton_laufzeitfehler_einlauf		:TON;
+ton_laufzeitfehler_auslauf		:TON;
+
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// ***** Allgemein *******************************************************************
+	// *******************************************************************************			
+		
+//Sensorflankem
+pFl_schleich(CLK:=in_Schleichsensor);
+nFl_Auslauf(CLK:=in_Auslaufsensor);
+nFl_Einlauf(CLK:=in_Einlaufsensor);
+//Timer
+intern_dauer_Suchfahrt := INT_TO_TIME(in_Dauer_Suchfahrt)*1000;
+ton_daten_ungueltig	(IN:= sk = 120, PT:=T#1S);
+ton_Suchfahrt				(IN:= sk = 0		, PT:=intern_dauer_Suchfahrt);
+
+//Geschwindigkeiten schreiben	
+IF pFl_schleich.Q
+	THEN
+	inout_steuern.speed:=in_speed_slow;
+END_IF
+
+IF nFl_Auslauf.Q
+	OR sk < 200
+	THEN
+	inout_steuern.speed:=in_speed;
+END_IF
+
+// Laufzeitfehler
+ton_Laufzeitfehler_Einlauf(PT:=in_Laufzeit_Auslauf);		
+ton_Laufzeitfehler_Auslauf(PT:=in_Laufzeit_Auslauf);
+
+IF in_frg_Ablauf
+THEN
+CASE sk OF
+		
+// ***** Ablauf starten **************************************************************
+	// *******************************************************************************
+0:		//
+		IF  in_Dauer_Suchfahrt <> 0
+			AND NOT in_Auslaufsensor
+		THEN
+			inout_steuern.vor:=TRUE;
+		END_IF
+		
+		IF ton_Suchfahrt.Q
+			OR in_Auslaufsensor
+		THEN
+			inout_steuern.vor:=FALSE;
+			sk:=100;	
+		END_IF
+	
+100:		// Zyklisch Daten anfragen
+	out_kom_an_Visu	:=0;
+	sk				:=110;
+	
+110: 	//Prüfen ob Daten gültig
+	IF in_kom_von_Visu=0
+	THEN
+		out_kom_an_Visu	:=10;
+	END_IF
+	
+	IF in_kom_von_Visu= 15	//gültig
+	THEN
+		sk							:=130;
+	ELSIF in_kom_von_Visu = 19	//ungültig
+	THEN
+		sk			:=120;	
+	END_IF
+	
+120:	//Kommuniation reset
+		//GVL_Visu_1112.KommAnVisu:=0;
+		
+		IF ton_daten_ungueltig.Q
+		THEN
+			sk			  :=100;
+		END_IF
+	
+130: //Sprungverteiler
+	// Station leer
+	IF NOT in_Auslaufsensor
+		AND NOT in_Einlaufsperre
+	THEN 
+			sk:=200;
+	//Station belegt
+	ELSIF in_Auslaufsensor
+		AND NOT in_Auslaufsperre
+	THEN 
+			sk:=300;
+	END_IF
+		
+		
+200:	//Einfördern
+		IF NOT in_Rueckwaerts
+		THEN	
+			inout_steuern.vor			:=TRUE;
+		ELSIF in_Rueckwaerts
+		THEN
+			inout_steuern.zur			:=TRUE;	
+		END_IF
+		
+		out_frg_vorhergehend	:=TRUE;
+	
+		//Einfördern quittieren über Hinterkante Einlauf
+		IF 	nFl_Einlauf.Q
+		THEN
+			out_frg_vorhergehend :=FALSE;
+			out_kom_an_Visu			:=30;
+		END_IF
+
+		//Transport bis auf Auslaufsensor
+		//Einlauf nachfolgendes Band bereit
+		IF in_Auslaufsensor					 	//Teil an Auslauf erkannt
+			AND in_frg_nachfolgend			//nachfolgene Anlage bereit zum Einfördern
+			AND in_kom_von_Visu=35								//Visu hat Teil auf Station gebucht
+			AND NOT in_Auslaufsperre	//nicht Ausfördern da Auslaufsperre
+		THEN
+			sk			:=300; //weiter zum Ausfördern ohne den Antrieb zu stoppen
+			
+		//Einlauf nachfolgendes Band NICHT bereit oder nicht auf Station gebucht	
+		ELSIF in_Auslaufsensor 						//Teil an Auslauf erkannt
+			AND (NOT in_frg_nachfolgend		//nachfolgende Anlage NICHT bereit
+			OR in_kom_von_Visu<>35)										//Visu hat Teil NICHT auf Station gebucht
+		THEN
+			inout_steuern.vor:=FALSE;				//Antrieb aus bis nachfolgende Anlage bereit und Visu Teil auf Station gebucht hat
+			inout_steuern.zur:=FALSE;
+		ELSIF in_Auslaufsperre
+		THEN
+			sk		:=100;
+		END_IF
+
+300:	//Ausfördern
+		IF NOT in_Rueckwaerts
+		THEN	
+			inout_steuern.vor			:=TRUE;
+		ELSIF in_Rueckwaerts
+		THEN
+			inout_steuern.zur			:=TRUE;	
+		END_IF
+		
+		//Warten bis ausgefördert
+		IF nFl_Auslauf.Q
+			OR NOT  in_frg_nachfolgend
+		THEN
+			inout_steuern.vor:=FALSE;
+			inout_steuern.zur:=FALSE;
+			sk:=100;
+		END_IF
+
+	END_CASE
+END_IF
+
+inout_Schrittkette:=sk;]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

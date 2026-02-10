@@ -1,0 +1,378 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_Ventil_V2" Id="{1ff8935d-59f0-4d8d-a5af-624ee626c28d}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Ventil_V2
+(*
+	Ansteuerungsbaustein zum Steuern und Überwachen von Ventilen und den dazugehörigen Sensoren
+	(abgeleitet vom Siemens Baustein "Allg-Ventilbaustein" Stand 20.01.20)
+	Autor O.E.
+	Erstellt 20.01.20
+	Version 1.0 
+	
+	Autor A.F.
+	Erstellt 25.11.25
+	Version 2.0
+		- Vereinfachung / Verkürzung vom Programm
+		- Methodenaufruf für Zylinder Ein bzw Aussteuern 
+*)
+VAR_INPUT
+	in_endlage_vor	:BOOL;	(*1=Endlage vorne ist angefahren*)
+	in_endlage_zur	:BOOL;	(*1=Endlage zurück ist angefahren*)
+	in_hand			:BOOL;	(*1=Handbetrieb*)
+	in_auto			:BOOL;	(*1=Automatikbetrieb*)
+	in_quit			:BOOL;	(*		*)
+END_VAR
+
+VAR_OUTPUT
+	out_vor				:BOOL;				(*Ausgang vorfahren*)
+	out_zur				:BOOL;				(*Ausgang zurückfahren*)
+	out_stoerung_vor	:BOOL;				(*Störung*)
+	out_stoerung_zur	:BOOL;				(*Störung*)
+	out_stoerung_vorzur	:BOOL;				(*Störung*)
+	out_vor_visu		:BOOL;				(*Endlagen direkt für die Visu weitergeleitet*)
+	out_zur_visu		:BOOL;				(*Endlagen direkt für die Visu weitergeleitet*)
+END_VAR
+
+VAR_IN_OUT
+	inout_ansteuerung	:DUT_Ventil_sps;
+	inout_visu			:DUT_Ventil_VISU;
+END_VAR
+
+VAR
+	temp_zeit_vor				:TIME;
+	temp_zeit_zur				:TIME;
+	temp_zeit_entprellen_vor	:TIME;
+	temp_zeit_entprellen_zur	:TIME;
+	temp_end_vor				:BOOL;
+	temp_end_zur				:BOOL;
+	temp_stoer_vor				:BOOL;
+	temp_stoer_zur				:BOOL;
+	temp_stoer_vor_zur			:BOOL;	
+END_VAR
+
+VAR	
+	verzoegerung_vor			:TON;	
+	verzoegerung_zur			:TON;		
+	ueberwachung_vor			:TON;		
+	ueberwachung_zur			:TON;	
+	fl_hm_vor					:R_trig;	
+	fl_hm_zur					:R_trig;	
+
+	hm_vor						:BOOL;	
+	hm_zur						:BOOL;	
+	hm_timer_reset				:BOOL;	
+	hm_timer_reset_2			:BOOL;	
+END_VAR
+
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(************************************************************************************************************************************************************)
+(*	SIGNALE IN 
+		in_endlage_vor		--- 1 = Endlage vorne ist angefahren
+		in_endlage_zur		--- 1 = Endlage zurück ist angefahren
+		in_hand				--- Handbetrieb
+		in_auto				--- Automatikbetrieb
+		in_quit				--- Störungs Reset
+						
+	SIGNALE OUT 
+		out_vor				--- Ausgang vorfahren
+		out_zur				--- Ausgang zurückfahren
+		out_stoerung		--- Störung
+	
+	SIGNALE INOUT - SPS
+		in_auto_vor			--- Startsignal vorfahren (bleibt gespeichert)
+		in_auto_zur			--- Startsignal zurückfahren (bleibt gespeichert)
+		in_aus				--- intern gespeicherte Startsignale löschen
+		in_freigabe_vor		--- 1 = vorfahren freigegeben
+		in_freigabe_zur		--- 1 = zurückfahren freigegeben
+		
+		out_ist_vor			--- steht in Endlage vor und kein Fehler
+		out_ist_zur			---	steht in Endlage zur und kein Fehler
+	
+	SIGNALE INOUT - VISU
+		hand_vor			--- Hand vorfahren
+		hand_zur			--- Hand zurückfahren
+		reset				--- ntern gespeicherte Startsignale löschen
+		service				--- 1 = ALLE Überwachungen deaktiviert
+		status				--- 0=??? 1=vor 2=ist vor 3=fehler vor 4=zur 5=ist zur 6=Fehler zur 7=Fehler vor zur
+		para				--- Parameter Struktur
+			ueberwachung_vor_aktiv	--- 0 = Endlagenüberwachung vor deaktiviert
+			ueberwachung_zur_aktiv	--- 0 = Endlagenüberwachung zurück deaktiviert
+			ausgang_vor_halten		--- 1 = Ausgang immer Ein, sonst 0 in Endlage/1 nicht in Endlage
+			ausgang_zur_halten		--- 1 = Ausgang immer Ein, sonst 0 in Endlage/1 nicht in Endlage
+			entprellen_vor_aktiv	--- 0 = Endlage sofort überwachen wenn einmal erreicht
+			entprellen_zur_aktiv	--  0 = Endlage sofort überwachen wenn einmal erreicht
+			ueberwachungszeit_vor	--- Überwachungszeit in ms (0-30000ms)
+			ueberwachungszeit_zur	--- Überwachungszeit in ms (0-30000ms)
+			entprellungszeit_vor	--- Entprellungszeit in ms (0-10000ms)
+			entprellungszeit_zur	--- Entprellungszeit in ms (0-10000ms)																					*)
+(************************************************************************************************************************************************************)
+
+
+(****** Zeitvorgabe prüfen **********************************************************************************************************************************)
+(* Überwachung vor -> 0-300000ms  *)
+	temp_zeit_vor:=inout_visu.para.ueberwachungszeit_vor;
+	temp_zeit_vor := LIMIT(T#0MS, inout_visu.para.ueberwachungszeit_vor, T#30000MS);
+(* Überwachung zurück -> 0-300000ms *)
+	temp_zeit_zur:=inout_visu.para.ueberwachungszeit_zur;
+	temp_zeit_zur := LIMIT(T#0MS, inout_visu.para.ueberwachungszeit_zur, T#30000MS);
+(* Entprellen vor -> 0-10000s *)
+	temp_zeit_entprellen_vor:=inout_visu.para.entprellungszeit_vor;
+	temp_zeit_entprellen_vor := LIMIT(T#0MS, inout_visu.para.entprellungszeit_vor, T#10000MS);
+(* Entprellen zurück -> 0-10000ms *)
+	temp_zeit_entprellen_zur:=inout_visu.para.entprellungszeit_zur;
+	temp_zeit_entprellen_zur := LIMIT(T#0MS, inout_visu.para.entprellungszeit_zur, T#10000MS);
+	
+(****** Endlage vor **********************************************************************************************************************************)
+	verzoegerung_vor(IN:= in_endlage_vor
+						AND NOT in_endlage_zur
+						AND NOT hm_zur
+						AND hm_timer_reset,
+						pt:= temp_zeit_entprellen_vor);
+	temp_end_vor:=((verzoegerung_vor.Q
+					AND NOT inout_visu.service)
+					OR (hm_vor
+						AND inout_visu.service));
+(****** Endlage zur **********************************************************************************************************************************)
+	verzoegerung_zur(IN:= in_endlage_zur
+						AND NOT in_endlage_vor
+						AND NOT hm_vor
+						AND hm_timer_reset,
+						pt:= temp_zeit_entprellen_zur);
+	temp_end_zur:=((verzoegerung_zur.Q
+					AND NOT inout_visu.service)
+					OR (hm_zur
+						AND inout_visu.service));
+(****** Start vor **********************************************************************************************************************************)
+	IF ((in_auto
+			AND inout_ansteuerung.in_auto_vor)
+		OR (in_hand
+			AND inout_visu.hand_vor))
+		AND inout_ansteuerung.in_freigabe_vor
+		AND NOT inout_ansteuerung.in_aus
+	THEN
+		hm_vor:=TRUE;
+	END_IF
+	
+	IF (in_auto
+			AND inout_ansteuerung.in_auto_zur)
+		OR (in_hand
+			AND inout_visu.hand_zur)
+		OR inout_visu.reset
+		OR inout_ansteuerung.in_aus
+	THEN
+		hm_vor:=FALSE;
+	END_IF
+	
+	out_vor:=hm_vor
+				AND inout_ansteuerung.in_freigabe_vor
+				AND (NOT temp_end_vor
+						OR inout_visu.para.ausgang_vor_halten);
+
+(****** Start zur **********************************************************************************************************************************)
+	IF ((in_auto
+			AND inout_ansteuerung.in_auto_zur)
+		OR (in_hand
+			AND inout_visu.hand_zur))
+		AND inout_ansteuerung.in_freigabe_zur
+		AND NOT inout_ansteuerung.in_aus
+	THEN
+		hm_zur:=TRUE;
+	END_IF
+
+	IF (in_auto
+			AND inout_ansteuerung.in_auto_vor)
+		OR (in_hand
+			AND inout_visu.hand_vor)
+		OR inout_visu.reset
+		OR inout_ansteuerung.in_aus
+	THEN
+		hm_zur:=FALSE;
+	END_IF
+	
+	out_zur:=hm_zur
+				AND inout_ansteuerung.in_freigabe_zur
+				AND (NOT temp_end_zur
+						OR inout_visu.para.ausgang_zur_halten);
+
+(****** Flankenbildung bei vor und zurück *************************************************************************************************************)
+(*wird benötigt damit der Timer bei direkten umschalten neu startet*) 
+	fl_hm_vor(CLK:=hm_vor);
+	fl_hm_zur(CLK:=hm_zur);
+	
+	hm_timer_reset_2:=fl_hm_vor.Q
+					OR fl_hm_zur.Q
+					OR ( NOT hm_vor
+							AND NOT hm_zur)
+					OR NOT inout_visu.para.ueberwachung_vor_aktiv	
+					OR NOT inout_visu.para.ueberwachung_zur_aktiv	
+					OR (out_stoerung_vorzur
+						AND (temp_end_vor
+								OR temp_end_zur))
+					OR (hm_vor
+						AND temp_end_vor)			
+					OR (hm_zur
+						AND temp_end_zur);			
+	
+(****** Zeitüberwachung Vor starten  *************************************************************************************************************)
+	ueberwachung_vor(IN:=inout_visu.para.ueberwachung_vor_aktiv
+							AND hm_vor
+							AND NOT hm_timer_reset_2,
+						pt:=temp_zeit_vor);
+		
+(****** Zeitüberwachung Zur starten  *************************************************************************************************************)
+	ueberwachung_zur(IN:=inout_visu.para.ueberwachung_zur_aktiv
+							AND hm_zur
+							AND NOT hm_timer_reset_2,
+						pt:=temp_zeit_zur);
+		
+(****** Störung - Zeitüberwachung Vor abgelaufen = Fehler *****************************************************************************************)
+	temp_stoer_vor:=ueberwachung_vor.Q
+					AND NOT temp_end_vor;
+				
+(****** Störung - Zeitüberwachung Zurück abgelaufen = Fehler **************************************************************************************)
+	temp_stoer_zur:=ueberwachung_zur.Q
+					AND NOT temp_end_zur;
+	
+(****** Störung - Beide Endlagen belegt = Fehler ***************************************************************************************************)
+	temp_stoer_vor_zur:=temp_stoer_vor
+						AND temp_stoer_zur;
+
+(****** Störung - Ausgabe - STATUS auf 0 ************************************************************************************************************)
+	IF in_quit
+	THEN
+		hm_timer_reset_2		:=FALSE;
+		inout_visu.status		:=0;
+	 	out_stoerung_vorzur		:=FALSE;
+		out_Stoerung_vor		:=FALSE;
+		out_Stoerung_zur		:=FALSE;
+	END_IF						
+
+	IF temp_stoer_vor
+		AND NOT temp_stoer_vor_zur
+	THEN
+	 	out_stoerung_vor:=TRUE;
+	END_IF						
+
+	IF temp_stoer_zur
+		AND NOT temp_stoer_vor_zur
+	THEN
+	 	out_stoerung_zur:=TRUE;
+	END_IF						
+
+	IF temp_stoer_vor_zur
+	THEN
+	 	out_stoerung_vorzur:=TRUE;
+	END_IF						
+
+	
+(****** steht in Endlage vor und kein Fehler ********************************************************************************************************)
+	inout_ansteuerung.out_ist_vor:= NOT out_stoerung_vorzur
+									AND temp_end_vor;
+
+(****** steht in Endlage zurück und kein Fehler *****************************************************************************************************)
+	inout_ansteuerung.out_ist_zur:= NOT out_stoerung_vorzur
+									AND temp_end_zur;
+									
+(***** Status ****************************************************************************************************************************************)
+	(* 1=vor *)							
+	IF hm_vor
+		AND NOT temp_end_vor
+		AND NOT temp_stoer_zur
+		AND NOT temp_stoer_vor_zur
+	THEN
+		inout_visu.status:=1;									
+	END_IF									
+	(* 2=ist vor *)							
+	IF (temp_end_vor
+		OR (NOT inout_visu.para.ueberwachung_vor_aktiv
+				AND hm_vor))
+		AND NOT temp_end_zur
+		AND NOT temp_stoer_zur
+		AND NOT temp_stoer_vor_zur
+	THEN
+		inout_visu.status:=2;									
+	END_IF															
+	(* 3=Fehler vor	*)							
+	IF temp_stoer_vor
+	THEN
+		inout_visu.status:=3;
+	END_IF
+	
+	(* 4=zur *)							
+	IF hm_zur
+		AND NOT temp_end_zur
+		AND NOT temp_stoer_zur
+		AND NOT temp_stoer_vor_zur
+	THEN
+		inout_visu.status:=4;									
+	END_IF									
+	(* 5=ist zur *)							
+	IF (temp_end_zur
+		OR (NOT inout_visu.para.ueberwachung_zur_aktiv
+				AND hm_zur))
+		AND NOT temp_end_vor
+		AND NOT temp_stoer_zur
+		AND NOT temp_stoer_vor_zur
+	THEN
+		inout_visu.status:=5;									
+	END_IF															
+	(* 6=Fehler zurück *)								
+	IF temp_stoer_zur
+	THEN
+		inout_visu.status:=6;
+	END_IF
+	(* 7=Fehler vor zur	*)
+	IF temp_stoer_vor_zur
+	THEN
+		inout_visu.status:=7;
+	END_IF
+
+	
+(***** Endlagen direkt an die Visu weiter reichen ***********************************************************************************************************)
+	out_vor_visu:=in_endlage_vor;
+	out_zur_visu:=in_endlage_zur;
+
+
+(***** IN Start-Befehle Hand und Automatik löschen **********************************************************************************************************)
+	inout_ansteuerung.in_auto_vor:=FALSE;
+	inout_ansteuerung.in_auto_zur:=FALSE;
+	inout_ansteuerung.in_aus := FALSE;
+	inout_visu.hand_vor:=FALSE;
+	inout_visu.hand_zur:=FALSE;
+	hm_timer_reset:=TRUE;
+
+
+]]></ST>
+    </Implementation>
+    <Method Name="M_AutoVor" Id="{a81f2526-85b4-41c6-82bd-ab1737dece8c}">
+      <Declaration><![CDATA[METHOD M_AutoVor : BOOL
+VAR_INPUT
+	Active		: BOOL;
+END_VAR
+
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[inout_ansteuerung.in_auto_vor := Active;
+IF inout_ansteuerung.out_ist_vor OR NOT Active THEN
+	M_AutoVor := TRUE;
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_AutoZur" Id="{de0082b1-1f35-41ae-b4e2-a9c264968b6c}">
+      <Declaration><![CDATA[METHOD M_AutoZur : BOOL
+VAR_INPUT
+	Active		: BOOL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[inout_ansteuerung.in_auto_zur := Active;
+IF inout_ansteuerung.out_ist_zur OR NOT Active THEN
+	M_AutoZur := TRUE;
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <GVL Name="EAs_3510" Id="{822aaaa8-20e4-4d24-837c-33fdc4ab8aa7}">
+    <Declaration><![CDATA[
+{attribute 'linkalways'} 
+VAR_GLOBAL
+
+    // Umrichter
+    //_______________________________________________________
+	
+	 {attribute 'TcLinkTo' := '	.PD_1_STATUSWORT  		:= TIID^Device 1 (EtherCAT)^=3510+FS2-6T1 (Transport Schlossseite X-Achse)^Module 1 (Standard 16 PD)^Inputs 16 PD^PI 1;
+								.PD_2_IST_DREHZAHL  	:= TIID^Device 1 (EtherCAT)^=3510+FS2-6T1 (Transport Schlossseite X-Achse)^Module 1 (Standard 16 PD)^Inputs 16 PD^PI 2;
+								.PD_3_Status  			:= TIID^Device 1 (EtherCAT)^=3510+FS2-6T1 (Transport Schlossseite X-Achse)^Module 1 (Standard 16 PD)^Inputs 16 PD^PI 3;
+								.PD_4_IST_DREHMOMENT  	:= TIID^Device 1 (EtherCAT)^=3510+FS2-6T1 (Transport Schlossseite X-Achse)^Module 1 (Standard 16 PD)^Inputs 16 PD^PI 4;
+								.PD_5_IST_STROM  		:= TIID^Device 1 (EtherCAT)^=3510+FS2-6T1 (Transport Schlossseite X-Achse)^Module 1 (Standard 16 PD)^Inputs 16 PD^PI 5'}		
+		e_Trans_Schlossseite	AT%I*	: DUT_SEW_FU_PD_IN; 	// Schnittstelle zwischen SPS und FU
+	 {attribute 'TcLinkTo' := '	.PD_1_Steuerwort  		:= TIID^Device 1 (EtherCAT)^=3510+FS2-6T1 (Transport Schlossseite X-Achse)^Module 1 (Standard 16 PD)^Outputs 16 PD^PO 1;
+								.PD_2_Solldrehzahl  	:= TIID^Device 1 (EtherCAT)^=3510+FS2-6T1 (Transport Schlossseite X-Achse)^Module 1 (Standard 16 PD)^Outputs 16 PD^PO 2;
+								.PD_3_Sollbeschleunigung:= TIID^Device 1 (EtherCAT)^=3510+FS2-6T1 (Transport Schlossseite X-Achse)^Module 1 (Standard 16 PD)^Outputs 16 PD^PO 3;
+								.PD_4_Sollverzoegerung  := TIID^Device 1 (EtherCAT)^=3510+FS2-6T1 (Transport Schlossseite X-Achse)^Module 1 (Standard 16 PD)^Outputs 16 PD^PO 4;
+								.PD_5_Digitalausgaenge  := TIID^Device 1 (EtherCAT)^=3510+FS2-6T1 (Transport Schlossseite X-Achse)^Module 1 (Standard 16 PD)^Outputs 16 PD^PO 5'}
+		a_Trans_Schlossseite	AT%Q*	: DUT_SEW_FU_PD_OUT;	// Schnittstelle zwischen SPS und FU
+														  					
+
+    // Eingaenge
+    //_______________________________________________________
+
+    // +K110-1K2
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-1K2 (EL1809)^Channel 16^Input'}
+        e_FR_3510_Transport_Schlossseite_Riemenfoerderer_langsam AT %I* : BOOL; (* =FR.3510 Transport Schloßseite Riemenförderer langsam *)
+
+    // +K110-1K3
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-1K3 (EL1809)^Channel 1^Input'}
+        e_FR_3510_Transport_Schlossseite_Riemenfoerderer_stopp AT %I* : BOOL; (* =FR.3510 Transport Schloßseite Riemenförderer stopp *)
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-1K3 (EL1809)^Channel 2^Input'}
+        e_FR_3510_Transport_Schlossseite_Laengsanschlag_ist_oben AT %I* : BOOL; (* =FR.3510 Transport Schloßseite Längsanschlag ist oben *)
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-1K3 (EL1809)^Channel 3^Input'}
+        e_FR_3510_Transport_Schlossseite_Laengsanschlag_ist_unten AT %I* : BOOL; (* =FR.3510 Transport Schloßseite Längsanschlag ist unten *)
+
+    // +K110-1K5
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-1K5 (EL1104)^Channel 1^Input'}
+        e_FR_3510_Transport_Schlossseite_X_Achse_Laengsanschlag_Referenz AT %I* : BOOL; (* =FR.3510 Transport Schloßseite X-Achse Längsanschlag Referenz *)
+
+
+    // Ausgaenge
+    //_______________________________________________________
+
+    // +K110-2K2
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-2K2 (EL2809)^Channel 1^Output'}
+        a_FR_3510_Transport_Schlossseite_X_Achse_Laengsanschlag_Schienenklemmung_klemmen AT %Q* : BOOL; (* =FR.3510 Transport Schloßseite X-Achse Längsanschlag Schienenklemmung klemmen *)
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-2K2 (EL2809)^Channel 2^Output'}
+        a_FR_3510_Transport_Schlossseite_Laengsanschlag_heben AT %Q* : BOOL; (* =FR.3510 Transport Schloßseite Längsanschlag heben *)
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-2K2 (EL2809)^Channel 3^Output'}
+        a_FR_3510_Transport_Schlossseite_Laengsanschlag_senken AT %Q* : BOOL; (* =FR.3510 Transport Schloßseite Längsanschlag senken *)
+END_VAR
+    ]]></Declaration>
+  </GVL>
+</TcPlcObject>

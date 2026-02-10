@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="DUT_PD_InOut_Achsen" Id="{616774ee-1e19-4242-b145-d95bfefecfcb}">
+    <Declaration><![CDATA[TYPE DUT_PD_InOut_Achsen :
+STRUCT
+	S0145_steuerword			AT%Q*:WORD;		// Signal Steuerwort für den Bremsentest/Reset des Umrichters
+												// 	.0 = Reset, 				S-0-0099 - C0500 Reset Zustandsklasse 1
+												//	.1 = Absolutwert setzen, 	S-0-0447 - C0300 Absolutwert setzen   !!! nur ohne Reglerfreigabe möglich
+												//	.2 = Bremsentest, 			P-0-0541 - C2100 Kommando Haltesystemüberwachen 
+	S0052_ref_pos				AT%Q*:DINT;		// Referenzposition /Absolutwert zum setzen
+	S0092_drehmoment_grenzwert 	AT%Q*:UINT;		// Drehmoment/ Kraft Grenzwert bipolar
+
+
+	S0144_statusword			AT%I*:WORD;		// Signal Statuswort 
+	P0539_status_bremse			AT%I*:WORD;		// Signal Statuswort für den Bremsentest
+	S0390_diagnose				AT%I*:DWORD;	// Diagnose Word des Reglers
+
+	//***** Nur beim Achsmodul XMD *********************************************************************
+	P0115_axis_state_maschine	AT%I*:WORD;		//	Achs-State-Machine: Statuswort, Achse 
+												//	.0 -> 1=Der Wechselrichter erlaubt die Leistungsfreigabe
+	S0240_DCbus_Supply			AT%Q*:WORD;		//	Zwischenkreis-Versorgung: Steuerwort										
+												//	.0-> 1=der Zwischenkreis ist bereit zur Leistungsabgabe		
+										
+	//***** Nur beim Versorgungsmodul XCS **************************************************************
+	S2058_power_supply_status	AT%I*:WORD;		// Zwischenkreis-Versorgung: Steuerwort		
+												//	.15-> 1= Die Freigabe ist gegeben, d.h. der Zwischenkreis ist belastbar
+	S2057_power_supply_contol	AT%Q*:WORD;		//	Versorgerregelung: Steuerwort 
+												//	.12-> 1= Kontakt schließen, Freigabe
+												//	.14-> 1= Zwischenkreis laden
+												//	.15-> 1= Freigabe, Sollbetriebsart aktivieren
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

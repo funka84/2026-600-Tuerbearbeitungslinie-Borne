@@ -1,0 +1,150 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Ablauf_3200" Id="{69dfe477-fa5b-40f6-b3ef-9757445daf5c}" SpecialFunc="None">
+    <Declaration><![CDATA[
+PROGRAM Ablauf_3200
+VAR
+    // TODO: lokale Variablen fuer den Ablauf deklarieren
+END_VAR
+    ]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+// TODO: Hauptprogramm-Code fuer Ablauf hier einfuegen
+      ]]></ST>
+    </Implementation>
+    <Method Name="M_VisuKomm" Id="{eaf97be7-62cc-440e-8142-11a59841de4b}">
+      <Declaration><![CDATA[
+METHOD M_VisuKomm : BOOL
+VAR_INPUT
+    Nr          : INT;
+END_VAR
+VAR_IN_OUT
+    anVisu      : INT;
+    vonVisu     : INT;
+END_VAR
+
+VAR_INST
+    result                  : INT;
+    ton_DatenUngueltig      : TON;
+    ton_DatenTimeout        : TON;
+    sc                      : INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+// Schnistelle zur VISU Kommunikation
+// Starttrigger belegen als Antwort wird auf die 5= gut oder 9=schlecht gewartet.
+// Kommunikationstimeout nach 5 Sekunden und wird automatisch wieder neugestartet
+
+ton_DatenTimeout(IN:= anVisu <> 0 AND vonVisu = 0, PT:=T#3S);
+ton_DatenUngueltig(IN:= sc = 20, PT:=T#500MS);
+
+CASE sc OF
+    0:  // Anfrage starten und auf Antwort warten
+        anVisu := Nr;
+        result := 0;
+        IF vonVisu <> 0 THEN
+            IF (vonVisu MOD Nr) = 5 THEN
+                sc := 10;
+            ELSIF (vonVisu MOD Nr) = 9 THEN
+                sc := 20;
+            END_IF
+        ELSIF ton_DatenTimeout.Q THEN
+            sc := 20;
+        END_IF
+
+    10: // Antwort 5 erhalten
+        anVisu := 0;
+        IF vonVisu = 0 THEN
+            M_VisuKomm := TRUE;
+            result := 1;
+            sc := 0;
+        END_IF
+
+    20: // Timeout, 1 Sekunde warten und erneut antriggern
+        IF ton_DatenUngueltig.Q THEN
+            anVisu := 0;
+            IF vonVisu = 0 THEN
+                result := -1;
+                sc := 0;
+            END_IF
+        END_IF
+
+END_CASE
+
+        ]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_VisuKommInt" Id="{07d57431-c1b5-48af-8282-3199458c2a33}">
+      <Declaration><![CDATA[
+METHOD M_VisuKommInt : INT
+VAR_INPUT
+    Nr          : INT;
+END_VAR
+VAR_IN_OUT
+    anVisu      : INT;
+    vonVisu     : INT;
+END_VAR
+
+VAR_INST
+    result                  : INT;
+    ton_DatenUngueltig      : TON;
+    ton_DatenTimeout        : TON;
+    sc                      : INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+// Schnistelle zur VISU Kommunikation
+// Starttrigger belegen als Antwort wird auf die 5= gut oder 9=schlecht gewartet.
+// Kommunikationstimeout nach 5 Sekunden und wird automatisch wieder neugestartet
+
+ton_DatenTimeout(IN:= anVisu <> 0 AND vonVisu = 0, PT:=T#3S);
+ton_DatenUngueltig(IN:= anVisu = 0 AND vonVisu = 0, PT:=T#500MS);
+
+CASE sc OF
+    0:  // Anfrage starten und auf Antwort warten
+        anVisu := Nr;
+        result := 0;
+        IF vonVisu <> 0 THEN
+            IF (vonVisu MOD Nr) = 5 THEN
+                sc := 10;
+            ELSIF (vonVisu MOD Nr) = 9 THEN
+                sc := 15;
+            END_IF
+        ELSIF ton_DatenTimeout.Q THEN
+            sc := 20;
+        END_IF
+
+    10: // Antwort 5 erhalten (OK)
+        anVisu := 0;
+        IF vonVisu = 0 THEN
+            M_VisuKommInt := 1;
+            result := 1;
+            sc := 0;
+        END_IF
+
+    15: // Antwort 9 erhalten (Fehler)
+        anVisu := 0;
+        IF vonVisu = 0 THEN
+            M_VisuKommInt := -1;
+            result := 1;
+            sc := 0;
+        END_IF
+
+    20: // Timeout, 1 Sekunde warten und erneut antriggern
+        anVisu := 0;
+        IF vonVisu = 0 THEN
+            result := -1;
+            IF ton_DatenUngueltig.Q THEN
+                sc := 0;
+            END_IF
+        END_IF
+
+END_CASE
+
+        ]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,157 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <GVL Name="EAs_0000" Id="{8d95b41e-53fd-4c57-b2f9-33e769da0790}">
+    <Declaration><![CDATA[
+{attribute 'linkalways'} 
+VAR_GLOBAL
+
+    // Eingaenge
+    //_______________________________________________________
+
+    // +FS1-3K5
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K5 (EL1809)^Channel 1^Input'}
+        e_FR_0101_Schaltschranktuer_ist_zu_und_Klimageraet_ist_Betriebsbereit AT %I* : BOOL; (* =FR.0101 Schaltschranktür ist zu und Klimagerät ist Betriebsbereit *)
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K5 (EL1809)^Channel 2^Input'}
+        e_FR_0400_Schaltschrank_24V_Lastueberwachung_ist_OK AT %I* : BOOL; (* =FR.0400 Schaltschrank 24V Lastüberwachung ist OK *)
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K5 (EL1809)^Channel 3^Input'}
+        e_FR_0600_Rueckmeldung_von_Safety_Freigabekreis_3 AT %I* : BOOL; (* =FR.0600 Rückmeldung von Safety Freigabekreis 3 *)
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K5 (EL1809)^Channel 4^Input'}
+        e_FR_0800_24V_UPS_Versorgung_ist_OK_und_zu_80_geladen AT %I* : BOOL; (* =FR.0800 24V UPS Versorgung ist OK und zu 80% geladen *)
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K5 (EL1809)^Channel 13^Input'}
+        e_FR_0300_SEW_Bremswiderstand_Versorgungsmodul_ist_OK AT %I* : BOOL; (* =FR.0300 SEW Bremswiderstand Versorgungsmodul ist OK *)
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K5 (EL1809)^Channel 14^Input'}
+        e_FS1_3K5_Channel_14 AT %I* : BOOL;
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K5 (EL1809)^Channel 15^Input'}
+        e_FS1_3K5_Channel_15 AT %I* : BOOL;
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K5 (EL1809)^Channel 16^Input'}
+        e_FS1_3K5_Channel_16 AT %I* : BOOL;
+
+    // +K110-1K3
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-1K3 (EL1809)^Channel 10^Input'}
+        e_K110_1K3_Channel_10 AT %I* : BOOL;
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-1K3 (EL1809)^Channel 11^Input'}
+        e_K110_1K3_Channel_11 AT %I* : BOOL;
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-1K3 (EL1809)^Channel 12^Input'}
+        e_K110_1K3_Channel_12 AT %I* : BOOL;
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-1K3 (EL1809)^Channel 13^Input'}
+        e_K110_1K3_Channel_13 AT %I* : BOOL;
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-1K3 (EL1809)^Channel 14^Input'}
+        e_K110_1K3_Channel_14 AT %I* : BOOL;
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-1K3 (EL1809)^Channel 15^Input'}
+        e_K110_1K3_Channel_15 AT %I* : BOOL;
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-1K3 (EL1809)^Channel 16^Input'}
+        e_K110_1K3_Channel_16 AT %I* : BOOL;
+
+    // +K110-1K6
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-1K6 (EL1104)^Channel 3^Input'}
+        e_K110_1K6_Channel_3 AT %I* : BOOL;
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-1K6 (EL1104)^Channel 4^Input'}
+        e_K110_1K6_Channel_4 AT %I* : BOOL;
+
+
+    // Ausgaenge
+    //_______________________________________________________
+
+    // +FS1-3K6
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K6 (EL2809)^Channel 1^Output'}
+        a_FR_0300_SEW_Netzschuetz_Versorgungsmodul_EIN_1Min_10sec_Ein_Ausschaltzeit AT %Q* : BOOL; (* =FR.0300 SEW Netzschütz Versorgungsmodul EIN (1Min/10sec. Ein/Ausschaltzeit) *)
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K6 (EL2809)^Channel 2^Output'}
+        a_FS1_3K6_Channel_2 AT %Q* : BOOL;
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K6 (EL2809)^Channel 3^Output'}
+        a_FS1_3K6_Channel_3 AT %Q* : BOOL;
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K6 (EL2809)^Channel 4^Output'}
+        a_FS1_3K6_Channel_4 AT %Q* : BOOL;
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K6 (EL2809)^Channel 5^Output'}
+        a_FS1_3K6_Channel_5 AT %Q* : BOOL;
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K6 (EL2809)^Channel 6^Output'}
+        a_FS1_3K6_Channel_6 AT %Q* : BOOL;
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K6 (EL2809)^Channel 7^Output'}
+        a_FS1_3K6_Channel_7 AT %Q* : BOOL;
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K6 (EL2809)^Channel 8^Output'}
+        a_FS1_3K6_Channel_8 AT %Q* : BOOL;
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K6 (EL2809)^Channel 9^Output'}
+        a_FS1_3K6_Channel_9 AT %Q* : BOOL;
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K6 (EL2809)^Channel 10^Output'}
+        a_FS1_3K6_Channel_10 AT %Q* : BOOL;
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K6 (EL2809)^Channel 11^Output'}
+        a_FS1_3K6_Channel_11 AT %Q* : BOOL;
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K6 (EL2809)^Channel 12^Output'}
+        a_FS1_3K6_Channel_12 AT %Q* : BOOL;
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K6 (EL2809)^Channel 13^Output'}
+        a_FS1_3K6_Channel_13 AT %Q* : BOOL;
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K6 (EL2809)^Channel 14^Output'}
+        a_FS1_3K6_Channel_14 AT %Q* : BOOL;
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K6 (EL2809)^Channel 15^Output'}
+        a_FS1_3K6_Channel_15 AT %Q* : BOOL;
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K6 (EL2809)^Channel 16^Output'}
+        a_FS1_3K6_Channel_16 AT %Q* : BOOL;
+
+    // +K110-2K2
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-2K1 (BK1120)^+K110-2K2 (EL2809)^Channel 9^Output'}
+        a_K110_2K2_Channel_9 AT %Q* : BOOL;
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-2K1 (BK1120)^+K110-2K2 (EL2809)^Channel 10^Output'}
+        a_K110_2K2_Channel_10 AT %Q* : BOOL;
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-2K1 (BK1120)^+K110-2K2 (EL2809)^Channel 11^Output'}
+        a_K110_2K2_Channel_11 AT %Q* : BOOL;
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-2K1 (BK1120)^+K110-2K2 (EL2809)^Channel 12^Output'}
+        a_K110_2K2_Channel_12 AT %Q* : BOOL;
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-2K1 (BK1120)^+K110-2K2 (EL2809)^Channel 13^Output'}
+        a_K110_2K2_Channel_13 AT %Q* : BOOL;
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-2K1 (BK1120)^+K110-2K2 (EL2809)^Channel 14^Output'}
+        a_K110_2K2_Channel_14 AT %Q* : BOOL;
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-2K1 (BK1120)^+K110-2K2 (EL2809)^Channel 15^Output'}
+        a_K110_2K2_Channel_15 AT %Q* : BOOL;
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-2K1 (BK1120)^+K110-2K2 (EL2809)^Channel 16^Output'}
+        a_K110_2K2_Channel_16 AT %Q* : BOOL;
+
+    // +K110-2K3
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-2K1 (BK1120)^+K110-2K3 (EL2808)^Channel 7^Output'}
+        a_K110_2K3_Channel_7 AT %Q* : BOOL;
+
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-2K1 (BK1120)^+K110-2K3 (EL2808)^Channel 8^Output'}
+        a_K110_2K3_Channel_8 AT %Q* : BOOL;
+END_VAR
+    ]]></Declaration>
+  </GVL>
+</TcPlcObject>
