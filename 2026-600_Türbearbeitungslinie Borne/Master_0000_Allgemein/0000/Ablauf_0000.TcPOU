@@ -4,7 +4,7 @@
     <Declaration><![CDATA[
 PROGRAM Ablauf_0000
 VAR
-    // TODO: lokale Variablen fuer den Ablauf deklarieren wow 2
+    // TODO: lokale Variablen fuer den Ablauf deklarieren wow 3d
 END_VAR
     ]]></Declaration>
     <Implementation>
