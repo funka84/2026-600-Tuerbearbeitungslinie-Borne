@@ -12,9 +12,6 @@
 		<Image Id="1" AddrType="9" ImageType="3">
 			<Name>Prozessabbild</Name>
 		</Image>
-		<Image Id="4" AddrType="10" ImageType="3">
-			<Name>Prozessabbild-2</Name>
-		</Image>
 		<Box File="+FS1-3K1 (BK1120).xti" Id="1">
 			<EtherCAT PortABoxInfo="#x00ffffff"/>
 		</Box>
@@ -66,6 +63,6 @@
 		<Box File="=0300+FS2-18T1.xti" Id="33">
 			<EtherCAT PortABoxInfo="#x01000020"/>
 		</Box>
-		<EtherCAT DcSyncMode="3"/>
+		<EtherCAT DcSyncMode="3" MaxSwitchPorts="2" MaxSwitchFrames="120" MaxSwitchMACs="100"/>
 	</Device>
 </TcSmItem>

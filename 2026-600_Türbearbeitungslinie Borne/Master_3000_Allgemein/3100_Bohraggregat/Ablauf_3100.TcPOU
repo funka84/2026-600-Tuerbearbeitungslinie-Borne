@@ -2,7 +2,7 @@
 <TcPlcObject Version="1.1.0.1">
   <POU Name="Ablauf_3100" Id="{6d2cf18d-45f9-46ad-8d58-ea63eee9a1ea}" SpecialFunc="None">
     <Declaration><![CDATA[
-PROGRAM Ablauf_3100
+PROGRAM Ablauf_3100 
 VAR
     // TODO: lokale Variablen fuer den Ablauf deklarieren
 END_VAR
