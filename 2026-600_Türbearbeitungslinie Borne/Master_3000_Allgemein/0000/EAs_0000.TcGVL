@@ -119,37 +119,36 @@ VAR_GLOBAL
         a_FS1_3K6_Channel_16 AT %Q* : BOOL;
 
     // +K110-2K2
-
-        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-2K1 (BK1120)^+K110-2K2 (EL2809)^Channel 9^Output'}
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-2K2 (EL2809)^Channel 9^Output'}
         a_K110_2K2_Channel_9 AT %Q* : BOOL;
 
-        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-2K1 (BK1120)^+K110-2K2 (EL2809)^Channel 10^Output'}
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-2K2 (EL2809)^Channel 10^Output'}
         a_K110_2K2_Channel_10 AT %Q* : BOOL;
 
-        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-2K1 (BK1120)^+K110-2K2 (EL2809)^Channel 11^Output'}
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-2K2 (EL2809)^Channel 11^Output'}
         a_K110_2K2_Channel_11 AT %Q* : BOOL;
 
-        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-2K1 (BK1120)^+K110-2K2 (EL2809)^Channel 12^Output'}
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-2K2 (EL2809)^Channel 12^Output'}
         a_K110_2K2_Channel_12 AT %Q* : BOOL;
 
-        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-2K1 (BK1120)^+K110-2K2 (EL2809)^Channel 13^Output'}
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-2K2 (EL2809)^Channel 13^Output'}
         a_K110_2K2_Channel_13 AT %Q* : BOOL;
 
-        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-2K1 (BK1120)^+K110-2K2 (EL2809)^Channel 14^Output'}
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-2K2 (EL2809)^Channel 14^Output'}
         a_K110_2K2_Channel_14 AT %Q* : BOOL;
 
-        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-2K1 (BK1120)^+K110-2K2 (EL2809)^Channel 15^Output'}
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-2K2 (EL2809)^Channel 15^Output'}
         a_K110_2K2_Channel_15 AT %Q* : BOOL;
 
-        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-2K1 (BK1120)^+K110-2K2 (EL2809)^Channel 16^Output'}
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-2K2 (EL2809)^Channel 16^Output'}
         a_K110_2K2_Channel_16 AT %Q* : BOOL;
 
     // +K110-2K3
 
-        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-2K1 (BK1120)^+K110-2K3 (EL2808)^Channel 7^Output'}
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-2K3 (EL2808)^Channel 7^Output'}
         a_K110_2K3_Channel_7 AT %Q* : BOOL;
 
-        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-2K1 (BK1120)^+K110-2K3 (EL2808)^Channel 8^Output'}
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-2K3 (EL2808)^Channel 8^Output'}
         a_K110_2K3_Channel_8 AT %Q* : BOOL;
 END_VAR
     ]]></Declaration>

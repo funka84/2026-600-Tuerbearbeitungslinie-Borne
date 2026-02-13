@@ -129,6 +129,14 @@
 				<Link VarA="PlcTask Outputs^EAs_3400.a_FR_3400_Druecker_Schluesselloch_oben_Bohraggregat_7_Bohrhub_senken" VarB="Channel 16^Output" AutoLink="true" Size="1"/>
 			</OwnerB>
 			<OwnerB Name="TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-2K2 (EL2809)">
+				<Link VarA="PlcTask Outputs^EAs_0000.a_K110_2K2_Channel_10" VarB="Channel 10^Output" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^EAs_0000.a_K110_2K2_Channel_11" VarB="Channel 11^Output" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^EAs_0000.a_K110_2K2_Channel_12" VarB="Channel 12^Output" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^EAs_0000.a_K110_2K2_Channel_13" VarB="Channel 13^Output" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^EAs_0000.a_K110_2K2_Channel_14" VarB="Channel 14^Output" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^EAs_0000.a_K110_2K2_Channel_15" VarB="Channel 15^Output" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^EAs_0000.a_K110_2K2_Channel_16" VarB="Channel 16^Output" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^EAs_0000.a_K110_2K2_Channel_9" VarB="Channel 9^Output" AutoLink="true" Size="1"/>
 				<Link VarA="PlcTask Outputs^EAs_3510.a_FR_3510_Transport_Schlossseite_Laengsanschlag_heben" VarB="Channel 2^Output" AutoLink="true" Size="1"/>
 				<Link VarA="PlcTask Outputs^EAs_3510.a_FR_3510_Transport_Schlossseite_Laengsanschlag_senken" VarB="Channel 3^Output" AutoLink="true" Size="1"/>
 				<Link VarA="PlcTask Outputs^EAs_3510.a_FR_3510_Transport_Schlossseite_X_Achse_Laengsanschlag_Schienenklemmung_klemmen" VarB="Channel 1^Output" AutoLink="true" Size="1"/>
@@ -139,6 +147,8 @@
 				<Link VarA="PlcTask Outputs^EAs_3540.a_FR_3540_Niederhalter_Bandseite_Niederhalter_senken" VarB="Channel 8^Output" AutoLink="true" Size="1"/>
 			</OwnerB>
 			<OwnerB Name="TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-2K3 (EL2808)">
+				<Link VarA="PlcTask Outputs^EAs_0000.a_K110_2K3_Channel_7" VarB="Channel 7^Output" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^EAs_0000.a_K110_2K3_Channel_8" VarB="Channel 8^Output" AutoLink="true" Size="1"/>
 				<Link VarA="PlcTask Outputs^EAs_3100.a_FR_3100_Schlossbearbeitung_Nullkante_heben" VarB="Channel 2^Output" AutoLink="true" Size="1"/>
 				<Link VarA="PlcTask Outputs^EAs_3100.a_FR_3100_Schlossbearbeitung_Nullkante_senken" VarB="Channel 3^Output" AutoLink="true" Size="1"/>
 				<Link VarA="PlcTask Outputs^EAs_3100.a_FR_3100_Schlossbearbeitung_Y_Achse_Schienenklemmung_klemmen" VarB="Channel 1^Output" AutoLink="true" Size="1"/>
@@ -303,20 +313,20 @@
 				<Link VarA="PlcTask Outputs^EAs_3540.ea_Y_Achse.PlcToNc" VarB="Inputs^FromPlc" AutoLink="true"/>
 			</OwnerB>
 			<OwnerB Name="TINC^NC-Task 1 SAF^NCI_3100">
-				<Link VarA="PlcTask Inputs^EAs_3100.e_NCI_3100" VarB="Outputs^ToPlc" AutoLink="true"/>
-				<Link VarA="PlcTask Outputs^EAs_3100.a_NCI_3100" VarB="Inputs^FromPlc" AutoLink="true"/>
+				<Link VarA="PlcTask Inputs^EAs_3100.e_NCI_Channel" VarB="Outputs^ToPlc" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3100.a_NCI_Channel" VarB="Inputs^FromPlc" AutoLink="true"/>
 			</OwnerB>
 			<OwnerB Name="TINC^NC-Task 1 SAF^NCI_3200">
-				<Link VarA="PlcTask Inputs^EAs_3200.e_NCI_3200" VarB="Outputs^ToPlc" AutoLink="true"/>
-				<Link VarA="PlcTask Outputs^EAs_3200.a_NCI_3200" VarB="Inputs^FromPlc" AutoLink="true"/>
+				<Link VarA="PlcTask Inputs^EAs_3200.e_NCI_Channel" VarB="Outputs^ToPlc" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3200.a_NCI_Channel" VarB="Inputs^FromPlc" AutoLink="true"/>
 			</OwnerB>
 			<OwnerB Name="TINC^NC-Task 1 SAF^NCI_3300">
-				<Link VarA="PlcTask Inputs^EAs_3300.e_NCI_3300" VarB="Outputs^ToPlc" AutoLink="true"/>
-				<Link VarA="PlcTask Outputs^EAs_3300.a_NCI_3300" VarB="Inputs^FromPlc" AutoLink="true"/>
+				<Link VarA="PlcTask Inputs^EAs_3300.e_NCI_Channel" VarB="Outputs^ToPlc" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3300.a_NCI_Channel" VarB="Inputs^FromPlc" AutoLink="true"/>
 			</OwnerB>
 			<OwnerB Name="TINC^NC-Task 1 SAF^NCI_3400">
-				<Link VarA="PlcTask Inputs^EAs_3400.e_NCI_3400" VarB="Outputs^ToPlc" AutoLink="true"/>
-				<Link VarA="PlcTask Outputs^EAs_3400.a_NCI_3400" VarB="Inputs^FromPlc" AutoLink="true"/>
+				<Link VarA="PlcTask Inputs^EAs_3400.e_NCI_Channel" VarB="Outputs^ToPlc" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3400.a_NCI_Channel" VarB="Inputs^FromPlc" AutoLink="true"/>
 			</OwnerB>
 		</OwnerA>
 	</Mappings>
