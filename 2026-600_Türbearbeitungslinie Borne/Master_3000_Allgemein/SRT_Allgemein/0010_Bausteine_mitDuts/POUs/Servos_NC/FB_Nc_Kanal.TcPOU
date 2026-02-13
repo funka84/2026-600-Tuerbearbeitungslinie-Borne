@@ -22,7 +22,6 @@ END_VAR
 
 VAR_OUTPUT
 	out_PlcToNc						:PLCTONC_NCICHANNEL_REF;
-	out_P_uebernommen				:BOOL;					(* vorgegebenes Programm übernommen soll=ist *)
 	out_FBErr						:BOOL;
 	out_FBErrId						:UDINT;
 END_VAR
@@ -34,7 +33,7 @@ VAR_IN_OUT
 	inout_NcStopOverrideNull		:BOOL;				(* NC-Ablauf unterbrechen -Override=0 *)
 	inout_NcEinzelsatzStart			:BOOL;				(* NC-Ablauf im Einzelsatzbetrieb abarbeiten *)
 	inout_NcEinzelsatzWeiter		:BOOL;				(* nächster Satz *)
-	inout_NcStatus					:Dut_Nc_Kanal;
+	inout_NcStatus					:DUT_NCI_Status;
 	
 END_VAR
 
@@ -201,7 +200,7 @@ END_VAR]]></Declaration>
 		Reset:= TRUE;
 	END_IF;
 
-	out_P_uebernommen:= in_PName = PName_akt;
+	inout_NcStatus.PrgUebernommen:= in_PName = PName_akt;
 //***** NC Err *************************************************************************************************
 	//**********************************************************************************************************
 	inout_NcStatus.Err	:=  in_NcToPlc.ItpState= Tc2_NCI.NCI_INTERPRETER_ABORTED

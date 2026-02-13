@@ -265,7 +265,10 @@
     <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\Servo\DUT_Geschwindigkeitsabgleich.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\Servo\DUT_NC_Kanal.TcDUT">
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\Servo\DUT_NCI_Steuern.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\Servo\DUT_NCI_Status.TcDUT">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\Servo\DUT_PD_InOut_Achsen.TcDUT">
@@ -506,6 +509,10 @@
       <DefaultResolution>Tc2_NC, * (Beckhoff Automation GmbH)</DefaultResolution>
       <Namespace>Tc2_NC</Namespace>
     </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_NCI">
+      <DefaultResolution>Tc2_NCI, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_NCI</Namespace>
+    </PlaceholderReference>
     <PlaceholderReference Include="Tc2_Standard">
       <DefaultResolution>Tc2_Standard, * (Beckhoff Automation GmbH)</DefaultResolution>
       <Namespace>Tc2_Standard</Namespace>
@@ -521,6 +528,10 @@
     <PlaceholderReference Include="Tc3_Database">
       <DefaultResolution>Tc3_Database, * (Beckhoff Automation GmbH)</DefaultResolution>
       <Namespace>Tc3_Database</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc3_MC2_AdvancedHoming">
+      <DefaultResolution>Tc3_MC2_AdvancedHoming, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc3_MC2_AdvancedHoming</Namespace>
     </PlaceholderReference>
     <PlaceholderReference Include="Tc3_Module">
       <DefaultResolution>Tc3_Module, * (Beckhoff Automation GmbH)</DefaultResolution>
@@ -564,11 +575,6 @@
     <Folder Include="SRT_Allgemein\Bus" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Master_0000_Allgemein.tmc">
-      <SubType>Content</SubType>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Master_3000_Allgemein.tmc">
       <SubType>Content</SubType>
     </None>
@@ -576,8 +582,8 @@
   <ProjectExtensions>
     <PlcProjectOptions>
       <XmlArchive>
-        <Data>
-          <o xml:space="preserve" t="OptionKey">
+  <Data>
+    <o xml:space="preserve" t="OptionKey">
       <v n="Name">"&lt;ProjectRoot&gt;"</v>
       <d n="SubKeys" t="Hashtable" ckt="String" cvt="OptionKey">
         <v>{192FAD59-8248-4824-A8DE-9177C94C195A}</v>
@@ -647,14 +653,14 @@
       </d>
       <d n="Values" t="Hashtable" />
     </o>
-        </Data>
-        <TypeList>
-          <Type n="Boolean">System.Boolean</Type>
-          <Type n="Hashtable">System.Collections.Hashtable</Type>
-          <Type n="OptionKey">{54dd0eac-a6d8-46f2-8c27-2f43c7e49861}</Type>
-          <Type n="String">System.String</Type>
-        </TypeList>
-      </XmlArchive>
+  </Data>
+  <TypeList>
+    <Type n="Boolean">System.Boolean</Type>
+    <Type n="Hashtable">System.Collections.Hashtable</Type>
+    <Type n="OptionKey">{54dd0eac-a6d8-46f2-8c27-2f43c7e49861}</Type>
+    <Type n="String">System.String</Type>
+  </TypeList>
+</XmlArchive>
     </PlcProjectOptions>
   </ProjectExtensions>
 </Project>

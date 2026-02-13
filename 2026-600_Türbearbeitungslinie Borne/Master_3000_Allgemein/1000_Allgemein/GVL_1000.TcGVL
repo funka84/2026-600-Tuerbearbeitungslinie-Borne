@@ -36,7 +36,7 @@ VAR_GLOBAL CONSTANT
 	iMaxEC								:INT := 0;								// Anzahl der verbauten EtherCat Klemmen
 	MaxECDevices						:INT := 0;
 	                                    
-	ibn0								: BOOL;									// Am Ende müssen alle QUerverweise gelöscht werden
+	ibn0								: BOOL := FALSE;									// Am Ende müssen alle QUerverweise gelöscht werden
 	ibn1								: BOOL := TRUE;							// Am Ende müssen alle QUerverweise gelöscht werden
 		
 END_VAR

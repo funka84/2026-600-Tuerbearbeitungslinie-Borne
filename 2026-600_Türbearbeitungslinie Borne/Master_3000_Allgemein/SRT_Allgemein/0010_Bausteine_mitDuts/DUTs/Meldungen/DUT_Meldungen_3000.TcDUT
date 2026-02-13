@@ -121,10 +121,11 @@ STRUCT
 	Nr_098		:BOOL;// #MText: #HText: #Prio: #BMK:
 	Nr_099		:BOOL;// #MText: #HText: #Prio: #BMK:
 	
-	Nr_100		:BOOL;// #MText: #HText: #Prio: #BMK:
-	Nr_101		:BOOL;// #MText: #HText: #Prio: #BMK:
-	Nr_102		:BOOL;// #MText: #HText: #Prio: #BMK:
-	Nr_103		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_100		:BOOL;// #MText: 3100 Bohraggregat - NCI Interpolation Fehler #HText: #Prio: #BMK:
+	Nr_101		:BOOL;// #MText: 3200 Bohraggregat - NCI Interpolation Fehler #HText: #Prio: #BMK:
+	Nr_102		:BOOL;// #MText: 3300 Bohraggregat - NCI Interpolation Fehler #HText: #Prio: #BMK:
+	Nr_103		:BOOL;// #MText: 3400 Bohraggregat - NCI Interpolation Fehler #HText: #Prio: #BMK:
+	
 	Nr_104		:BOOL;// #MText: #HText: #Prio: #BMK:
 	Nr_105		:BOOL;// #MText: #HText: #Prio: #BMK:
 	Nr_106		:BOOL;// #MText: #HText: #Prio: #BMK:

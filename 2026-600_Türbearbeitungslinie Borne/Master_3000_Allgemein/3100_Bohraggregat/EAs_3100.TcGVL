@@ -4,9 +4,18 @@
     <Declaration><![CDATA[{attribute 'qualified_only'}
 {attribute 'linkalways'} 
 VAR_GLOBAL
+	// NCI Grupppe verlinken ***************************************************************************************************************************************
+    //_______________________________________________________
+	
+	{attribute 'TcLinkTo':='TINC^NC-Task 1 SAF^NCI_3100^Outputs^ToPlc'}	
+	e_NCI_Channel				AT %I*: NCTOPLC_NCICHANNEL_REF;	// Schnittstellen Struktur zwischen NCI<->SPS
+	
+	{attribute 'TcLinkTo':='TINC^NC-Task 1 SAF^NCI_3100^Inputs^FromPlc'}
+	a_NCI_Channel			 	AT %Q*: PLCTONC_NCICHANNEL_REF;	// Schnittstellen Struktur zwischen NCI<->SPS
 
 	// Servoregler *************************************************************************************************************************************************
-
+    //_______________________________________________________
+	
 	{attribute 'TcNcAxis':='=3100+FS2-11M1 (X-Achse)'}	
 	ea_X_Achse					: Axis_ref;				// Schnittstellen Struktur zwischen NC<->SPS
 	
@@ -15,6 +24,7 @@ VAR_GLOBAL
 	
 	{attribute 'TcNcAxis':='=3100+FS2-13M1 (Z-Achse)'}	
 	ea_Z_Achse					: Axis_ref;				// Schnittstellen Struktur zwischen NC<->SPS
+
 
     // Umrichter
     //_______________________________________________________

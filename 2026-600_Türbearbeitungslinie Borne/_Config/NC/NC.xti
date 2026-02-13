@@ -28,5 +28,9 @@
 		<Axis File="=3400+FS2-12M1 (Y-Achse).xti" Id="10"/>
 		<Axis File="=3520+FS2-11M1 (Y-Achse).xti" Id="11"/>
 		<Axis File="=3540+FS2-11M1 (Y-Achse).xti" Id="12"/>
+		<Channel File="NCI_3100.xti"/>
+		<Channel File="NCI_3200.xti"/>
+		<Channel File="NCI_3300.xti"/>
+		<Channel File="NCI_3400.xti"/>
 	</NC>
 </TcSmItem>

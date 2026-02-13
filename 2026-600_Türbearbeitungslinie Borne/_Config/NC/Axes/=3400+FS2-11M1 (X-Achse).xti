@@ -1424,7 +1424,7 @@ External Setpoint Generation:
 			</Relations>
 		</DataType>
 	</DataTypes>
-	<Axis Id="9" CreateSymbols="true" AxisType="1">
+	<Axis Id="9" CreateSymbols="true" AxisType="1" SimulationMode="true">
 		<Name>__FILENAME__</Name>
 		<AxisPara>
 			<OtherSettings AllowMotionCmdToSlave="true"/>
@@ -1488,7 +1488,7 @@ External Setpoint Generation:
 			</Vars>
 		</Encoder>
 		<Drive Name="Drive" DrvType="16">
-			<DrvPara MaxCount="#xffffffff">
+			<DrvPara MaxCount="#xffffffff" DriveControlDWord="#x00020000">
 				<Analog TorqueSetpointScale="10" ScaleFactorActTorque="0.1"/>
 				<TimeComp TaskDelayCycles="1"/>
 			</DrvPara>

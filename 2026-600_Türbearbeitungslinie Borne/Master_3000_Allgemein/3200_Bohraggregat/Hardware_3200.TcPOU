@@ -9,6 +9,8 @@ VAR
 	fbY_Achse										: FB_Achse_NC_PTP_Beckhoff; 
 	fbZ_Achse										: FB_Achse_NC_PTP_Beckhoff; 
 
+	fbNCI_Channel									: FB_Nc_Kanal;
+
     // Frequenzumrichter **********************************************************
 	fbBohraggr_Stufenbohr							: FB_SEW_MOVITRAC_C_CoE;
 	fbBohraggr_Stulpfraes							: FB_SEW_MOVITRAC_C_CoE;
@@ -51,8 +53,37 @@ END_VAR
 	A_Umrichter();
 	A_Ventile();
 	A_Servo();
+	A_NCI();	
 		  ]]></ST>
     </Implementation>
+    <Action Name="A_NCI" Id="{64754db5-ef81-4515-b922-b428de5d5537}">
+      <Implementation>
+        <ST><![CDATA[					
+// ***** NCI Kanal *****************************************************************
+	//********************************************************************************
+	fbNCI_Channel(
+		in_Kanal_Id:= EAs_3200.e_NCI_Channel.ChnId, 
+		in_Gruppe_Id:= EAs_3200.e_NCI_Channel.GrpId, 
+		in_X_Id:= EAs_3200.e_NCI_Channel.AcsAxisIDs[0], 
+		in_Y_Id:= EAs_3200.e_NCI_Channel.AcsAxisIDs[1], 
+		in_Z_Id:= EAs_3200.e_NCI_Channel.AcsAxisIDs[2], 
+		in_Pfad:= GVL_3200.NCI_Steuern.Pfad, 
+		in_PName:= GVL_3200.NCI_Steuern.PrgName, 
+		in_Override:= GVL_Visu_0000.override, 
+		in_NcToPlc:= EAs_3200.e_NCI_Channel, 
+		out_PlcToNc=> EAs_3200.a_NCI_Channel, 
+		inout_NcReset:= GVL_3200.NCI_Steuern.Reset, 
+		inout_NcGruppe_koppeln:= GVL_3200.NCI_Steuern.Koppeln, 
+		inout_NcStart:= GVL_3200.NCI_Steuern.Start, 
+		inout_NcStopOverrideNull:= GVL_3200.NCI_Steuern.StopOverrideNull, 
+		inout_NcEinzelsatzStart:= GVL_3200.NCI_Steuern.EinzelsatzStart, 
+		inout_NcEinzelsatzWeiter:= GVL_3200.NCI_Steuern.EinzelsatzWeiter, 
+		inout_NcStatus:= GVL_3200.NCI_Status);
+		
+	GVL_Meldungen.Diagnose_3000.Nr_101	:= UDINT_TO_DINT(fbNCI_Channel.out_FBErrId);	
+	GVL_Meldungen.Meldungen_3000.Nr_101 := fbNCI_Channel.out_FBErr ;	]]></ST>
+      </Implementation>
+    </Action>
     <Action Name="A_Sensorik" Id="{4ac82c31-532f-452e-b9fb-8f0239fd9650}">
       <Implementation>
         <ST><![CDATA[					

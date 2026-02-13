@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <TcSmItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2012/07/TcSmProject" TcSmVersion="1.0" TcVersion="3.1.4026.20" ClassName="CTComPlcObjDef">
-	<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" XtvPath="Master_3000_Allgemein\Master_3000_Allgemein Instance.xtv" TmcPath="Master_0000_Allgemein\Master_0000_Allgemein.tmc">
+	<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" XtvPath="Master_3000_Allgemein\Master_3000_Allgemein Instance.xtv" TmcPath="Master_3000_Allgemein\Master_3000_Allgemein.tmc">
 		<Name>__FILENAME__</Name>
 		<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 		<Contexts>
@@ -255,8 +255,8 @@
 				<Link VarA="PlcTask Outputs^EAs_3520.a_Trans_Bandseite^PD_5_Digitalausgaenge" VarB="Module 1 (Standard 16 PD)^Outputs 16 PD^PO 5" AutoLink="true"/>
 			</OwnerB>
 			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^=3100+FS2-11M1 (X-Achse)">
-				<Link VarA="PlcTask Inputs^EAs_3100.ea_X_Achse.NcToPlc" VarB="Outputs^ToPlc" AutoLink="true"/>
-				<Link VarA="PlcTask Outputs^EAs_3100.ea_X_Achse.PlcToNc" VarB="Inputs^FromPlc" AutoLink="true"/>
+				<Link VarA="PlcTask Inputs^EAs_3100.ea_X_Achse.NcToPlc" VarB="Outputs^ToPlc"/>
+				<Link VarA="PlcTask Outputs^EAs_3100.ea_X_Achse.PlcToNc" VarB="Inputs^FromPlc"/>
 			</OwnerB>
 			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^=3100+FS2-12M1 (Y-Achse)">
 				<Link VarA="PlcTask Inputs^EAs_3100.ea_Y_Achse.NcToPlc" VarB="Outputs^ToPlc" AutoLink="true"/>
@@ -301,6 +301,22 @@
 			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^=3540+FS2-11M1 (Y-Achse)">
 				<Link VarA="PlcTask Inputs^EAs_3540.ea_Y_Achse.NcToPlc" VarB="Outputs^ToPlc" AutoLink="true"/>
 				<Link VarA="PlcTask Outputs^EAs_3540.ea_Y_Achse.PlcToNc" VarB="Inputs^FromPlc" AutoLink="true"/>
+			</OwnerB>
+			<OwnerB Name="TINC^NC-Task 1 SAF^NCI_3100">
+				<Link VarA="PlcTask Inputs^EAs_3100.e_NCI_3100" VarB="Outputs^ToPlc" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3100.a_NCI_3100" VarB="Inputs^FromPlc" AutoLink="true"/>
+			</OwnerB>
+			<OwnerB Name="TINC^NC-Task 1 SAF^NCI_3200">
+				<Link VarA="PlcTask Inputs^EAs_3200.e_NCI_3200" VarB="Outputs^ToPlc" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3200.a_NCI_3200" VarB="Inputs^FromPlc" AutoLink="true"/>
+			</OwnerB>
+			<OwnerB Name="TINC^NC-Task 1 SAF^NCI_3300">
+				<Link VarA="PlcTask Inputs^EAs_3300.e_NCI_3300" VarB="Outputs^ToPlc" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3300.a_NCI_3300" VarB="Inputs^FromPlc" AutoLink="true"/>
+			</OwnerB>
+			<OwnerB Name="TINC^NC-Task 1 SAF^NCI_3400">
+				<Link VarA="PlcTask Inputs^EAs_3400.e_NCI_3400" VarB="Outputs^ToPlc" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3400.a_NCI_3400" VarB="Inputs^FromPlc" AutoLink="true"/>
 			</OwnerB>
 		</OwnerA>
 	</Mappings>

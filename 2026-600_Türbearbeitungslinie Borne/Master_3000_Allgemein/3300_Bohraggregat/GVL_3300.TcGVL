@@ -25,6 +25,12 @@ VAR_GLOBAL
 
     Tuer_Anwahl                         : BOOL;   // Signal Tür Anwahl, Tür soll geöffnet werden
     Tuer_Freigabe                       : BOOL;   // Signal Tür Freigabe, Tür kann geöffnet werden
+	
+    // NCI Variablen *********************************************
+	NCI_Steuern						: DUT_NCI_Steuern;
+	NCI_Status						: DUT_NCI_Status;
+	NCI_RPara_anNC					: ARRAY [0..99] OF LREAL;
+	NCI_RPara_vonNC					: ARRAY [0..99] OF LREAL;
 END_VAR
     ]]></Declaration>
   </GVL>

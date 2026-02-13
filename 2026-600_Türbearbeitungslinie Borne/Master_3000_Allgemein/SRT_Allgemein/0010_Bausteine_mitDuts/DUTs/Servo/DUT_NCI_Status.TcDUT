@@ -1,8 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
-  <DUT Name="DUT_NC_Kanal" Id="{f3f2cf34-b99a-4ec6-94c0-473a6b00c70c}">
-    <Declaration><![CDATA[TYPE DUT_NC_Kanal :
+  <DUT Name="DUT_NCI_Status" Id="{f3f2cf34-b99a-4ec6-94c0-473a6b00c70c}">
+    <Declaration><![CDATA[TYPE DUT_NCI_Status :
 STRUCT
+	PrgUebernommen		:BOOL;	
+
 	AxTo3DOK			:BOOL;
 	AxToPTPOK			:BOOL;
 

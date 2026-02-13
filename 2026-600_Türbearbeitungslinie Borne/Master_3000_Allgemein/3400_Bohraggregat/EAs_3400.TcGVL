@@ -4,6 +4,15 @@
     <Declaration><![CDATA[{attribute 'qualified_only'}
 {attribute 'linkalways'} 
 VAR_GLOBAL
+	// NCI Grupppe verlinken ***************************************************************************************************************************************
+    //_______________________________________________________
+	
+	{attribute 'TcLinkTo':='TINC^NC-Task 1 SAF^NCI_3400^Outputs^ToPlc'}	
+	e_NCI_Channel				AT %I*: NCTOPLC_NCICHANNEL_REF;	// Schnittstellen Struktur zwischen NCI<->SPS
+	
+	{attribute 'TcLinkTo':='TINC^NC-Task 1 SAF^NCI_3400^Inputs^FromPlc'}
+	a_NCI_Channel			 	AT %Q*: PLCTONC_NCICHANNEL_REF;	// Schnittstellen Struktur zwischen NCI<->SPS
+
 
 	// Servoregler *************************************************************************************************************************************************
 

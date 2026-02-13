@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="DUT_NCI_Steuern" Id="{7f1f5931-274a-49eb-910f-844b7d2e2467}">
+    <Declaration><![CDATA[TYPE DUT_NCI_Steuern :
+STRUCT
+	Pfad				: STRING := 'C:\SRTvisu\Fräsanlage\GCodes\';
+	PrgName				: STRING := '';
+	Reset				: BOOL;
+	Koppeln				: BOOL;
+	Start				: BOOL;
+	StopOverrideNull	: BOOL;
+	EinzelsatzStart		: BOOL;
+	EinzelsatzWeiter	: BOOL;	
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>
