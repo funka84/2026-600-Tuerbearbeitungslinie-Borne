@@ -37,6 +37,9 @@
     <Compile Include="0000\Hardware_0000.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="0000_Safety\Ablauf_Safety.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="0000_Safety\GVL_Safety.TcGVL">
       <SubType>Code</SubType>
       <LinkAlways>true</LinkAlways>
@@ -323,6 +326,24 @@
     <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\Ventil\DUT_VorZur_visu.TcDUT">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\Safety_Union\Enum\enum_FB_AND.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\Safety_Union\Enum\enum_FB_EDM.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\Safety_Union\Enum\enum_FB_ESTOP.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\Safety_Union\Enum\enum_FB_MON.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\Safety_Union\Enum\enum_FB_RS.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\Safety_Union\union_STATE_AND.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\FB_Achs_Freigabe.TcPOU">
       <SubType>Code</SubType>
     </Compile>
@@ -479,6 +500,18 @@
     <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\Zaehler\FB_SpindelInBearbeitung.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\Safety_Union\union_STATE_EDM.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\Safety_Union\union_STATE_ESTOP.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\Safety_Union\union_STATE_MON.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\Safety_Union\union_STATE_RS.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="SRT_Allgemein\Bus\Busdiagnose.TcPOU">
       <SubType>Code</SubType>
     </Compile>
@@ -567,6 +600,7 @@
     <Folder Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\SEW_Movitrac\COE" />
     <Folder Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\SEW_Movitrac\CSV_BASE" />
     <Folder Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\Ventil" />
+    <Folder Include="SRT_Allgemein\0010_Bausteine_mitDuts\Safety_Union" />
     <Folder Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs" />
     <Folder Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\FU_SEW" />
     <Folder Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\FU_SEW\Movi_B" />
@@ -577,6 +611,7 @@
     <Folder Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\Safety" />
     <Folder Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\Servos_NC" />
     <Folder Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\Zaehler" />
+    <Folder Include="SRT_Allgemein\0010_Bausteine_mitDuts\Safety_Union\Enum" />
     <Folder Include="SRT_Allgemein\Bus" />
   </ItemGroup>
   <ItemGroup>

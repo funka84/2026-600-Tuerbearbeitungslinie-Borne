@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="union_STATE_RS" Id="{8fb6fd03-2fad-449d-ac36-107455b6c3b8}">
+    <Declaration><![CDATA[TYPE union_STATE_RS :
+UNION
+	byState		: BYTE;
+	eState		: enum_FB_RS;
+END_UNION
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

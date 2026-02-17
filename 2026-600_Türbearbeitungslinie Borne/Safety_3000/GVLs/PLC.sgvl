@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<GlobalVariables Crc="3360803593" Id="ff1423bb-5c3b-4e89-aa8e-98007f7cc55f" FileFormatVersion="1.0">
+<GlobalVariables Crc="3685817969" Id="ff1423bb-5c3b-4e89-aa8e-98007f7cc55f" FileFormatVersion="1.0">
   <Variable Id="3cea40c9-af43-4bfa-8900-21ff7db80c71">
     <Name>in_RM_Kreis_3</Name>
     <SourceUsages>
@@ -31,6 +31,96 @@
       <FbPortUsage Id="0f1b4593-ad67-475d-a02a-73db5dc2c219">
         <ModelElementId>0fe4f42e-12fe-4b49-afb7-c70e19222694</ModelElementId>
       </FbPortUsage>
+    </TargetUsages>
+  </Variable>
+  <Variable Id="d5556af3-21f8-4522-95f9-859346aaf9a0">
+    <Name>in_Run</Name>
+    <SourceUsages>
+      <AliasDeviceIoUsage Id="4ff20c62-957d-4683-9839-d67fdbf54e29">
+        <SdsId>15</SdsId>
+        <ChannelId>1</ChannelId>
+        <FunctionId>1131179973</FunctionId>
+      </AliasDeviceIoUsage>
+    </SourceUsages>
+    <TargetUsages>
+      <GroupPortUsage Id="f22085ca-744a-4bd9-a364-0dab49f8e1f7">
+        <ModelElementId>9471766b-c524-42d9-b5a8-6639eef5701c</ModelElementId>
+      </GroupPortUsage>
+    </TargetUsages>
+  </Variable>
+  <Variable Id="626cbf36-bea8-4a66-aec7-52c8fb5df1b3">
+    <Name>in_ErrAck</Name>
+    <SourceUsages>
+      <AliasDeviceIoUsage Id="f8be8030-40b6-43ba-a0d3-d8e6158b1fc9">
+        <SdsId>16</SdsId>
+        <ChannelId>1</ChannelId>
+        <FunctionId>1131179973</FunctionId>
+      </AliasDeviceIoUsage>
+    </SourceUsages>
+    <TargetUsages>
+      <GroupPortUsage Id="733dddc7-8687-466c-948a-a1cdfa6bc4da">
+        <ModelElementId>a5799b59-d06b-4c8d-9e5c-508fd0b8f179</ModelElementId>
+      </GroupPortUsage>
+    </TargetUsages>
+  </Variable>
+  <Variable Id="38ebc56a-2ba3-4211-bdb9-d017deffa9bf">
+    <Name>out_Running</Name>
+    <SourceUsages>
+      <GroupPortUsage Id="fca292d4-e616-4d2b-95d1-92e07ac51a80">
+        <ModelElementId>aaff3bb9-5db9-41f5-b971-76285fd05569</ModelElementId>
+      </GroupPortUsage>
+    </SourceUsages>
+    <TargetUsages>
+      <AliasDeviceIoUsage Id="7493487b-c664-4a3c-9407-1d2e94d33601">
+        <SdsId>17</SdsId>
+        <ChannelId>1</ChannelId>
+        <FunctionId>1131179972</FunctionId>
+      </AliasDeviceIoUsage>
+    </TargetUsages>
+  </Variable>
+  <Variable Id="62cec1d6-1f8b-493b-9ae8-ad63527eb9d0">
+    <Name>out_FB_Err</Name>
+    <SourceUsages>
+      <GroupPortUsage Id="e6a43597-3905-41b3-9cf6-ca5a81b311eb">
+        <ModelElementId>a4ac58b0-135f-4892-b8ba-b65da6017a6f</ModelElementId>
+      </GroupPortUsage>
+    </SourceUsages>
+    <TargetUsages>
+      <AliasDeviceIoUsage Id="2ba6a618-cd87-48f4-a1b5-b3527bbdbdc4">
+        <SdsId>18</SdsId>
+        <ChannelId>1</ChannelId>
+        <FunctionId>1131179972</FunctionId>
+      </AliasDeviceIoUsage>
+    </TargetUsages>
+  </Variable>
+  <Variable Id="e14ed737-6101-4e62-8fdb-6426428163c5">
+    <Name>out_Com_Err</Name>
+    <SourceUsages>
+      <GroupPortUsage Id="84510afb-02bc-499f-9309-eec09c7a792e">
+        <ModelElementId>a85d90ce-d051-4e35-9b92-ab2b2de512ad</ModelElementId>
+      </GroupPortUsage>
+    </SourceUsages>
+    <TargetUsages>
+      <AliasDeviceIoUsage Id="77a44503-f0f2-4d7e-8de3-7696a4268c59">
+        <SdsId>19</SdsId>
+        <ChannelId>1</ChannelId>
+        <FunctionId>1131179972</FunctionId>
+      </AliasDeviceIoUsage>
+    </TargetUsages>
+  </Variable>
+  <Variable Id="80e374de-7718-42fb-9d11-4e90a71f91d6">
+    <Name>out_Other_Err</Name>
+    <SourceUsages>
+      <GroupPortUsage Id="46ae48b1-5bee-475f-a954-8b46e6eb7de4">
+        <ModelElementId>5efa3295-7f3d-456c-a84a-1bf5a62b586d</ModelElementId>
+      </GroupPortUsage>
+    </SourceUsages>
+    <TargetUsages>
+      <AliasDeviceIoUsage Id="3cbc2177-a1f2-469a-93d4-0c0d39dfba45">
+        <SdsId>20</SdsId>
+        <ChannelId>1</ChannelId>
+        <FunctionId>1131179972</FunctionId>
+      </AliasDeviceIoUsage>
     </TargetUsages>
   </Variable>
 </GlobalVariables>

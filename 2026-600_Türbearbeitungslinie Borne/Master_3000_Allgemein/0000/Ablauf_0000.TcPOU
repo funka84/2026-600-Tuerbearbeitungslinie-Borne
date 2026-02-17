@@ -10,7 +10,7 @@ END_VAR
     <Implementation>
       <ST><![CDATA[
 // TODO: Hauptprogramm-Code fuer Ablauf hier einfuegen
-      ]]></ST>
+]]></ST>
     </Implementation>
     <Method Name="M_VisuKomm" Id="{3bd020ec-9635-409f-b1d7-663929ec8626}">
       <Declaration><![CDATA[

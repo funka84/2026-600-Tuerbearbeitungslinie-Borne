@@ -58,13 +58,23 @@
 			</SubItem>
 		</DataType>
 		<DataType>
-			<Name GUID="{18071995-0000-0000-0000-002000000005}" IecBaseType="true" AutoDeleteType="true" HideSubItems="true">ARRAY [0..4] OF BIT</Name>
-			<BitSize>5</BitSize>
+			<Name GUID="{18071995-0000-0000-0000-002000000004}" IecBaseType="true" AutoDeleteType="true" HideSubItems="true">ARRAY [0..3] OF BIT</Name>
+			<BitSize>4</BitSize>
 			<BaseType GUID="{18071995-0000-0000-0000-000000000010}">BIT</BaseType>
 			<ArrayInfo>
 				<LBound>0</LBound>
-				<Elements>5</Elements>
+				<Elements>4</Elements>
 			</ArrayInfo>
+		</DataType>
+		<DataType>
+			<Name GUID="{73F57572-A2C9-F88F-FFC6-9BA3A895E419}" AutoDeleteType="true">INFODATA_FB_1</Name>
+			<BitSize>8</BitSize>
+			<SubItem>
+				<Name>State</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000002}">USINT</Type>
+				<BitSize>8</BitSize>
+				<BitOffs>0</BitOffs>
+			</SubItem>
 		</DataType>
 		<DataType>
 			<Name GUID="{18071995-0000-0000-0000-002000000010}" IecBaseType="true" AutoDeleteType="true" HideSubItems="true">ARRAY [0..1] OF BYTE</Name>
@@ -86,7 +96,7 @@
 			<SyncMan>001000012600010001000000000100010001001026010000</SyncMan>
 			<SyncMan>001100012200010002000000000100010001001122010000</SyncMan>
 			<SyncMan>001210002400010003000000000000000800001224010000</SyncMan>
-			<SyncMan>001d0f002000010004000000000000000900001d20010000</SyncMan>
+			<SyncMan>001d16002000010004000000000000000900001d20010000</SyncMan>
 			<SyncMan>002e00002400000003000000000000000000002e24000000</SyncMan>
 			<SyncMan>002f00002000000004000000000000000000002f20000000</SyncMan>
 			<Fmmu>0000000000000000001200020100000001000000060000000200000000000000</Fmmu>
@@ -116,18 +126,58 @@
 					<Type GUID="{B05FDAB7-3241-ACD3-D16C-0FDAF8825BC9}">FSOE_7</Type>
 				</Entry>
 			</Pdo>
-			<Pdo Name="StandardOutputs" Index="#x17f0" InOut="1" Flags="#x2011" SyncMan="2">
-				<Entry Name="SafeGroup_Fraese.ErrorAcknowledgement_1" Index="#x6000" Sub="#x01">
+			<Pdo Name="StandardInputs" Index="#x1bf0" Flags="#x2011" SyncMan="3">
+				<Entry Name="SafeGroup_Fraese.fromSafety_Run_SafeGroup_Fraese_17" Index="#x7000" Sub="#x01">
 					<Type>BIT</Type>
 				</Entry>
-				<Entry Name="SafeGroup_Fraese.toSafety_RM_Kreis_3_4" Index="#x6000" Sub="#x02">
+				<Entry Name="SafeGroup_Fraese.fromSafety_FB_Err_18" Index="#x7000" Sub="#x02">
 					<Type>BIT</Type>
 				</Entry>
-				<Entry Name="SafeGroup_Fraese.toSafety_Restart_Not_Aus_5" Index="#x6000" Sub="#x03">
+				<Entry Name="SafeGroup_Fraese.fromSafety_Com_Err_19" Index="#x7000" Sub="#x03">
+					<Type>BIT</Type>
+				</Entry>
+				<Entry Name="SafeGroup_Fraese.fromSafety_Other_Err_20" Index="#x7000" Sub="#x04">
 					<Type>BIT</Type>
 				</Entry>
 				<Entry>
-					<Type GUID="{18071995-0000-0000-0000-002000000005}">ARRAY [0..4] OF BIT</Type>
+					<Type GUID="{18071995-0000-0000-0000-002000000004}">ARRAY [0..3] OF BIT</Type>
+				</Entry>
+			</Pdo>
+			<Pdo Name="StandardOutputs" Index="#x17f0" InOut="1" Flags="#x2011" SyncMan="2">
+				<Entry Name="SafeGroup_Fraese.toSafety_RM_Kreis_3_4" Index="#x6000" Sub="#x01">
+					<Type>BIT</Type>
+				</Entry>
+				<Entry Name="SafeGroup_Fraese.toSafety_Restart_Not_Aus_5" Index="#x6000" Sub="#x02">
+					<Type>BIT</Type>
+				</Entry>
+				<Entry Name="SafeGroup_Fraese.toSafety_Run_SafeGroup_Fraese_15" Index="#x6000" Sub="#x03">
+					<Type>BIT</Type>
+				</Entry>
+				<Entry Name="SafeGroup_Fraese.toSafety_ErrAck_SafeGroup_Fraese_16" Index="#x6000" Sub="#x04">
+					<Type>BIT</Type>
+				</Entry>
+				<Entry>
+					<Type GUID="{18071995-0000-0000-0000-002000000004}">ARRAY [0..3] OF BIT</Type>
+				</Entry>
+			</Pdo>
+			<Pdo Name="Function Block Info Data" Index="#x1bf8" Flags="#x2011" SyncMan="3">
+				<Entry Name="SafeGroup_Fraese.Nothalt_intern.FB_Not_Aus_Intern Info Data" Index="#x7000" Sub="#x01">
+					<Type GUID="{73F57572-A2C9-F88F-FFC6-9BA3A895E419}">INFODATA_FB_1</Type>
+				</Entry>
+				<Entry Name="SafeGroup_Fraese.Nothalt_intern.FB_Not_Aus_Gesamt Info Data" Index="#x7000" Sub="#x02">
+					<Type GUID="{73F57572-A2C9-F88F-FFC6-9BA3A895E419}">INFODATA_FB_1</Type>
+				</Entry>
+				<Entry Name="SafeGroup_Fraese.Freigabekreis_3.FB_EDM_Kreis_3 Info Data" Index="#x7000" Sub="#x03">
+					<Type GUID="{73F57572-A2C9-F88F-FFC6-9BA3A895E419}">INFODATA_FB_1</Type>
+				</Entry>
+				<Entry Name="SafeGroup_Fraese.Freigabekreis_3.FB_AND_Kreis_3 Info Data" Index="#x7000" Sub="#x04">
+					<Type GUID="{73F57572-A2C9-F88F-FFC6-9BA3A895E419}">INFODATA_FB_1</Type>
+				</Entry>
+				<Entry Name="SafeGroup_Fraese.Stillstand.FB_MON_Stillstand Info Data" Index="#x7000" Sub="#x05">
+					<Type GUID="{73F57572-A2C9-F88F-FFC6-9BA3A895E419}">INFODATA_FB_1</Type>
+				</Entry>
+				<Entry Name="SafeGroup_Fraese.Druckluft.FB_AND_Druckluft Info Data" Index="#x7000" Sub="#x06">
+					<Type GUID="{73F57572-A2C9-F88F-FFC6-9BA3A895E419}">INFODATA_FB_1</Type>
 				</Entry>
 			</Pdo>
 			<Pdo Name="FSLOGIC Inputs" Index="#x1bff" Flags="#x0091" SyncMan="3">

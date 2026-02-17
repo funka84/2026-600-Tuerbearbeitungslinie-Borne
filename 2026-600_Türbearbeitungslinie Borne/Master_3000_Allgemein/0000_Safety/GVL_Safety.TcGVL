@@ -5,17 +5,28 @@
 {attribute 'linkalways'} 
 VAR_GLOBAL
 	
-(* Copy and Paste Vorlage
-		{attribute 'TcLinkTo':=''}
-		rm_Luft_2 AT%Q*:BOOL; (*  *)
-*)
-	
     // Eingaenge
     //_______________________________________________________
 	
+		{attribute 'TcLinkTo':='TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K3 (EL1918)^StandardInputs^SafeGroup_Fraese.fromSafety_Run_SafeGroup_Fraese_17'}
+		in_Run_SafeGroup_Fraese AT%I*:BOOL; (*  *)
 	
+		{attribute 'TcLinkTo':='TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K3 (EL1918)^StandardInputs^SafeGroup_Fraese.fromSafety_FB_Err_18'}
+		in_FB_Err AT%I*:BOOL; (*  *)
+		
+		{attribute 'TcLinkTo':='TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K3 (EL1918)^StandardInputs^SafeGroup_Fraese.fromSafety_Com_Err_19'}
+		in_Com_Err AT%I*:BOOL; (*  *)
+		
+		{attribute 'TcLinkTo':='TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K3 (EL1918)^StandardInputs^SafeGroup_Fraese.fromSafety_Other_Err_20'}
+		in_Other_Err AT%I*:BOOL; (*  *)
     // Ausgänge
     //_______________________________________________________
+	
+		{attribute 'TcLinkTo':='TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K3 (EL1918)^StandardOutputs^SafeGroup_Fraese.toSafety_Run_SafeGroup_Fraese_15'}
+		out_Run_SafeGroup_Fraese AT%Q*:BOOL; (*  *)
+	
+		{attribute 'TcLinkTo':='TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K3 (EL1918)^StandardOutputs^SafeGroup_Fraese.toSafety_ErrAck_SafeGroup_Fraese_16'}
+		out_ErrAck_SafeGroup_Fraese AT%Q*:BOOL; (*  *)
 	
 		{attribute 'TcLinkTo':='TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K3 (EL1918)^StandardOutputs^SafeGroup_Fraese.toSafety_Restart_Not_Aus_5'}
 		out_Not_Aus_Restart AT%Q*:BOOL;	(* Not Aus Restart *)
@@ -26,7 +37,32 @@ VAR_GLOBAL
 
     // Intern
     //_______________________________________________________
+			
+		{attribute 'TcLinkTo':='.byState := TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K3 (EL1918)^Function Block Info Data^SafeGroup_Fraese.Nothalt_intern.FB_Not_Aus_Intern Info Data^State'}
+		in_State_FBand_Not_Aus_Intern AT%I*:union_STATE_AND;
+	
+		{attribute 'TcLinkTo':='.byState := TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K3 (EL1918)^Function Block Info Data^SafeGroup_Fraese.Nothalt_intern.FB_Not_Aus_Gesamt Info Data^State'}
+		in_State_FBand_Not_Aus_Gesamt AT%I*:union_STATE_ESTOP;
+	
+		{attribute 'TcLinkTo':='.byState := TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K3 (EL1918)^Function Block Info Data^SafeGroup_Fraese.Freigabekreis_3.FB_AND_Kreis_3 Info Data^State'}
+		in_State_FBand_Kreis_3 AT%I*:union_STATE_AND;
+	
+		{attribute 'TcLinkTo':='.byState := TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K3 (EL1918)^Function Block Info Data^SafeGroup_Fraese.Freigabekreis_3.FB_EDM_Kreis_3 Info Data^State'}
+		in_State_FBedm_Kreis_3 AT%I*:union_STATE_EDM;
+	
+		{attribute 'TcLinkTo':='.byState := TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K3 (EL1918)^Function Block Info Data^SafeGroup_Fraese.Stillstand.FB_MON_Stillstand Info Data^State'}
+		in_State_FBmon_Stillstand AT%I*:union_STATE_MON;
+	
+		{attribute 'TcLinkTo':='.byState := TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K3 (EL1918)^Function Block Info Data^SafeGroup_Fraese.Druckluft.FB_AND_Druckluft Info Data^State'}
+		in_State_FBand_Druckluft AT%I*:union_STATE_AND;
+		
+		
+END_VAR
 
-END_VAR]]></Declaration>
+
+(* Copy and Paste Vorlage
+		{attribute 'TcLinkTo':=''}
+		rm_Luft_2 AT%Q*:BOOL; (*  *)
+*)]]></Declaration>
   </GVL>
 </TcPlcObject>

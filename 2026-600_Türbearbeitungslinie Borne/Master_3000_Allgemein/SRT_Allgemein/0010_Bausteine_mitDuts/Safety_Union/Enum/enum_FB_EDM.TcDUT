@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="enum_FB_EDM" Id="{0f0e1da2-12ce-4d7f-9ed8-cc235254ac72}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+{attribute 'to_string'}
+TYPE enum_FB_EDM :
+(
+	undefine := 0,
+	stop := 2,
+	error := 4,
+	reset := 5,
+	monoff :=14,
+	monon := 15 
+);
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

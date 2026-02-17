@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="enum_FB_AND" Id="{8a37ab05-64f9-41c8-b4e4-93ecb23704c4}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+{attribute 'to_string'}
+TYPE enum_FB_AND :
+(
+	undefine := 0,
+	run := 1,
+	stop := 2,
+	safe := 3
+);
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

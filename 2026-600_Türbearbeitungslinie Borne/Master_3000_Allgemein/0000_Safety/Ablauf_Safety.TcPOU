@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Ablauf_Safety" Id="{e2bcdb3e-a81c-43d7-a27c-f27a71c74ecf}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM Ablauf_Safety
+VAR
+	ton_sk_Freigabe	: ton;
+	ton_Quittieren	: ton;
+	tof_Quittieren	: tof;
+	FT_Quittieren	: F_TRIG;
+	RT_Quittieren	: R_TRIG;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// Ansteuerung Safety
+GVL_Safety.out_Run_SafeGroup_Fraese := GVL_Visu_0000.quittieren OR GVL_Safety.in_Run_SafeGroup_Fraese;
+GVL_Safety.out_ErrAck_SafeGroup_Fraese := GVL_Visu_0000.quittieren;
+
+// Verzögerung
+FT_Quittieren(CLK:= GVL_Visu_0000.quittieren, Q=> );
+RT_Quittieren(CLK:= GVL_Visu_0000.quittieren, Q=> );
+
+ton_Quittieren(IN:= GVL_Visu_0000.quittieren, PT:=T#100MS , Q=> , ET=> );
+tof_Quittieren(IN:= GVL_Visu_0000.quittieren, PT:=T#200MS , Q=> , ET=> );
+
+//Restart
+GVL_Safety.out_Not_Aus_Restart := NOT GVL_Visu_0000.quittieren AND tof_Quittieren.Q;
+
+//Rückmeldungen
+GVL_Safety.out_rm_Kreis_3 := NOT EAs_0000.e_FR_0600_Rueckmeldung_von_Safety_Freigabekreis_3;
+
+//Freigabe
+ton_sk_Freigabe(IN:= GVL_Safety.in_State_FBand_Kreis_3.eState = enum_FB_AND.run, PT:=T#250MS , Q=> , ET=> );
+GVL_0000.sk_Freigabe := ton_sk_Freigabe.Q;
+
+//Safety Statusübersicht
+GVL_Safety.in_Run_SafeGroup_Fraese;
+GVL_Safety.in_FB_Err;
+GVL_Safety.in_Com_Err;
+GVL_Safety.in_Other_Err;
+
+GVL_Safety.in_State_FBand_Not_Aus_Intern.eState;
+GVL_Safety.in_State_FBand_Not_Aus_Gesamt.eState;
+GVL_Safety.in_State_FBand_Kreis_3.eState;
+GVL_Safety.in_State_FBedm_Kreis_3.eState;
+GVL_Safety.in_State_FBmon_Stillstand.eState;
+GVL_Safety.in_State_FBand_Druckluft.eState;
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

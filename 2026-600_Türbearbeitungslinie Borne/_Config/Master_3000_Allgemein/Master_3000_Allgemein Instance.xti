@@ -21,7 +21,19 @@
 	<Mappings>
 		<OwnerA>
 			<OwnerB Name="TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K3 (EL1918)">
+				<Link VarA="PlcTask Inputs^GVL_Safety.in_Com_Err" VarB="StandardInputs^SafeGroup_Fraese.fromSafety_Com_Err_19" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^GVL_Safety.in_FB_Err" VarB="StandardInputs^SafeGroup_Fraese.fromSafety_FB_Err_18" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^GVL_Safety.in_Other_Err" VarB="StandardInputs^SafeGroup_Fraese.fromSafety_Other_Err_20" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^GVL_Safety.in_Run_SafeGroup_Fraese" VarB="StandardInputs^SafeGroup_Fraese.fromSafety_Run_SafeGroup_Fraese_17" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^GVL_Safety.in_State_FBand_Druckluft^byState" VarB="Function Block Info Data^SafeGroup_Fraese.Druckluft.FB_AND_Druckluft Info Data^State" AutoLink="true"/>
+				<Link VarA="PlcTask Inputs^GVL_Safety.in_State_FBand_Kreis_3^byState" VarB="Function Block Info Data^SafeGroup_Fraese.Freigabekreis_3.FB_AND_Kreis_3 Info Data^State" AutoLink="true"/>
+				<Link VarA="PlcTask Inputs^GVL_Safety.in_State_FBand_Not_Aus_Gesamt^byState" VarB="Function Block Info Data^SafeGroup_Fraese.Nothalt_intern.FB_Not_Aus_Gesamt Info Data^State" AutoLink="true"/>
+				<Link VarA="PlcTask Inputs^GVL_Safety.in_State_FBand_Not_Aus_Intern^byState" VarB="Function Block Info Data^SafeGroup_Fraese.Nothalt_intern.FB_Not_Aus_Intern Info Data^State" AutoLink="true"/>
+				<Link VarA="PlcTask Inputs^GVL_Safety.in_State_FBedm_Kreis_3^byState" VarB="Function Block Info Data^SafeGroup_Fraese.Freigabekreis_3.FB_EDM_Kreis_3 Info Data^State" AutoLink="true"/>
+				<Link VarA="PlcTask Inputs^GVL_Safety.in_State_FBmon_Stillstand^byState" VarB="Function Block Info Data^SafeGroup_Fraese.Stillstand.FB_MON_Stillstand Info Data^State" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^GVL_Safety.out_ErrAck_SafeGroup_Fraese" VarB="StandardOutputs^SafeGroup_Fraese.toSafety_ErrAck_SafeGroup_Fraese_16" AutoLink="true" Size="1"/>
 				<Link VarA="PlcTask Outputs^GVL_Safety.out_Not_Aus_Restart" VarB="StandardOutputs^SafeGroup_Fraese.toSafety_Restart_Not_Aus_5" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^GVL_Safety.out_Run_SafeGroup_Fraese" VarB="StandardOutputs^SafeGroup_Fraese.toSafety_Run_SafeGroup_Fraese_15" AutoLink="true" Size="1"/>
 				<Link VarA="PlcTask Outputs^GVL_Safety.out_rm_Kreis_3" VarB="StandardOutputs^SafeGroup_Fraese.toSafety_RM_Kreis_3_4" AutoLink="true" Size="1"/>
 			</OwnerB>
 			<OwnerB Name="TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K5 (EL1809)">
