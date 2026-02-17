@@ -20,6 +20,10 @@
 	</Instance>
 	<Mappings>
 		<OwnerA>
+			<OwnerB Name="TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K3 (EL1918)">
+				<Link VarA="PlcTask Outputs^GVL_Safety.out_Not_Aus_Restart" VarB="StandardOutputs^SafeGroup_Fraese.toSafety_Restart_Not_Aus_5" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^GVL_Safety.out_rm_Kreis_3" VarB="StandardOutputs^SafeGroup_Fraese.toSafety_RM_Kreis_3_4" AutoLink="true" Size="1"/>
+			</OwnerB>
 			<OwnerB Name="TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K5 (EL1809)">
 				<Link VarA="PlcTask Inputs^EAs_0000.e_FR_0101_Schaltschranktuer_ist_zu_und_Klimageraet_ist_Betriebsbereit" VarB="Channel 1^Input" AutoLink="true" Size="1"/>
 				<Link VarA="PlcTask Inputs^EAs_0000.e_FR_0300_SEW_Bremswiderstand_Versorgungsmodul_ist_OK" VarB="Channel 13^Input" AutoLink="true" Size="1"/>

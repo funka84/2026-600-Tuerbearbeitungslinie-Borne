@@ -66,6 +66,16 @@
 		<Box File="=0300+FS2-18T1.xti" Id="33">
 			<EtherCAT PortABoxInfo="#x01000020"/>
 		</Box>
-		<EtherCAT DcSyncMode="3" MaxSwitchPorts="2" MaxSwitchFrames="120" MaxSwitchMACs="100"/>
+		<EtherCAT VirtualDeviceName="true" DcSyncMode="3" MaxSwitchPorts="2" MaxSwitchFrames="120" MaxSwitchMACs="100"/>
 	</Device>
+	<Mappings>
+		<OwnerA>
+			<OwnerB Name="TIID^Device 1 (EtherCAT)">
+				<Link VarA="+FS1-3K1 (BK1120)^+FS1-3K3 (EL1918)^ConnectionInputs^SafeGroup_Fraese.+FS1-3K4 (EL2904) - Module 2_2 TxPDO" VarB="+FS1-3K1 (BK1120)^+FS1-3K4 (EL2904)^Module 1 (FSOES)^RxPDO^FSOE"/>
+				<Link VarA="+FS1-3K1 (BK1120)^+FS1-3K3 (EL1918)^ConnectionOutputs^SafeGroup_Fraese.+FS1-3K4 (EL2904) - Module 2_2 RxPDO" VarB="+FS1-3K1 (BK1120)^+FS1-3K4 (EL2904)^Module 1 (FSOES)^TxPDO^FSOE"/>
+				<Link VarA="+FS1-3K1 (BK1120)^+FS1-3K4 (EL2904)^Module 1 (FSOES)^RxPDO^FSOE" VarB="+FS1-3K1 (BK1120)^+FS1-3K3 (EL1918)^ConnectionInputs^SafeGroup_Fraese.+FS1-3K4 (EL2904) - Module 2_2 TxPDO"/>
+				<Link VarA="+FS1-3K1 (BK1120)^+FS1-3K4 (EL2904)^Module 1 (FSOES)^TxPDO^FSOE" VarB="+FS1-3K1 (BK1120)^+FS1-3K3 (EL1918)^ConnectionOutputs^SafeGroup_Fraese.+FS1-3K4 (EL2904) - Module 2_2 RxPDO"/>
+			</OwnerB>
+		</OwnerA>
+	</Mappings>
 </TcSmItem>

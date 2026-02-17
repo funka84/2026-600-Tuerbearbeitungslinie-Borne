@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <GVL Name="GVL_Safety" Id="{26074b54-b43f-43f1-a9ea-c7b317f9c13c}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+{attribute 'linkalways'} 
+VAR_GLOBAL
+	
+(* Copy and Paste Vorlage
+		{attribute 'TcLinkTo':=''}
+		rm_Luft_2 AT%Q*:BOOL; (*  *)
+*)
+	
+    // Eingaenge
+    //_______________________________________________________
+	
+	
+    // Ausgänge
+    //_______________________________________________________
+	
+		{attribute 'TcLinkTo':='TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K3 (EL1918)^StandardOutputs^SafeGroup_Fraese.toSafety_Restart_Not_Aus_5'}
+		out_Not_Aus_Restart AT%Q*:BOOL;	(* Not Aus Restart *)
+	
+		{attribute 'TcLinkTo':='TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K3 (EL1918)^StandardOutputs^SafeGroup_Fraese.toSafety_RM_Kreis_3_4'}
+		out_rm_Kreis_3 AT%Q*:BOOL; (* Rückmeldung Freigabekreis 3*)
+		
+
+    // Intern
+    //_______________________________________________________
+
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>

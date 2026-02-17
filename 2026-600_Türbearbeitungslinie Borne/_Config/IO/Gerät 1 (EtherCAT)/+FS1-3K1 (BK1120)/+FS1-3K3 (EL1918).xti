@@ -2,6 +2,71 @@
 <TcSmItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2012/07/TcSmProject" TcSmVersion="1.0" TcVersion="3.1.4026.20" ClassName="CFlbTermDef" SubType="9099">
 	<DataTypes>
 		<DataType>
+			<Name GUID="{2438F91B-E188-4ED7-8594-54354F9ED6A4}" Namespace="Safety" TcBaseType="true">FSOE_6</Name>
+			<BitSize>48</BitSize>
+			<SubItem>
+				<Name>FSoE CMD</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000002}">USINT</Type>
+				<BitSize>8</BitSize>
+				<BitOffs>0</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>FSoE Data</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000032}">BITARR8</Type>
+				<BitSize>8</BitSize>
+				<BitOffs>8</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>FSoE CRC_0</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000005}">UINT</Type>
+				<BitSize>16</BitSize>
+				<BitOffs>16</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>FSoE ConnID</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000005}">UINT</Type>
+				<BitSize>16</BitSize>
+				<BitOffs>32</BitOffs>
+			</SubItem>
+		</DataType>
+		<DataType>
+			<Name GUID="{B05FDAB7-3241-ACD3-D16C-0FDAF8825BC9}" AutoDeleteType="true">FSOE_7</Name>
+			<BitSize>56</BitSize>
+			<SubItem>
+				<Name>FSoE CMD</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000002}">USINT</Type>
+				<BitSize>8</BitSize>
+				<BitOffs>0</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>FSoE Data 0</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000033}">BITARR16</Type>
+				<BitSize>16</BitSize>
+				<BitOffs>8</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>FSoE CRC_0</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000005}">UINT</Type>
+				<BitSize>16</BitSize>
+				<BitOffs>24</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>FSoE ConnID</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000005}">UINT</Type>
+				<BitSize>16</BitSize>
+				<BitOffs>40</BitOffs>
+			</SubItem>
+		</DataType>
+		<DataType>
+			<Name GUID="{18071995-0000-0000-0000-002000000005}" IecBaseType="true" AutoDeleteType="true" HideSubItems="true">ARRAY [0..4] OF BIT</Name>
+			<BitSize>5</BitSize>
+			<BaseType GUID="{18071995-0000-0000-0000-000000000010}">BIT</BaseType>
+			<ArrayInfo>
+				<LBound>0</LBound>
+				<Elements>5</Elements>
+			</ArrayInfo>
+		</DataType>
+		<DataType>
 			<Name GUID="{18071995-0000-0000-0000-002000000010}" IecBaseType="true" AutoDeleteType="true" HideSubItems="true">ARRAY [0..1] OF BYTE</Name>
 			<BitSize>16</BitSize>
 			<BaseType GUID="{18071995-0000-0000-0000-000000000001}">BYTE</BaseType>
@@ -20,8 +85,8 @@
 		<EtherCAT SlaveType="2" PdiType="#x0005" MboxDataLinkLayer="true" StateMBoxPolling="true" CycleMBoxPollingTime="0" CoeType="3" FoeType="1" VendorId="#x00000002" ProductCode="#x077e3052" RevisionNo="#x00110000" InfoDataAddr="true" RepeatSupport="true" TimeoutStateChange1="5000" TimeoutMailbox2="10000" TComSupport="true" PortPhys="51" DebugMemory="8" SafetyLogicSupported="true" MaxSlotCount="2" Type="EL1918, 8K. Safety Eingang 24V, TwinSAFE" Desc="EL1918">
 			<SyncMan>001000012600010001000000000100010001001026010000</SyncMan>
 			<SyncMan>001100012200010002000000000100010001001122010000</SyncMan>
-			<SyncMan>001208002400010003000000000000000800001224010000</SyncMan>
-			<SyncMan>001d09002000010004000000000000000900001d20010000</SyncMan>
+			<SyncMan>001210002400010003000000000000000800001224010000</SyncMan>
+			<SyncMan>001d0f002000010004000000000000000900001d20010000</SyncMan>
 			<SyncMan>002e00002400000003000000000000000000002e24000000</SyncMan>
 			<SyncMan>002f00002000000004000000000000000000002f20000000</SyncMan>
 			<Fmmu>0000000000000000001200020100000001000000060000000200000000000000</Fmmu>
@@ -34,111 +99,47 @@
 			<SuName></SuName>
 			<SuTask>#x00000000</SuTask>
 			<SuTask>#x00000000</SuTask>
-			<MBoxUserCmdData>004003000a0000001f000000030010000000000000000000000000000000000020f31005020000000100456e61626c6520446961674d65737361676520617320656d657267656e637900</MBoxUserCmdData>
-			<Pdo Name="FSoE Inputs" Index="#x1a00" Flags="#x0091" SyncMan="3">
-				<Entry Name="FSOE__FSoE Command" Index="#x6080" Sub="#x01">
-					<Type>USINT</Type>
+			<MBoxUserCmdData>004003000a0000001f000000000000000000000000000000000000000000000020f31005020000000100456e61626c6520446961674d65737361676520617320656d657267656e637900</MBoxUserCmdData>
+			<Pdo Name="ConnectionInputs" Index="#x1a00" Flags="#x2011" SyncMan="3">
+				<Entry Name="SafeGroup_Fraese.+FS1-3K4 (EL2904) - Module 2_2 TxPDO" Index="#x7000" Sub="#x01">
+					<Type GUID="{2438F91B-E188-4ED7-8594-54354F9ED6A4}" Namespace="Safety">FSOE_6</Type>
 				</Entry>
-				<Entry Name="FSOE__FSIN Module 1.Input" Index="#x6001" Sub="#x01">
-					<Type>BIT</Type>
-				</Entry>
-				<Entry Name="FSOE__FSIN Module 1.Module Fault" Index="#x6002" Sub="#x01">
-					<Type>BIT</Type>
-				</Entry>
-				<Entry Name="FSOE__FSIN Module 2.Input" Index="#x6011" Sub="#x01">
-					<Type>BIT</Type>
-				</Entry>
-				<Entry Name="FSOE__FSIN Module 2.Module Fault" Index="#x6012" Sub="#x01">
-					<Type>BIT</Type>
-				</Entry>
-				<Entry Name="FSOE__FSIN Module 3.Input" Index="#x6021" Sub="#x01">
-					<Type>BIT</Type>
-				</Entry>
-				<Entry Name="FSOE__FSIN Module 3.Module Fault" Index="#x6022" Sub="#x01">
-					<Type>BIT</Type>
-				</Entry>
-				<Entry Name="FSOE__FSIN Module 4.Input" Index="#x6031" Sub="#x01">
-					<Type>BIT</Type>
-				</Entry>
-				<Entry Name="FSOE__FSIN Module 4.Module Fault" Index="#x6032" Sub="#x01">
-					<Type>BIT</Type>
-				</Entry>
-				<Entry Name="FSOE__FSIN Module 5.Input" Index="#x6041" Sub="#x01">
-					<Type>BIT</Type>
-				</Entry>
-				<Entry Name="FSOE__FSIN Module 5.Module Fault" Index="#x6042" Sub="#x01">
-					<Type>BIT</Type>
-				</Entry>
-				<Entry Name="FSOE__FSIN Module 6.Input" Index="#x6051" Sub="#x01">
-					<Type>BIT</Type>
-				</Entry>
-				<Entry Name="FSOE__FSIN Module 6.Module Fault" Index="#x6052" Sub="#x01">
-					<Type>BIT</Type>
-				</Entry>
-				<Entry Name="FSOE__FSIN Module 7.Input" Index="#x6061" Sub="#x01">
-					<Type>BIT</Type>
-				</Entry>
-				<Entry Name="FSOE__FSIN Module 7.Module Fault" Index="#x6062" Sub="#x01">
-					<Type>BIT</Type>
-				</Entry>
-				<Entry Name="FSOE__FSIN Module 8.Input" Index="#x6071" Sub="#x01">
-					<Type>BIT</Type>
-				</Entry>
-				<Entry Name="FSOE__FSIN Module 8.Module Fault" Index="#x6072" Sub="#x01">
-					<Type>BIT</Type>
-				</Entry>
-				<Entry Name="FSOE__FSoE CRC 000" Index="#x6080" Sub="#x03">
-					<Type>UINT</Type>
-				</Entry>
-				<Entry Name="FSOE__FSoE Connection ID" Index="#x6080" Sub="#x02">
-					<Type>UINT</Type>
+				<Entry Name="SafeGroup_Fraese.+FS1-SafetyKomm_14 TxPDO" Index="#x7000" Sub="#x02">
+					<Type GUID="{B05FDAB7-3241-ACD3-D16C-0FDAF8825BC9}">FSOE_7</Type>
 				</Entry>
 			</Pdo>
-			<Pdo Name="FSoE Outputs" Index="#x1600" InOut="1" Flags="#x0091" SyncMan="2">
-				<Entry Name="FSOE__FSoE Command" Index="#x7080" Sub="#x01">
-					<Type>USINT</Type>
+			<Pdo Name="ConnectionOutputs" Index="#x1600" InOut="1" Flags="#x2011" SyncMan="2">
+				<Entry Name="SafeGroup_Fraese.+FS1-3K4 (EL2904) - Module 2_2 RxPDO" Index="#x6000" Sub="#x01">
+					<Type GUID="{2438F91B-E188-4ED7-8594-54354F9ED6A4}" Namespace="Safety">FSOE_6</Type>
 				</Entry>
-				<Entry Name="FSOE__FSIN Module 1.ErrAck" Index="#x7002" Sub="#x01">
+				<Entry Name="SafeGroup_Fraese.+FS1-SafetyKomm_14 RxPDO" Index="#x6000" Sub="#x02">
+					<Type GUID="{B05FDAB7-3241-ACD3-D16C-0FDAF8825BC9}">FSOE_7</Type>
+				</Entry>
+			</Pdo>
+			<Pdo Name="StandardOutputs" Index="#x17f0" InOut="1" Flags="#x2011" SyncMan="2">
+				<Entry Name="SafeGroup_Fraese.ErrorAcknowledgement_1" Index="#x6000" Sub="#x01">
 					<Type>BIT</Type>
 				</Entry>
-				<Entry Name="FSOE__FSIN Module 2.ErrAck" Index="#x7012" Sub="#x01">
+				<Entry Name="SafeGroup_Fraese.toSafety_RM_Kreis_3_4" Index="#x6000" Sub="#x02">
 					<Type>BIT</Type>
 				</Entry>
-				<Entry Name="FSOE__FSIN Module 3.ErrAck" Index="#x7022" Sub="#x01">
+				<Entry Name="SafeGroup_Fraese.toSafety_Restart_Not_Aus_5" Index="#x6000" Sub="#x03">
 					<Type>BIT</Type>
 				</Entry>
-				<Entry Name="FSOE__FSIN Module 4.ErrAck" Index="#x7032" Sub="#x01">
-					<Type>BIT</Type>
-				</Entry>
-				<Entry Name="FSOE__FSIN Module 5.ErrAck" Index="#x7042" Sub="#x01">
-					<Type>BIT</Type>
-				</Entry>
-				<Entry Name="FSOE__FSIN Module 6.ErrAck" Index="#x7052" Sub="#x01">
-					<Type>BIT</Type>
-				</Entry>
-				<Entry Name="FSOE__FSIN Module 7.ErrAck" Index="#x7062" Sub="#x01">
-					<Type>BIT</Type>
-				</Entry>
-				<Entry Name="FSOE__FSIN Module 8.ErrAck" Index="#x7072" Sub="#x01">
-					<Type>BIT</Type>
-				</Entry>
-				<Entry Name="FSOE__FSoE CRC 000" Index="#x7080" Sub="#x03">
-					<Type>UINT</Type>
-				</Entry>
-				<Entry Name="FSOE__FSoE Connection ID" Index="#x7080" Sub="#x02">
-					<Type>UINT</Type>
+				<Entry>
+					<Type GUID="{18071995-0000-0000-0000-002000000005}">ARRAY [0..4] OF BIT</Type>
 				</Entry>
 			</Pdo>
 			<Pdo Name="FSLOGIC Inputs" Index="#x1bff" Flags="#x0091" SyncMan="3">
-				<Entry Name="Safe Logic State" Index="#xf100" Sub="#x01">
+				<Entry Name="Safe Logic State" BitLen="8" Index="#xf100" Sub="#x01">
 					<Type>USINT</Type>
 				</Entry>
-				<Entry Name="Cycle Counter" Index="#xf100" Sub="#x02">
+				<Entry Name="Cycle Counter" BitLen="8" Index="#xf100" Sub="#x02">
 					<Type>USINT</Type>
 				</Entry>
 			</Pdo>
 			<Pdo Name="FSLOGIC Outputs" Index="#x17ff" InOut="1" Flags="#x0091" SyncMan="2">
-				<Entry>
+				<Entry BitLen="16">
 					<Type GUID="{18071995-0000-0000-0000-002000000010}">ARRAY [0..1] OF BYTE</Type>
 				</Entry>
 			</Pdo>
@@ -154,21 +155,13 @@
 			<Slot Name="FSOE-Slot">
 				<SlotData>0000000001000400000000000000000000000000000000000000000000000000</SlotData>
 				<ModuleIdent>17827710</ModuleIdent>
-				<Module Id="#x03090001" Type="FSOE" Class="1918">
-					<Name>Module 1 (FSOE)</Name>
-					<ImageId>575</ImageId>
-					<ModuleData>020000007e07100100002c000000000000000000000000000000000000000000</ModuleData>
-					<PdoIndex>6656</PdoIndex>
-					<PdoIndex>5632</PdoIndex>
-					<CoeProfile ProfileNo="#x00bf1389"/>
-				</Module>
 			</Slot>
 			<Slot Name="FSLOGIC">
 				<SlotData>0000010001000400000000000000000000000000000000000000000000000000</SlotData>
 				<ModuleIdent>691</ModuleIdent>
 				<Module Id="#x03090002" Type="FSLOGIC" Class="FSLOGIC">
 					<Name>Module 2 (FSLOGIC)</Name>
-					<ImageId>575</ImageId>
+					<ImageId>549</ImageId>
 					<ModuleData>02000000b3020000000004000000000000000000000000000000000000000000</ModuleData>
 					<PdoIndex>7167</PdoIndex>
 					<PdoIndex>6143</PdoIndex>

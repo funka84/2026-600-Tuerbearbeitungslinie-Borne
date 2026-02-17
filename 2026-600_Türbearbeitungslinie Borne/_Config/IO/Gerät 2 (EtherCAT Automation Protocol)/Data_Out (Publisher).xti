@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+<TcSmItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2012/07/TcSmProject" TcSmVersion="1.0" TcVersion="3.1.4026.20" ClassName="CNvPubSubDef" SubType="9051">
+	<DataTypes>
+		<DataType>
+			<Name GUID="{BE6A089E-D8AC-4BE8-9EAE-74D96F640502}" Namespace="Safety" TcBaseType="true">FSOE_7</Name>
+			<BitSize>56</BitSize>
+			<SubItem>
+				<Name>FSoE CMD</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000002}">USINT</Type>
+				<BitSize>8</BitSize>
+				<BitOffs>0</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>FSoE Data</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000033}">BITARR16</Type>
+				<BitSize>16</BitSize>
+				<BitOffs>8</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>FSoE CRC_0</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000005}">UINT</Type>
+				<BitSize>16</BitSize>
+				<BitOffs>24</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>FSoE ConnID</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000005}">UINT</Type>
+				<BitSize>16</BitSize>
+				<BitOffs>40</BitOffs>
+			</SubItem>
+		</DataType>
+	</DataTypes>
+	<Box Id="34" BoxType="9051">
+		<Name>__FILENAME__</Name>
+		<ImageId>99</ImageId>
+		<Vars VarGrpType="1">
+			<Name>Eingänge</Name>
+			<Var BoxStateVariable="true">
+				<Name>FrameState</Name>
+				<Comment><![CDATA[0x0001 = Not sent (frame skipped)
+0x0002 = Error (frame oversized)
+0x0004 = Subscriber missing (Unicast only)
+]]></Comment>
+				<Type>UINT</Type>
+			</Var>
+		</Vars>
+		<Vars VarGrpType="2">
+			<Name>Ausgänge</Name>
+			<Var BoxStateVariable="true">
+				<Name>FrameCtrl</Name>
+				<Comment><![CDATA[0x0001 = Disable sending
+0x0002 = Remove destination MAC from ARP cache
+]]></Comment>
+				<Type>UINT</Type>
+			</Var>
+		</Vars>
+		<Eap InOut="1" Mac="010105040000" DisableSubscriberMonitoring="true" ArpRetryInterval="1000">
+			<EapVar Id="1" VarInOut="1" NvId="1" NvLength="7">
+				<Name>Safety_Out</Name>
+				<ImageId>97</ImageId>
+				<Vars VarGrpType="1">
+					<Name>Eingänge</Name>
+					<Var BoxStateVariable="true">
+						<Name>VarState</Name>
+						<Comment><![CDATA[0x0001 = Not sent (variable skipped)
+0x0004 = Resolve dynamic symbol failed
+]]></Comment>
+						<Type>UINT</Type>
+						<BitOffs>16</BitOffs>
+					</Var>
+				</Vars>
+				<Vars VarGrpType="2">
+					<Name>Ausgänge</Name>
+					<Var BoxStateVariable="true">
+						<Name>VarCtrl</Name>
+						<Comment><![CDATA[0x0001 = Disable publishing
+]]></Comment>
+						<Type>UINT</Type>
+						<BitOffs>16</BitOffs>
+					</Var>
+					<Var>
+						<Name>VarData</Name>
+						<Type GUID="{BE6A089E-D8AC-4BE8-9EAE-74D96F640502}" Namespace="Safety">FSOE_7</Type>
+						<BitOffs>32</BitOffs>
+					</Var>
+				</Vars>
+			</EapVar>
+		</Eap>
+	</Box>
+</TcSmItem>

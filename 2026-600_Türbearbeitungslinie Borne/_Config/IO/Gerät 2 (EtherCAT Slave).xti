@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<TcSmItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2012/07/TcSmProject" TcSmVersion="1.0" TcVersion="3.1.4026.20" ClassName="CDevEtherCATSlaveDef" SubType="130">
+	<DataTypes>
+		<DataType>
+			<Name GUID="{BE6A089E-D8AC-4BE8-9EAE-74D96F640502}" Namespace="Safety" TcBaseType="true">FSOE_7</Name>
+			<BitSize>56</BitSize>
+			<SubItem>
+				<Name>FSoE CMD</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000002}">USINT</Type>
+				<BitSize>8</BitSize>
+				<BitOffs>0</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>FSoE Data</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000033}">BITARR16</Type>
+				<BitSize>16</BitSize>
+				<BitOffs>8</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>FSoE CRC_0</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000005}">UINT</Type>
+				<BitSize>16</BitSize>
+				<BitOffs>24</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>FSoE ConnID</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000005}">UINT</Type>
+				<BitSize>16</BitSize>
+				<BitOffs>40</BitOffs>
+			</SubItem>
+		</DataType>
+		<DataType>
+			<Name GUID="{18071995-0000-0000-0000-00000000003D}" TcBaseType="true" HideType="true">USINTARR6</Name>
+			<BitSize>48</BitSize>
+			<BaseType GUID="{18071995-0000-0000-0000-000000000002}">USINT</BaseType>
+			<ArrayInfo>
+				<LBound>0</LBound>
+				<Elements>6</Elements>
+			</ArrayInfo>
+		</DataType>
+	</DataTypes>
+	<Device Id="2" DevType="130" AmsNetId="192.168.187.1.3.255" RemoteName="Gerät 2 (EtherCAT Slave)">
+		<Name>__FILENAME__</Name>
+		<AddressInfo>
+			<Ccat>
+				<Address>0</Address>
+				<Offset>0</Offset>
+				<Size>0</Size>
+				<BaseAddr>0</BaseAddr>
+				<BusNo>0</BusNo>
+				<SlotNo>0</SlotNo>
+			</Ccat>
+		</AddressInfo>
+		<Vars VarGrpType="1" InsertType="1">
+			<Name>Eingänge</Name>
+			<Var>
+				<Name>Safety_In</Name>
+				<Type GUID="{BE6A089E-D8AC-4BE8-9EAE-74D96F640502}" Namespace="Safety">FSOE_7</Type>
+			</Var>
+		</Vars>
+		<Vars VarGrpType="2" InsertType="1">
+			<Name>Ausgänge</Name>
+			<Var>
+				<Name>Safety_Out</Name>
+				<Type GUID="{BE6A089E-D8AC-4BE8-9EAE-74D96F640502}" Namespace="Safety">FSOE_7</Type>
+			</Var>
+		</Vars>
+		<Vars VarGrpType="3">
+			<Name>InfoData</Name>
+			<Var>
+				<Name>State</Name>
+				<Comment><![CDATA[0x___1 = Slave is in 'INIT' state
+0x___2 = Slave is in 'PREOP' state
+0x___4 = Slave is in 'SAFEOP' state
+0x___8 = Slave is in 'OP' state]]></Comment>
+				<Type>UINT</Type>
+				<BitOffs>56</BitOffs>
+				<InOut>0</InOut>
+			</Var>
+			<Var>
+				<Name>NetId</Name>
+				<Type GUID="{18071995-0000-0000-0000-00000000003D}">USINTARR6</Type>
+				<BitOffs>72</BitOffs>
+				<InOut>0</InOut>
+			</Var>
+		</Vars>
+		<Image Id="5" AddrType="1" ImageType="2">
+			<Name>Prozessabbild</Name>
+		</Image>
+		<EtherCATSlave/>
+	</Device>
+</TcSmItem>
