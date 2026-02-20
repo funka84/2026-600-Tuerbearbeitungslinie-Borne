@@ -25,7 +25,22 @@ VAR_GLOBAL
 	
 	stoerung_quitt						:BOOL;
 	sammelstoerung						:BOOL;
+	
 END_VAR
-    ]]></Declaration>
+
+{attribute 'qualified_only'}
+VAR_GLOBAL CONSTANT
+	Master_AmsNetId						:T_AmsNetID	:='172.16.1.000.1.1';		// Net id des EC- Masters
+	TC_AmsNetId							:T_AmsNetID :='172.16.1.227.1.1';      	//	Net id des TwincatSystems
+	
+	MaxCOEParam							:INT := 92;
+	MAX_CSV_BASE_ROWS 					:INT := 92;
+	iMaxEC								:INT := 0;								// Anzahl der verbauten EtherCat Klemmen
+	MaxECDevices						:INT := 0;
+	                                    
+	ibn0								: BOOL := FALSE;									// Am Ende müssen alle QUerverweise gelöscht werden
+	ibn1								: BOOL := TRUE;							// Am Ende müssen alle QUerverweise gelöscht werden
+		
+END_VAR]]></Declaration>
   </GVL>
 </TcPlcObject>

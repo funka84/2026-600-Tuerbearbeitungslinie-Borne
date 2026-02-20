@@ -57,8 +57,8 @@ VAR
 	(* *)
 	j						:INT;
 	
-	I_nECNetID				:T_AmsNetId:=GVL_1000.Master_AmsNetId;			(*	Net id des EC- Masters	*)
-	I_nTcAMSNetID			:T_AmsNetId:=GVL_1000.TC_AmsNetId;			(*	Net id des TwincatSystems	*)
+	I_nECNetID				:T_AmsNetId:=GVL_0000.Master_AmsNetId;			(*	Net id des EC- Masters	*)
+	I_nTcAMSNetID			:T_AmsNetId:=GVL_0000.TC_AmsNetId;			(*	Net id des TwincatSystems	*)
 	I_sFilePath				:STRING;
 	tempiParam: INT;
 	pFL_StartLesen: R_TRIG;
@@ -180,12 +180,12 @@ CASE iStepParameter OF
 30:(*  In CSV Schreiben 	*)
 (*=======================================================*)
 
-	FOR j := 0 TO GVL_1000.MaxCOEParam BY 1 DO
+	FOR j := 0 TO GVL_0000.MaxCOEParam BY 1 DO
 		fbParameterCSV.I_stParameter[j].sName	:=	fbCoeDataRead.I_stParameter[j].sName;
 		fbParameterCSV.I_stParameter[j].nWert	:=	fbCoeDataRead.Q_stParameter[j].nWert;
 	END_FOR
 
-	IF j >= GVL_1000.MaxCOEParam
+	IF j >= GVL_0000.MaxCOEParam
 	THEN
 		fbParameterCSV.I_bStartWrite	:= TRUE;
 	END_IF
@@ -267,7 +267,7 @@ CASE iStepParameter OF
 (*=======================================================*)
 80:(*  Lesen aus CSV 	*)
 (*=======================================================*)
-	FOR j := 0 TO GVL_1000.MaxCOEParam BY 1 DO
+	FOR j := 0 TO GVL_0000.MaxCOEParam BY 1 DO
 		fbCoeDataWrite.I_stParameter[j].nZugriff:=		fbCoeDataRead.I_stParameter[j].nZugriff;
 		fbCoeDataWrite.I_stParameter[j].nIndex:=		fbCoeDataRead.I_stParameter[j].nIndex;
 		fbCoeDataWrite.I_stParameter[j].nLength:=	fbCoeDataRead.I_stParameter[j].nLength;
@@ -281,7 +281,7 @@ CASE iStepParameter OF
 (*=======================================================*)
 100:(* Zuweisung Readbaustein auf Schreib Baustein schreiben  	*)
 (*=======================================================*)
-	FOR j := 0 TO GVL_1000.MaxCOEParam BY 1 DO
+	FOR j := 0 TO GVL_0000.MaxCOEParam BY 1 DO
 		fbCoeDataWrite.I_stParameter[j].nZugriff:=		fbCoeDataRead.I_stParameter[j].nZugriff;
 		fbCoeDataWrite.I_stParameter[j].nIndex:=		fbCoeDataRead.I_stParameter[j].nIndex;
 		fbCoeDataWrite.I_stParameter[j].nLength:=	fbCoeDataRead.I_stParameter[j].nLength;

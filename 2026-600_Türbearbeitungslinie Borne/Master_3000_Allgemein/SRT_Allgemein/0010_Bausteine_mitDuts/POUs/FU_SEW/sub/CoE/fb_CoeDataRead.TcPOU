@@ -17,10 +17,10 @@ VAR_INPUT
 	I_tAutoTime		:TIME :=t#2s;
 	I_sNetID			:STRING;
 	I_nSlave			:UINT;
-	I_stParameter		:ARRAY[0..GVL_1000.MaxCOEParam] OF st_COE_Parameter;
+	I_stParameter		:ARRAY[0..GVL_0000.MaxCOEParam] OF st_COE_Parameter;
 END_VAR
 VAR_OUTPUT
-	Q_stParameter	:ARRAY[0..GVL_1000.MaxCOEParam] OF st_COE_Parameter_Out;
+	Q_stParameter	:ARRAY[0..GVL_0000.MaxCOEParam] OF st_COE_Parameter_Out;
 	Q_bBusy			:BOOL;
 	Q_bError			:BOOL;
 END_VAR
@@ -61,7 +61,7 @@ CASE iStepCoE OF
 
 	iStepCoE := iStepCoE+1;
 
-2:	IF iParam <= GVL_1000.MaxCOEParam
+2:	IF iParam <= GVL_0000.MaxCOEParam
 	THEN
 		iStepCoE := iStepCoE+1;
 	ELSE

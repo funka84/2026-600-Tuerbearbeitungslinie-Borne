@@ -8,6 +8,31 @@ VAR_GLOBAL
     // Eingaenge
     //_______________________________________________________
 
+	// +BP1-1A1
+        {attribute 'TcLinkTo' := ''}
+        e_Steuerspannung_ein AT %I* : BOOL; (* =FR.0500 Hauptbedienpanel Steuerspannung einschalten *)
+		
+        {attribute 'TcLinkTo' := ''}
+        e_Steuerspannung_aus AT %I* : BOOL; (* =FR.0500 Hauptbedienpanel Steuerspannung ausschalten *)
+		
+        {attribute 'TcLinkTo' := ''}
+        e_USB_res_03 AT %I* : BOOL; (* =FR.0500 Hauptbedienpanel USB Eingangssignal Reserve *)
+		
+        {attribute 'TcLinkTo' := ''}
+        e_USB_res_04 AT %I* : BOOL; (* =FR.0500 Hauptbedienpanel USB Eingangssignal Reserve *)
+
+        {attribute 'TcLinkTo' := ''}
+		a_Led_Steuerspannung_ein AT %Q* : BOOL; (* =FR.0500 Hauptbedienpanel Led Steuerspannung ist eingeschaltet*)
+		
+        {attribute 'TcLinkTo' := ''}
+        a_Led_Steuerspannung_aus AT %Q* : BOOL; (* =FR.0500 Hauptbedienpanel Led Steuerspannung ist ausgeschaltet*)
+		
+        {attribute 'TcLinkTo' := ''}
+        a_Led_USB_res_03 AT %Q* : BOOL; (* =FR.0500 Hauptbedienpanel Led Reserve *)
+		
+        {attribute 'TcLinkTo' := ''}
+        a_LEd_USB_res_04 AT %Q* : BOOL; (* =FR.0500 Hauptbedienpanel Led Reserve *)
+		
     // +FS1-3K5
         {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K5 (EL1809)^Channel 1^Input'}
         e_FR_0101_Schaltschranktuer_ist_zu_und_Klimageraet_ist_Betriebsbereit AT %I* : BOOL; (* =FR.0101 Schaltschranktür ist zu und Klimagerät ist Betriebsbereit *)
@@ -21,6 +46,9 @@ VAR_GLOBAL
         {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K5 (EL1809)^Channel 4^Input'}
         e_FR_0800_24V_UPS_Versorgung_ist_OK_und_zu_80_geladen AT %I* : BOOL; (* =FR.0800 24V UPS Versorgung ist OK und zu 80% geladen *)
 
+        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K5 (EL1809)^Channel 5^Input'}
+        e_FR_1000_Allgemein_Druckluft_OK AT %I* : BOOL; (* =FR.1000 Allgemein Druckluft OK *)
+		
         {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K5 (EL1809)^Channel 13^Input'}
         e_FR_0300_SEW_Bremswiderstand_Versorgungsmodul_ist_OK AT %I* : BOOL; (* =FR.0300 SEW Bremswiderstand Versorgungsmodul ist OK *)
 
@@ -32,7 +60,7 @@ VAR_GLOBAL
 
         {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+FS1-3K1 (BK1120)^+FS1-3K5 (EL1809)^Channel 16^Input'}
         e_FS1_3K5_Channel_16 AT %I* : BOOL;
-
+		
     // +K110-1K3
 
         {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+K110-1K1 (BK1120)^+K110-1K3 (EL1809)^Channel 10^Input'}

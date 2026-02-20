@@ -13,7 +13,6 @@ END_VAR
 // Hardware-Aufrufe
 // ----------------------------------------------------------
 Hardware_0000();
-Hardware_1000();
 Hardware_3100();
 Hardware_3200();
 Hardware_3300();
@@ -29,7 +28,6 @@ Hardware_3540();
 Ablauf_Safety();
 
 Ablauf_0000();
-Ablauf_1000();
 Ablauf_3100();
 Ablauf_3200();
 Ablauf_3300();

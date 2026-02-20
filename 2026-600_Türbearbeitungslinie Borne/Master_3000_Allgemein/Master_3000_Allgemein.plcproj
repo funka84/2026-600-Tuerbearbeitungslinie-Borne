@@ -44,21 +44,6 @@
       <SubType>Code</SubType>
       <LinkAlways>true</LinkAlways>
     </Compile>
-    <Compile Include="1000_Allgemein\Ablauf_1000.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="1000_Allgemein\EAs_1000.TcGVL">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="1000_Allgemein\GVL_1000.TcGVL">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="1000_Allgemein\GVL_Visu_1000.TcGVL">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="1000_Allgemein\Hardware_1000.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="3100_Bohraggregat\Ablauf_3100.TcPOU">
       <SubType>Code</SubType>
     </Compile>
@@ -578,7 +563,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="0000" />
-    <Folder Include="1000_Allgemein" />
     <Folder Include="3100_Bohraggregat" />
     <Folder Include="3200_Bohraggregat" />
     <Folder Include="3300_Bohraggregat" />
@@ -622,8 +606,8 @@
   <ProjectExtensions>
     <PlcProjectOptions>
       <XmlArchive>
-  <Data>
-    <o xml:space="preserve" t="OptionKey">
+        <Data>
+          <o xml:space="preserve" t="OptionKey">
       <v n="Name">"&lt;ProjectRoot&gt;"</v>
       <d n="SubKeys" t="Hashtable" ckt="String" cvt="OptionKey">
         <v>{192FAD59-8248-4824-A8DE-9177C94C195A}</v>
@@ -693,14 +677,14 @@
       </d>
       <d n="Values" t="Hashtable" />
     </o>
-  </Data>
-  <TypeList>
-    <Type n="Boolean">System.Boolean</Type>
-    <Type n="Hashtable">System.Collections.Hashtable</Type>
-    <Type n="OptionKey">{54dd0eac-a6d8-46f2-8c27-2f43c7e49861}</Type>
-    <Type n="String">System.String</Type>
-  </TypeList>
-</XmlArchive>
+        </Data>
+        <TypeList>
+          <Type n="Boolean">System.Boolean</Type>
+          <Type n="Hashtable">System.Collections.Hashtable</Type>
+          <Type n="OptionKey">{54dd0eac-a6d8-46f2-8c27-2f43c7e49861}</Type>
+          <Type n="String">System.String</Type>
+        </TypeList>
+      </XmlArchive>
     </PlcProjectOptions>
   </ProjectExtensions>
 </Project>

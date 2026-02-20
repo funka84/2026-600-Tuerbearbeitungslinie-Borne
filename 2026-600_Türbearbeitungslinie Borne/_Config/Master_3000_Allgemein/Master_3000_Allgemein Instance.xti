@@ -42,10 +42,10 @@
 				<Link VarA="PlcTask Inputs^EAs_0000.e_FR_0400_Schaltschrank_24V_Lastueberwachung_ist_OK" VarB="Channel 2^Input" AutoLink="true" Size="1"/>
 				<Link VarA="PlcTask Inputs^EAs_0000.e_FR_0600_Rueckmeldung_von_Safety_Freigabekreis_3" VarB="Channel 3^Input" AutoLink="true" Size="1"/>
 				<Link VarA="PlcTask Inputs^EAs_0000.e_FR_0800_24V_UPS_Versorgung_ist_OK_und_zu_80_geladen" VarB="Channel 4^Input" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Inputs^EAs_0000.e_FR_1000_Allgemein_Druckluft_OK" VarB="Channel 5^Input" AutoLink="true" Size="1"/>
 				<Link VarA="PlcTask Inputs^EAs_0000.e_FS1_3K5_Channel_14" VarB="Channel 14^Input" AutoLink="true" Size="1"/>
 				<Link VarA="PlcTask Inputs^EAs_0000.e_FS1_3K5_Channel_15" VarB="Channel 15^Input" AutoLink="true" Size="1"/>
 				<Link VarA="PlcTask Inputs^EAs_0000.e_FS1_3K5_Channel_16" VarB="Channel 16^Input" AutoLink="true" Size="1"/>
-				<Link VarA="PlcTask Inputs^EAs_1000.e_FR_1000_Allgemein_Druckluft_OK" VarB="Channel 5^Input" AutoLink="true" Size="1"/>
 				<Link VarA="PlcTask Inputs^EAs_3100.e_FR_3100_Bohraggregat_1_Schlosskastenfraeser_Stillstandserkennung_Motor_steht" VarB="Channel 6^Input" AutoLink="true" Size="1"/>
 				<Link VarA="PlcTask Inputs^EAs_3100.e_FR_3100_Bohraggregat_2_Vorbohren_Stillstandserkennung_Motor_steht" VarB="Channel 7^Input" AutoLink="true" Size="1"/>
 				<Link VarA="PlcTask Inputs^EAs_3100.e_FR_3100_Bohraggregat_3_Stulpfraeser_Stillstandserkennung_Motor_steht" VarB="Channel 8^Input" AutoLink="true" Size="1"/>
