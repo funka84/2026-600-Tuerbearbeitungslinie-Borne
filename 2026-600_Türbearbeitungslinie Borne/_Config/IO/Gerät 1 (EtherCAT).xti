@@ -66,6 +66,9 @@
 		<Box File="=0300+FS2-18T1.xti" Id="33">
 			<EtherCAT PortABoxInfo="#x01000020"/>
 		</Box>
+		<Box File="Box 36 (PD4-E591L42-E-65-1).xti" Id="36">
+			<EtherCAT PortABoxInfo="#x01000021"/>
+		</Box>
 		<EtherCAT VirtualDeviceName="true" DcSyncMode="3" MaxSwitchPorts="2" MaxSwitchFrames="120" MaxSwitchMACs="100"/>
 	</Device>
 	<Mappings>
