@@ -28,7 +28,8 @@
 		<Axis File="=3400+FS2-12M1 (Y-Achse).xti" Id="10"/>
 		<Axis File="=3520+FS2-11M1 (Y-Achse).xti" Id="11"/>
 		<Axis File="=3540+FS2-11M1 (Y-Achse).xti" Id="12"/>
-		<Axis File="Achse 13.xti" Id="13"/>
+		<Axis File="=FR.3510+FS1-6T1 (X-Laengsanschlag).xti" Id="13"/>
+		<Axis File="=FR.3520+FS1-6T1 (X-Laengsanschlag).xti" Id="14"/>
 		<Channel File="NCI_3100.xti"/>
 		<Channel File="NCI_3200.xti"/>
 		<Channel File="NCI_3300.xti"/>

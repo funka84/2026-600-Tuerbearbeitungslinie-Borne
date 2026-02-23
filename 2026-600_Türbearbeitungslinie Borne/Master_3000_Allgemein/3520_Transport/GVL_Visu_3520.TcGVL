@@ -14,6 +14,7 @@ VAR_GLOBAL
 
     // Servoregler
 	Y_Achse						: DUT_Achse_Service;	//#Tab: 3520 Transport #Name: Y-Achse 
+	X_Achse						: DUT_Achse_Service;	//#Tab: 3520 Transport #Name: X-Achse Längsanschlag
 
     // Ventile
 	 Laengsanschl        		: DUT_Ventil_VISU;      //#Tab: 3520 Transport #Name: Bandseite Längsanschlag
@@ -22,11 +23,12 @@ VAR_GLOBAL
 END_VAR
 
 VAR_GLOBAL PERSISTENT
-    Schrittnummer              : INT;
-    //Kopfdaten                : DUT_Kopfdaten;
-    //Kopfdaten_default        : DUT_Kopfdaten;
-    //Jobdaten                 : DUT_Jobdaten;
-    //Jobdaten_default         : DUT_Jobdaten;
+    Schrittnummer           : INT;
+    Kopfdaten               : DUT_Kopfdaten;
+    Kopfdaten_default       : DUT_Kopfdaten;
+    Jobdaten                : ARRAY[1..10] OF DUT_Jobdaten;
+    Jobdaten_default        : ARRAY[1..10] OF DUT_Jobdaten;
+	aktJob					: DUT_Jobdaten;
 
     //para_Vorlage             : REAL := 0.0; //#Typ: VParam #Tab:  #Name:  #Einheit:mm #Min: 1 #Max: 100 #Format:F1
 END_VAR

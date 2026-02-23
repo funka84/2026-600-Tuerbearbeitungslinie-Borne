@@ -9,7 +9,10 @@ VAR_GLOBAL
 
 	{attribute 'TcNcAxis':='=3520+FS2-11M1 (Y-Achse)'}	
 	ea_Y_Achse					: Axis_ref;				// Schnittstellen Struktur zwischen NC<->SPS
-
+	
+	{attribute 'TcNcAxis':='=FR.3520+FS1-6T1 (X-Laengsanschlag)'}	
+	ea_X_Achse					: Axis_ref;				// Schnittstellen Struktur zwischen NC<->SPS
+	
     // Umrichter
     //_______________________________________________________
 										  
@@ -25,7 +28,7 @@ VAR_GLOBAL
 								.PD_4_Sollverzoegerung  := TIID^Device 1 (EtherCAT)^=3520+FS2-6T1 (Transport Bandseite X-Achse)^Module 1 (Standard 16 PD)^Outputs 16 PD^PO 4;
 								.PD_5_Digitalausgaenge  := TIID^Device 1 (EtherCAT)^=3520+FS2-6T1 (Transport Bandseite X-Achse)^Module 1 (Standard 16 PD)^Outputs 16 PD^PO 5'}
 		a_Trans_Bandseite		AT%Q*	: DUT_SEW_FU_PD_OUT;	// Schnittstelle zwischen SPS und FU
-
+	
 
     // Eingaenge
     //_______________________________________________________

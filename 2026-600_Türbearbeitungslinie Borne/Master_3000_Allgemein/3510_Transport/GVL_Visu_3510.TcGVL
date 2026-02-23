@@ -13,7 +13,7 @@ VAR_GLOBAL
 	Trans_Schlossseite			: DUT_SEW_FU_Visu; 		//#Tab: 3510 Transport #Name: Transport Schlossseite X-Achse
 
     // Servoregler
-    //Achse                    	: DUT_Achse_Service;      //#Tab: #Name: 
+	X_Achse						: DUT_Achse_Service;	//#Tab: 3510 Transport #Name: X-Achse Längsanschlag
 
     // Ventile
 	 Laengsanschl        		: DUT_Ventil_VISU;      //#Tab: 3510 Transport #Name: Schlossseite Längsanschlag
@@ -22,11 +22,12 @@ VAR_GLOBAL
 END_VAR
 
 VAR_GLOBAL PERSISTENT
-    Schrittnummer              : INT;
-    //Kopfdaten                : DUT_Kopfdaten;
-    //Kopfdaten_default        : DUT_Kopfdaten;
-    //Jobdaten                 : DUT_Jobdaten;
-    //Jobdaten_default         : DUT_Jobdaten;
+    Schrittnummer           : INT;
+    Kopfdaten               : DUT_Kopfdaten;
+    Kopfdaten_default       : DUT_Kopfdaten;
+    Jobdaten                : ARRAY[1..10] OF DUT_Jobdaten;
+    Jobdaten_default        : ARRAY[1..10] OF DUT_Jobdaten;
+	aktJob					: DUT_Jobdaten;
 
     //para_Vorlage             : REAL := 0.0; //#Typ: VParam #Tab:  #Name:  #Einheit:mm #Min: 1 #Max: 100 #Format:F1
 END_VAR

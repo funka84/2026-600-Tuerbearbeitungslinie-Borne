@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="DUT_Kopfdaten" Id="{0815a844-9c78-43b2-b260-3b8cdec1e230}">
+    <Declaration><![CDATA[TYPE DUT_Kopfdaten :
+STRUCT
+	X_Dimension			:REAL;		// Bauteil Höhe Tür
+	Y_Dimension			:REAL;		// Bauteil Breite Tür
+	Z_Dimension			:REAL;		// Bauteil Dicke
+	
+	Fehlteil			:BOOL;		// Teil hat die die Plausibiltätsprüfung durch Längen- und Breitenmessung nicht bestanden
+	Artikelnr			:STRING(20);// 
+	Anschlag			:INT;		// 1 links , 2 rechts
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

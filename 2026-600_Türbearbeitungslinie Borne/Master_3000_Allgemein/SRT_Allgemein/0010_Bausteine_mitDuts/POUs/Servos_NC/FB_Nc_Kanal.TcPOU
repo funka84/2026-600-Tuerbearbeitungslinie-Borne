@@ -9,11 +9,6 @@
 	Version 1.0 	
 *)
 VAR_INPUT
-	in_Kanal_Id						:UDINT;					(* NC Kanal Nummer *)
-	in_Gruppe_Id					:UDINT;					(* NC Gruppennummer *)
-	in_X_Id							:UDINT;					(* X-Achs Id *)
-	in_Y_Id							:UDINT;					(* Y-Achs Id *)
-	in_Z_Id							:UDINT;					(* Z-Achs Id *)
 	in_Pfad							:STRING[80];			(* Pfad wo das NC-Programm liegr *)
 	in_PName						:STRING[80];			(* Name des zubearbeitenden NC-Programms *)
 	in_Override						:DINT;					(* Gesamt Override der bearbeitung 0-100%*)
@@ -95,6 +90,7 @@ END_VAR]]></Declaration>
 		M_FunktionsNummer							-> ItpGetHskMFunc
 	8. Gruppe auflösen / Achsen entkoppeln		-> CfgReconfigGroup
 *)
+
 //***** Kanalreset *********************************************************************************************
 	//**********************************************************************************************************
 	Reset:= inout_NcReset;
@@ -119,11 +115,14 @@ END_VAR]]></Declaration>
 			END_IF;
 		END_IF;
 
+
+
+
 	// Achsen in 3D Gruppe uebergeben 
-	AxTo3D	(	nGroupId		:=in_Gruppe_Id,
-				nXAxisId		:=in_X_Id,
-				nYAxisId		:=in_Y_Id,
-				nZAxisId		:=in_Z_Id,
+	AxTo3D	(	nGroupId		:=in_NcToPlc.GrpId,
+				nXAxisId		:=in_NcToPlc.AcsAxisIDs[0],
+				nYAxisId		:=in_NcToPlc.AcsAxisIDs[1],
+				nZAxisId		:=in_NcToPlc.AcsAxisIDs[2],
 				nQ1AxisId		:=0,
 				nQ2AxisId		:=0,
 				nQ3AxisId		:=0,
@@ -145,7 +144,7 @@ END_VAR]]></Declaration>
 	END_IF;
 
 	// Achsen zurueck in PTP 
-	AxToPTP(nGroupId		:=in_Gruppe_Id,
+	AxToPTP(nGroupId		:=in_NcToPlc.GrpId,
 			bExecute		:=AxToPTPLoad,
 			tTimeOuT		:=T#1S);
 
@@ -312,8 +311,8 @@ END_VAR]]></Declaration>
 		Reset:= FALSE;
 	END_IF;
 
-	ProgReset(nChnId	:=in_Kanal_Id,
-				nGrpId	:=in_Gruppe_Id,	
+	ProgReset(nChnId	:=in_NcToPlc.ChnId,
+				nGrpId	:=in_NcToPlc.GrpId,	
 				bExecute:=Reset,
 				tTimeOut:=T#1S,				
 				bErr		=>,

@@ -1565,7 +1565,7 @@ External Setpoint Generation:
 	</Axis>
 	<Mappings>
 		<OwnerA>
-			<OwnerB Name="TIID^Device 1 (EtherCAT)^Box 36 (PD4-E591L42-E-65-1)">
+			<OwnerB Name="TIID^Device 1 (EtherCAT)^=FR.3510+FS1-6T1">
 				<Link VarA="Drive^Inputs^In^nState1" VarB="Transmit PDO 1 Mapping Parameter^Statusword" Size="8"/>
 				<Link VarA="Drive^Inputs^In^nState2" VarB="Transmit PDO 1 Mapping Parameter^Statusword" Size="8" OffsB="8"/>
 				<Link VarA="Drive^Inputs^In^nState4" VarB="WcState^InputToggle" Size="1" OffsA="1"/>

@@ -21,7 +21,12 @@ VAR_GLOBAL
 								.PD_5_Digitalausgaenge  := TIID^Device 1 (EtherCAT)^=3510+FS2-6T1 (Transport Schlossseite X-Achse)^Module 1 (Standard 16 PD)^Outputs 16 PD^PO 5'}
 		a_Trans_Schlossseite	AT%Q*	: DUT_SEW_FU_PD_OUT;	// Schnittstelle zwischen SPS und FU
 														  					
-
+	// Servoregler
+    //_______________________________________________________
+	{attribute 'TcNcAxis':='=FR.3510+FS1-6T1 (X-Laengsanschlag)'}	
+	ea_X_Achse					: Axis_ref;				// Schnittstellen Struktur zwischen NC<->SPS
+	
+	
     // Eingaenge
     //_______________________________________________________
 

@@ -5,6 +5,7 @@
 STRUCT
 	Pfad				: STRING := 'C:\SRTvisu\Fräsanlage\GCodes\';
 	PrgName				: STRING := '';
+	Override			: DINT;
 	Reset				: BOOL;
 	Koppeln				: BOOL;
 	Start				: BOOL;

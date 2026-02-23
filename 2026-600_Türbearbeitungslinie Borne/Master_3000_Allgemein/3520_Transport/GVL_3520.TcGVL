@@ -6,6 +6,8 @@ VAR_GLOBAL
     // Achsen ***************************************************	
 	Y_Achse_steuern						: DUT_Achse_Steuern;		
 	Y_Achse_status						: DUT_Achse_Status;		
+	X_Achse_steuern						: DUT_Achse_Steuern;	//Längsrichtung	
+	X_Achse_status						: DUT_Achse_Status;		//Längsrichtung
 
     // Frequenzumrichter ****************************************
 	Trans_Bandseite_steuern				: DUT_SEW_FU_Steuern;	

@@ -4,146 +4,353 @@
     <Declaration><![CDATA[
 PROGRAM Ablauf_3100 
 VAR
-    // TODO: lokale Variablen fuer den Ablauf deklarieren
+	i						: INT ;		// Ablaufkontrolle;
+	Schritt_Freigabe		: BOOL;		// Einzelschrittbetrieb ermöglichen
+	ton_Schritt_Freigabe	: ton;		// Timeout Schritt wird nicht beendet
+	nReturn					: INT;		// Visu Ergebnisnummer 
+	RT_TeilGebucht			: R_trig;
+	FT_TeilGebucht			: F_trig;
+	
+	// G-Code auslesen	
+	FB_Open					: FB_FileOpen;
+	FB_Read					: FB_FileGets;
+	FB_Close				: FB_FileClose;
+	arrGCode				: ARRAY[0..100] OF STRING[255];
+	iComment				: INT;
+	k						: INT;
+	j						: INT;
+	bReadGCode				: BOOL;			// Startbefehl G-Code Datei auslesen
+	strBlock				: string;
+	strGCode				: STRING[255];
+	strGcodeFile			: STRING[255];
+	strComment				: STRING[255];	// Aktulle Blocknummer mit Kommentar
 END_VAR
     ]]></Declaration>
     <Implementation>
       <ST><![CDATA[
-// TODO: Hauptprogramm-Code fuer Ablauf hier einfuegen
-      ]]></ST>
+i := i + 1;
+      
+// Allgemein
+//________________________________________________________________________________________
+	A_Automatik();
+	
+// Zuweisungen
+//________________________________________________________________________________________
+GVL_Visu_3100.Schrittnummer := GVL_3100.sk;
+				
+// Freigabe Ablauf
+//________________________________________________________________________________________
+//Schritt_Freigabe := FALSE;
+GVL_3100.sk_Freigabe := GVL_Visu_3100.SteuerStatus.auto_aktiv AND NOT GVL_Meldungen.Stoerung_0000;	
+GVL_3100.Tuer_Freigabe := GVL_3100.Tuer_Anwahl AND NOT Schritt_Freigabe;
+
+IF GVL_3100.sk_Freigabe 
+AND NOT GVL_3100.Tuer_Anwahl
+AND NOT GVL_Visu_0000.SteuerStatus.auto_pause THEN
+	Schritt_Freigabe := TRUE;
+	ton_Schritt_Freigabe.IN := FALSE;
+ELSE
+	ton_Schritt_Freigabe.IN := TRUE;
+	IF ton_Schritt_Freigabe.Q THEN
+		ton_Schritt_Freigabe.IN := FALSE;
+		Schritt_Freigabe := FALSE;
+	END_IF	
+END_IF
+
+// Timer und Flanken
+//________________________________________________________________________________________
+ton_Schritt_Freigabe(IN:= , PT:= T#5S , Q=> , ET=> );
+
+RT_TeilGebucht(CLK:= GVL_Visu_3100.Daten_gebucht, Q=> );
+FT_TeilGebucht(CLK:= GVL_Visu_3100.Daten_gebucht, Q=> );
+
+// Schrittkette
+//________________________________________________________________________________________
+IF GVL_3100.sk_Freigabe
+THEN
+	CASE gvl_3100.sk OF
+		
+	// Grundstellungsfahrt
+	//________________________________________________________________________________________
+	0: //Reset - Warte auf Automatik Start
+		IF Schritt_Freigabe THEN
+			gvl_3100.sk := 100;		
+			Schritt_Freigabe := FALSE;
+		END_IF
+	
+	
+	// Ablauf starten 
+	//________________________________________________________________________________________
+	100: // Daten anfordern und auf 5 = Daten okay warten
+		IF M_VisuKomm(Nr:=10 , anVisu:= GVL_Visu_3100.KommAnVisu, vonVisu:=GVL_Visu_3100.KommVonVisu, Sperre := Schritt_Freigabe) THEN
+			gvl_3100.sk := 110;	
+		END_IF
+		IF GVL_Visu_3100.KommAnVisu = 0
+		AND GVL_Visu_3100.KommVonVisu = 0
+		THEN
+			Schritt_Freigabe := FALSE;
+		END_IF	
+	101: // Daten anfordern und jede Antwort auswerten
+		nReturn := M_VisuKomm_Int(Nr:=10 , anVisu:= GVL_Visu_3100.KommAnVisu, vonVisu:=GVL_Visu_3100.KommVonVisu, Sperre := Schritt_Freigabe);
+		IF nReturn = 5 THEN
+			gvl_3100.sk := 110;	
+		END_IF
+		IF GVL_Visu_3100.KommAnVisu = 0
+		AND GVL_Visu_3100.KommVonVisu = 0
+		THEN
+			Schritt_Freigabe := FALSE;
+		END_IF	
+
+	// Fräsprogramm abarbeiten
+	//________________________________________________________________________________________
+		
+
+	END_CASE
+END_IF
+	]]></ST>
     </Implementation>
-    <Method Name="M_VisuKomm" Id="{34bc1e86-6080-4623-8b28-22e3efc594d1}">
-      <Declaration><![CDATA[
-METHOD M_VisuKomm : BOOL
+    <Action Name="A_Automatik" Id="{8360300e-f73d-4991-801b-eb8a7bc478f2}">
+      <Implementation>
+        <ST><![CDATA[
+// Automatik handeln
+	IF GVL_Visu_3100.SteuerStatus.auto THEN
+		IF GVL_Visu_3100.SteuerStatus.auto_start 
+		THEN
+			GVL_Visu_3100.SteuerStatus.auto_aktiv := TRUE;
+			GVL_Visu_3100.SteuerStatus.auto_start := FALSE;
+			GVL_Visu_3100.SteuerStatus.auto_stop := FALSE;
+		ELSIF GVL_Visu_3100.SteuerStatus.auto_stop 
+		THEN
+			GVL_Visu_3100.SteuerStatus.auto_aktiv := FALSE;
+			GVL_Visu_3100.SteuerStatus.auto_start := FALSE;
+			GVL_Visu_3100.SteuerStatus.auto_stop := FALSE;
+		END_IF
+	END_IF
+
+// Wenn Automatik nicht angewählt ist dann Zustände löschen
+	IF NOT  GVL_Visu_3100.SteuerStatus.auto THEN
+		GVL_Visu_3100.SteuerStatus.auto_start := FALSE;
+		GVL_Visu_3100.SteuerStatus.auto_stop := FALSE;
+	END_IF
+	
+// Wenn Fehler dann Station aus der Automatik kicken
+	IF GVL_Meldungen.Stoerung_0000 
+	AND NOT Schritt_Freigabe
+	THEN
+		GVL_Visu_3100.SteuerStatus.auto_start := FALSE;
+		GVL_Visu_3100.SteuerStatus.auto_aktiv := FALSE;
+	END_IF
+	
+// Reset handlen
+	IF GVL_Visu_3100.SteuerStatus.reset THEN
+		GVL_3100.sk := 0;
+		Schritt_Freigabe := FALSE;	
+		GVL_Visu_3100.SteuerStatus.reset := FALSE;
+		GVL_Visu_3100.KommAnVisu := 0;
+		GVL_Visu_3100.KommVonVisu := 0;
+	END_IF
+	
+	
+	]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="A_Read_GCode" Id="{21d95c9a-afe4-4e1c-a2ab-6842ff14166c}">
+      <Implementation>
+        <ST><![CDATA[	
+	strGcodeFile := CONCAT(GVL_0000.Pfad_NCI,GVL_VISU_3100.aktJob.Programm);
+	strGcodeFile := CONCAT(strGcodeFile, '.nc');
+	
+	FB_Open(
+	sPathName := strGcodeFile,
+	nMode:= FOPEN_MODETEXT OR FOPEN_MODEREAD, 
+	ePath:= PATH_GENERIC );
+	
+	FB_Read(
+	hFile:= FB_Open.hFile, 
+	sLine=> strGCode);
+	
+	FB_Close(
+	hFile:= FB_Open.hFile);
+	
+	
+	IF k > 0 AND k < 100 THEN
+		FOR j := 1 TO k BY 1 DO
+			
+			//IF FIND(STR1:=arrGCode[j] , STR2:=CONCAT('N',TO_STRING(EAs_400_Fraese.e_NC_Kanal_NciToPlc.BlockNo ))) <> 0 AND EAs_400_Fraese.e_NC_Kanal_NciToPlc.BlockNo > 0  THEN
+			IF FIND(STR1:=arrGCode[j] , STR2:=CONCAT('N',CONCAT(TO_STRING(EAs_3100.e_NCI_Channel.BlockNo),' ') )) <> 0 AND EAs_3100.e_NCI_Channel.BlockNo > 0  THEN
+				strComment := arrGCode[j];
+				strBlock := CONCAT('N',TO_STRING(EAs_3100.e_NCI_Channel.BlockNo));
+				strBlock := CONCAT(strBlock, ' - ');
+				
+				strComment := DELETE(STR:=strComment , LEN:=FIND(STR1:= strComment, STR2:='(' ) , POS:=1 );
+				strComment := CONCAT(strBlock, strComment);
+				strComment := CONCAT('Fraesdetails: ', strComment);
+			ELSIF EAs_3100.e_NCI_Channel.BlockNo = 0 THEN
+				strComment := '';
+			END_IF
+		
+		END_FOR
+	ELSE
+		strComment := '';
+	END_IF
+	
+	CASE iComment OF
+		0:	IF bReadGCode THEN
+				FB_Open.bExecute := TRUE;
+				IF FB_Open.bBusy THEN
+					iComment := 10;
+					k := 0;
+				END_IF;
+			END_IF
+
+		10: IF NOT FB_Open.bBusy AND NOT FB_Open.bError THEN
+				FB_Read.bExecute := NOT FB_Read.bBusy;
+				IF 	FB_Read.bBusy THEN
+					iComment := 20;
+				END_IF
+			END_IF
+				
+		20:	IF NOT FB_Read.bBusy THEN
+				k := k + 1 ;
+				strGCode := LEFT(STR:=strGCode , SIZE:=len(strGCode) - 2 );
+				arrGCode[k] := strGCode;
+				
+				IF NOT FB_Read.bEOF THEN
+					iComment := 10;
+				ELSE
+					iComment := 50;
+				END_IF
+			END_IF
+			
+		50: FB_Close.bExecute := TRUE;
+			IF FB_Close.bBusy THEN
+				iComment := 60;
+			END_IF
+		60: iComment := 0;
+			bReadGCode := FALSE;
+			FB_Open.bExecute := FALSE;
+			FB_Read.bExecute := FALSE;
+			FB_Close.bExecute := FALSE;
+	END_CASE]]></ST>
+      </Implementation>
+    </Action>
+    <Method Name="M_VisuKomm" Id="{4efa33d2-b20b-4da3-8495-f4a53d816e85}">
+      <Declaration><![CDATA[METHOD M_VisuKomm : BOOL
 VAR_INPUT
-    Nr          : INT;
+	
+	Nr			: INT;
+	Sperre		: BOOL := FALSE;
 END_VAR
 VAR_IN_OUT
-    anVisu      : INT;
-    vonVisu     : INT;
+	anVisu		: INT;
+	vonVisu		: INT;
 END_VAR
 
 VAR_INST
-    result                  : INT;
-    ton_DatenUngueltig      : TON;
-    ton_DatenTimeout        : TON;
-    sc                      : INT;
+	result					: INT;
+	ton_DatenUngueltig		: TON;
+	ton_DatenTimeout		: ton;
+	sc						: INT;
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[
-// Schnistelle zur VISU Kommunikation
+        <ST><![CDATA[// Schnistelle zur VISU Kommunikation
 // Starttrigger belegen als Antwort wird auf die 5= gut oder 9=schlecht gewartet.
 // Kommunikationstimeout nach 5 Sekunden und wird automatisch wieder neugestartet
 
-ton_DatenTimeout(IN:= anVisu <> 0 AND vonVisu = 0, PT:=T#3S);
-ton_DatenUngueltig(IN:= sc = 20, PT:=T#500MS);
+ton_DatenTimeout(IN:= anVisu <> 0 AND vonVisu = 0 AND NOT Sperre, PT:=T#3S);	
+ton_DatenUngueltig(IN:= sc = 20, PT:=T#500MS);	
 
 CASE sc OF
-    0:  // Anfrage starten und auf Antwort warten
-        anVisu := Nr;
-        result := 0;
-        IF vonVisu <> 0 THEN
-            IF (vonVisu MOD Nr) = 5 THEN
-                sc := 10;
-            ELSIF (vonVisu MOD Nr) = 9 THEN
-                sc := 20;
-            END_IF
-        ELSIF ton_DatenTimeout.Q THEN
-            sc := 20;
-        END_IF
+	0: 	// Anfrage starten und auf Antwort warten
+		anVisu := SEL(Sperre, nr, 0);
+		result := 0;
+		IF vonVisu <> 0 THEN
+            IF (vonVisu MOD nr) = 5 THEN
+				sc := 10;
+            ELSIF (vonVisu MOD nr) = 9 THEN
+				sc := 20;
+			END_IF
+		ELSIF ton_DatenTimeout.Q THEN
+			sc := 20;
+		END_IF
 
-    10: // Antwort 5 erhalten
-        anVisu := 0;
-        IF vonVisu = 0 THEN
-            M_VisuKomm := TRUE;
-            result := 1;
-            sc := 0;
-        END_IF
-
-    20: // Timeout, 1 Sekunde warten und erneut antriggern
-        IF ton_DatenUngueltig.Q THEN
-            anVisu := 0;
-            IF vonVisu = 0 THEN
-                result := -1;
-                sc := 0;
-            END_IF
-        END_IF
-
-END_CASE
-
-        ]]></ST>
+	10: // Antwort 5 erhalten
+		anVisu := 0;
+		IF vonVisu = 0 THEN
+			M_VisuKomm := TRUE;
+			result := 1;
+			sc := 0;
+		END_IF
+		
+	20: // Timeout, 1 Sekunde warten und erneut antriggern
+		IF ton_DatenUngueltig.Q THEN
+			anVisu := 0;
+			IF vonVisu = 0 THEN
+				result := -1;
+					sc := 0;
+			END_IF
+		END_IF
+		
+END_CASE]]></ST>
       </Implementation>
     </Method>
-    <Method Name="M_VisuKommInt" Id="{b277cca0-cae1-40b9-8199-136c3265079d}">
-      <Declaration><![CDATA[
-METHOD M_VisuKommInt : INT
+    <Method Name="M_VisuKomm_Int" Id="{d8e46686-4514-4a86-adb9-3496f6f07a7c}">
+      <Declaration><![CDATA[METHOD M_VisuKomm_Int : INT
 VAR_INPUT
-    Nr          : INT;
+	
+	Nr			: INT;
+	Sperre		: BOOL := FALSE;
 END_VAR
 VAR_IN_OUT
-    anVisu      : INT;
-    vonVisu     : INT;
+	anVisu		: INT;
+	vonVisu		: INT;
 END_VAR
 
 VAR_INST
-    result                  : INT;
-    ton_DatenUngueltig      : TON;
-    ton_DatenTimeout        : TON;
-    sc                      : INT;
+	result					: INT;
+	ton_DatenUngueltig		: TON;
+	ton_DatenTimeout		: ton;
+	sc						: INT;
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[
-// Schnistelle zur VISU Kommunikation
+        <ST><![CDATA[// Schnistelle zur VISU Kommunikation
 // Starttrigger belegen als Antwort wird auf die 5= gut oder 9=schlecht gewartet.
 // Kommunikationstimeout nach 5 Sekunden und wird automatisch wieder neugestartet
 
-ton_DatenTimeout(IN:= anVisu <> 0 AND vonVisu = 0, PT:=T#3S);
-ton_DatenUngueltig(IN:= anVisu = 0 AND vonVisu = 0, PT:=T#500MS);
+ton_DatenTimeout(IN:= anVisu <> 0 AND vonVisu = 0 AND NOT Sperre, PT:=T#3S);	
+ton_DatenUngueltig(IN:= sc = 20, PT:=T#500MS);	
 
 CASE sc OF
-    0:  // Anfrage starten und auf Antwort warten
-        anVisu := Nr;
-        result := 0;
-        IF vonVisu <> 0 THEN
-            IF (vonVisu MOD Nr) = 5 THEN
-                sc := 10;
-            ELSIF (vonVisu MOD Nr) = 9 THEN
-                sc := 15;
-            END_IF
-        ELSIF ton_DatenTimeout.Q THEN
-            sc := 20;
-        END_IF
+	0: 	// Anfrage starten und auf Antwort warten
+		anVisu := SEL(Sperre, nr, 0);
+		result := 0;
+		IF vonVisu <> 0 THEN
+			result := (vonVisu MOD nr);
+			sc := 10;
+		ELSIF ton_DatenTimeout.Q THEN
+			sc := 20;
+		END_IF
 
-    10: // Antwort 5 erhalten (OK)
-        anVisu := 0;
-        IF vonVisu = 0 THEN
-            M_VisuKommInt := 1;
-            result := 1;
-            sc := 0;
-        END_IF
-
-    15: // Antwort 9 erhalten (Fehler)
-        anVisu := 0;
-        IF vonVisu = 0 THEN
-            M_VisuKommInt := -1;
-            result := 1;
-            sc := 0;
-        END_IF
-
-    20: // Timeout, 1 Sekunde warten und erneut antriggern
-        anVisu := 0;
-        IF vonVisu = 0 THEN
-            result := -1;
-            IF ton_DatenUngueltig.Q THEN
-                sc := 0;
-            END_IF
-        END_IF
-
-END_CASE
-
-        ]]></ST>
+	10: // Antwort 5 erhalten
+		anVisu := 0;
+		IF vonVisu = 0 THEN
+			M_VisuKomm_Int := result;
+			result := 0;
+			sc := 0;
+		END_IF
+		
+	20: // Timeout, 1 Sekunde warten und erneut antriggern
+		IF ton_DatenUngueltig.Q THEN
+			anVisu := 0;
+			IF vonVisu = 0 THEN
+				result := -1;
+					sc := 0;
+			END_IF
+		END_IF
+		
+END_CASE]]></ST>
       </Implementation>
     </Method>
   </POU>

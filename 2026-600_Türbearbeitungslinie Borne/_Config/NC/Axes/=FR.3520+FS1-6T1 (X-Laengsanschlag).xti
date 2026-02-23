@@ -1424,7 +1424,7 @@ External Setpoint Generation:
 			</Relations>
 		</DataType>
 	</DataTypes>
-	<Axis Id="9" CreateSymbols="true" AxisType="1">
+	<Axis Id="14" CreateSymbols="true" AxisType="1" GroupId="18">
 		<Name>__FILENAME__</Name>
 		<AxisPara>
 			<OtherSettings AllowMotionCmdToSlave="true"/>
@@ -1488,7 +1488,7 @@ External Setpoint Generation:
 			</Vars>
 		</Encoder>
 		<Drive Name="Drive" DrvType="16">
-			<DrvPara MaxCount="#xffffffff" DriveControlDWord="#x00020000">
+			<DrvPara MaxCount="#xffffffff">
 				<Analog TorqueSetpointScale="10" ScaleFactorActTorque="0.1"/>
 				<TimeComp TaskDelayCycles="1"/>
 			</DrvPara>
@@ -1565,22 +1565,17 @@ External Setpoint Generation:
 	</Axis>
 	<Mappings>
 		<OwnerA>
-			<OwnerB Name="TIID^Device 1 (EtherCAT)^=0300+FS2-17T1">
-				<Link VarA="Drive^Inputs^In^nDataIn3[0]" VarB="=3400+FS2-11M1 (X-Achse)^Inputs^Torque actual value"/>
-				<Link VarA="Drive^Inputs^In^nDcOutputTime" VarB="InfoData^DcOutputShift"/>
-				<Link VarA="Drive^Inputs^In^nState1" VarB="=3400+FS2-11M1 (X-Achse)^Inputs^Status word" Size="8"/>
-				<Link VarA="Drive^Inputs^In^nState2" VarB="=3400+FS2-11M1 (X-Achse)^Inputs^Status word" Size="8" OffsB="8"/>
+			<OwnerB Name="TIID^Device 1 (EtherCAT)^=FR.3520+FS1-6T1">
+				<Link VarA="Drive^Inputs^In^nState1" VarB="Transmit PDO 1 Mapping Parameter^Statusword" Size="8"/>
+				<Link VarA="Drive^Inputs^In^nState2" VarB="Transmit PDO 1 Mapping Parameter^Statusword" Size="8" OffsB="8"/>
 				<Link VarA="Drive^Inputs^In^nState4" VarB="WcState^InputToggle" Size="1" OffsA="1"/>
 				<Link VarA="Drive^Inputs^In^nState4" VarB="WcState^WcState" Size="1"/>
-				<Link VarA="Drive^Inputs^In^nState5" VarB="=3400+FS2-11M1 (X-Achse)^Inputs^Modes of operation display"/>
-				<Link VarA="Drive^Outputs^Out^nCtrl1" VarB="=3400+FS2-11M1 (X-Achse)^Outputs^Control word" Size="8"/>
-				<Link VarA="Drive^Outputs^Out^nCtrl2" VarB="=3400+FS2-11M1 (X-Achse)^Outputs^Control word" Size="8" OffsB="8"/>
-				<Link VarA="Drive^Outputs^Out^nCtrl5" VarB="=3400+FS2-11M1 (X-Achse)^Outputs^Modes of operation"/>
-				<Link VarA="Drive^Outputs^Out^nDataOut1" VarB="=3400+FS2-11M1 (X-Achse)^Outputs^Target position"/>
-				<Link VarA="Drive^Outputs^Out^nDataOut2" VarB="=3400+FS2-11M1 (X-Achse)^Outputs^Target velocity"/>
-				<Link VarA="Drive^Outputs^Out^nDataOut4[0]" VarB="=3400+FS2-11M1 (X-Achse)^Outputs^Target torque"/>
-				<Link VarA="Enc^Inputs^In^nDataIn1" VarB="=3400+FS2-11M1 (X-Achse)^Inputs^Position actual value"/>
-				<Link VarA="Enc^Inputs^In^nDcInputTime" VarB="InfoData^DcInputShift"/>
+				<Link VarA="Drive^Inputs^In^nState5" VarB="Transmit PDO 1 Mapping Parameter^Modes of operation display"/>
+				<Link VarA="Drive^Outputs^Out^nCtrl1" VarB="Receive PDO 1 Mapping Parameter^Controlword" Size="8"/>
+				<Link VarA="Drive^Outputs^Out^nCtrl2" VarB="Receive PDO 1 Mapping Parameter^Controlword" Size="8" OffsB="8"/>
+				<Link VarA="Drive^Outputs^Out^nCtrl5" VarB="Receive PDO 1 Mapping Parameter^Modes of operation"/>
+				<Link VarA="Drive^Outputs^Out^nDataOut1" VarB="Receive PDO 2 Mapping Parameter^Target Position"/>
+				<Link VarA="Enc^Inputs^In^nDataIn1" VarB="Transmit PDO 2 Mapping Parameter^Position actual value"/>
 				<Link VarA="Enc^Inputs^In^nState4" VarB="WcState^InputToggle" Size="1" OffsA="1"/>
 				<Link VarA="Enc^Inputs^In^nState4" VarB="WcState^WcState" Size="1"/>
 			</OwnerB>
