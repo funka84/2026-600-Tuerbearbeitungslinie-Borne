@@ -320,6 +320,14 @@
 				<Link VarA="PlcTask Inputs^EAs_3400.ea_Y_Achse.NcToPlc" VarB="Outputs^ToPlc" AutoLink="true"/>
 				<Link VarA="PlcTask Outputs^EAs_3400.ea_Y_Achse.PlcToNc" VarB="Inputs^FromPlc" AutoLink="true"/>
 			</OwnerB>
+			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^=3510+FS1-6T1 (X-Laengsanschlag)">
+				<Link VarA="PlcTask Inputs^EAs_3510.ea_X_Achse.NcToPlc" VarB="Outputs^ToPlc" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3510.ea_X_Achse.PlcToNc" VarB="Inputs^FromPlc" AutoLink="true"/>
+			</OwnerB>
+			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^=3520+FS1-6T1 (X-Laengsanschlag)">
+				<Link VarA="PlcTask Inputs^EAs_3520.ea_X_Achse.NcToPlc" VarB="Outputs^ToPlc" AutoLink="true"/>
+				<Link VarA="PlcTask Outputs^EAs_3520.ea_X_Achse.PlcToNc" VarB="Inputs^FromPlc" AutoLink="true"/>
+			</OwnerB>
 			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^=3520+FS2-11M1 (Y-Achse)">
 				<Link VarA="PlcTask Inputs^EAs_3520.ea_Y_Achse.NcToPlc" VarB="Outputs^ToPlc" AutoLink="true"/>
 				<Link VarA="PlcTask Outputs^EAs_3520.ea_Y_Achse.PlcToNc" VarB="Inputs^FromPlc" AutoLink="true"/>
@@ -327,14 +335,6 @@
 			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^=3540+FS2-11M1 (Y-Achse)">
 				<Link VarA="PlcTask Inputs^EAs_3540.ea_Y_Achse.NcToPlc" VarB="Outputs^ToPlc" AutoLink="true"/>
 				<Link VarA="PlcTask Outputs^EAs_3540.ea_Y_Achse.PlcToNc" VarB="Inputs^FromPlc" AutoLink="true"/>
-			</OwnerB>
-			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^=FR.3510+FS1-6T1 (X-Laengsanschlag)">
-				<Link VarA="PlcTask Inputs^EAs_3510.ea_X_Achse.NcToPlc" VarB="Outputs^ToPlc" AutoLink="true"/>
-				<Link VarA="PlcTask Outputs^EAs_3510.ea_X_Achse.PlcToNc" VarB="Inputs^FromPlc" AutoLink="true"/>
-			</OwnerB>
-			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^=FR.3520+FS1-6T1 (X-Laengsanschlag)">
-				<Link VarA="PlcTask Inputs^EAs_3520.ea_X_Achse.NcToPlc" VarB="Outputs^ToPlc" AutoLink="true"/>
-				<Link VarA="PlcTask Outputs^EAs_3520.ea_X_Achse.PlcToNc" VarB="Inputs^FromPlc" AutoLink="true"/>
 			</OwnerB>
 			<OwnerB Name="TINC^NC-Task 1 SAF^NCI_3100">
 				<Link VarA="PlcTask Inputs^EAs_3100.e_NCI_Channel" VarB="Outputs^ToPlc" AutoLink="true"/>

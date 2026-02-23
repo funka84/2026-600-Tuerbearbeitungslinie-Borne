@@ -100,11 +100,31 @@ THEN
 		THEN
 			Schritt_Freigabe := FALSE;
 		END_IF	
+		
 
 	// Fräsprogramm abarbeiten
 	//________________________________________________________________________________________
+	500: // Programmladen
+		GVL_3100.NCI_Steuern.PrgName := GVL_Visu_3100.aktJob.Programm;
+		GVL_3100.NCI_Steuern.PrgLaden := TRUE;
+		gvl_3100.sk := 510;	
+	510: // Warte auf Rückmeldung das Programm geladen ist und koppel die Achsen
+		IF NOT GVL_3100.NCI_Steuern.PrgLaden THEN
+			GVL_3100.NCI_Steuern.Koppeln := TRUE;
+			IF GVL_3100.NCI_Status.AxToPTPOK THEN
+				GVL_3100.NCI_Steuern.Start := TRUE;
+				gvl_3100.sk := 520;	
+			END_IF
+		END_IF
+	520: // Warte auf Fräsvorgang beendet
+		IF NOT GVL_3100.NCI_Steuern.Start
+		AND NOT GVL_3100.NCI_Status.Aktiv
+		AND NOT GVL_3100.NCI_Status.Run
+		AND NOT GVL_3100.NCI_Status.Err
+		THEN
+			gvl_3100.sk := 530;	
+		END_IF
 		
-
 	END_CASE
 END_IF
 	]]></ST>

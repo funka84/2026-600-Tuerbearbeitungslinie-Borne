@@ -10,7 +10,7 @@ VAR_GLOBAL
 	{attribute 'TcNcAxis':='=3520+FS2-11M1 (Y-Achse)'}	
 	ea_Y_Achse					: Axis_ref;				// Schnittstellen Struktur zwischen NC<->SPS
 	
-	{attribute 'TcNcAxis':='=FR.3520+FS1-6T1 (X-Laengsanschlag)'}	
+	{attribute 'TcNcAxis':='=3520+FS1-6T1 (X-Laengsanschlag)'}	
 	ea_X_Achse					: Axis_ref;				// Schnittstellen Struktur zwischen NC<->SPS
 	
     // Umrichter

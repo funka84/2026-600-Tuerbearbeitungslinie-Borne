@@ -1424,7 +1424,7 @@ External Setpoint Generation:
 			</Relations>
 		</DataType>
 	</DataTypes>
-	<Axis Id="13" CreateSymbols="true" AxisType="1" GroupId="17">
+	<Axis Id="13" CreateSymbols="true" AxisType="1" SimulationMode="true" GroupId="17">
 		<Name>__FILENAME__</Name>
 		<AxisPara>
 			<OtherSettings AllowMotionCmdToSlave="true"/>
@@ -1488,7 +1488,7 @@ External Setpoint Generation:
 			</Vars>
 		</Encoder>
 		<Drive Name="Drive" DrvType="16">
-			<DrvPara MaxCount="#xffffffff">
+			<DrvPara MaxCount="#xffffffff" DriveControlDWord="#x00020000">
 				<Analog TorqueSetpointScale="10" ScaleFactorActTorque="0.1"/>
 				<TimeComp TaskDelayCycles="1"/>
 			</DrvPara>
@@ -1565,7 +1565,7 @@ External Setpoint Generation:
 	</Axis>
 	<Mappings>
 		<OwnerA>
-			<OwnerB Name="TIID^Device 1 (EtherCAT)^=FR.3510+FS1-6T1">
+			<OwnerB Name="TIID^Device 1 (EtherCAT)^=3510+FS1-6T1">
 				<Link VarA="Drive^Inputs^In^nState1" VarB="Transmit PDO 1 Mapping Parameter^Statusword" Size="8"/>
 				<Link VarA="Drive^Inputs^In^nState2" VarB="Transmit PDO 1 Mapping Parameter^Statusword" Size="8" OffsB="8"/>
 				<Link VarA="Drive^Inputs^In^nState4" VarB="WcState^InputToggle" Size="1" OffsA="1"/>

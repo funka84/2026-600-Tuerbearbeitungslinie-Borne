@@ -56,7 +56,9 @@ END_VAR
 	A_Umrichter();
 	A_Ventile();
 	A_Servo();
-	A_NCI();	  ]]></ST>
+	A_NCI();	  
+	
+	]]></ST>
     </Implementation>
     <Action Name="A_NCI" Id="{be488c0e-a6ff-465d-b460-0b3fe8941c0e}">
       <Implementation>
@@ -73,8 +75,12 @@ END_VAR
 		in_PName:= GVL_3100.NCI_Steuern.PrgName, 
 		in_Override:= GVL_3100.NCI_Steuern.Override, 
 		in_NcToPlc:= EAs_3100.e_NCI_Channel, 
+		in_nXAxisId	:= 1,
+		in_nYAxisId	:= 2,
+		in_nZAxisId	:= 3,
 		out_PlcToNc=> EAs_3100.a_NCI_Channel, 
 		inout_NcReset:= GVL_3100.NCI_Steuern.Reset, 
+		inout_PrgLaden:= GVL_3100.NCI_Steuern.PrgLaden, 
 		inout_NcGruppe_koppeln:= GVL_3100.NCI_Steuern.Koppeln, 
 		inout_NcStart:= GVL_3100.NCI_Steuern.Start, 
 		inout_NcStopOverrideNull:= GVL_3100.NCI_Steuern.StopOverrideNull, 
@@ -328,7 +334,7 @@ fbStillBohraggr_Stulpfraes		(	in_Sensor:=,
 								out_stoerung_vorzur=> GVL_Meldungen.Meldungen_3000.Nr_048,
 								inout_ansteuerung:=GVL_3100.Schlosskast_Vorlegehub  ,
 								inout_visu:=GVL_Visu_3100.Schlosskast_Vorlegehub  );
-								
+							
 	
 	GVL_Visu_3100.Vorbohren_Bohrhub.para.ausgang_vor_halten:=TRUE;	
 	GVL_Visu_3100.Vorbohren_Bohrhub.para.ausgang_zur_halten:=TRUE;	

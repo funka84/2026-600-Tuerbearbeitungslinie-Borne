@@ -13,6 +13,10 @@ VAR_INPUT
 	in_PName						:STRING[80];			(* Name des zubearbeitenden NC-Programms *)
 	in_Override						:DINT;					(* Gesamt Override der bearbeitung 0-100%*)
 	in_NcToPlc						:NCTOPLC_NCICHANNEL_REF;
+	
+	in_nXAxisId						:UDINT;
+	in_nYAxisId						:UDINT;
+	in_nZAxisId						:UDINT;
 END_VAR
 
 VAR_OUTPUT
@@ -23,6 +27,7 @@ END_VAR
 
 VAR_IN_OUT
 	inout_NcReset					:BOOL;				(* Kanal Reset *)
+	inout_PrgLaden					:BOOL;				(* Programm laden und wenn Fertig false setzten *)
 	inout_NcGruppe_koppeln			:BOOL;				(* Achsen zu einer Gruppe zusammen fügen *)
 	inout_NcStart					:BOOL;				(* NC-Ablauf starten *)
 	inout_NcStopOverrideNull		:BOOL;				(* NC-Ablauf unterbrechen -Override=0 *)
@@ -73,6 +78,7 @@ VAR
 	Untbr:							BOOL;
 	Reset:							BOOL;
 
+	PLoad_Busy						: BOOL;
 	 
 END_VAR]]></Declaration>
     <Implementation>
@@ -120,9 +126,9 @@ END_VAR]]></Declaration>
 
 	// Achsen in 3D Gruppe uebergeben 
 	AxTo3D	(	nGroupId		:=in_NcToPlc.GrpId,
-				nXAxisId		:=in_NcToPlc.AcsAxisIDs[0],
-				nYAxisId		:=in_NcToPlc.AcsAxisIDs[1],
-				nZAxisId		:=in_NcToPlc.AcsAxisIDs[2],
+				nXAxisId		:=in_nXAxisId,
+				nYAxisId		:=in_nYAxisId,
+				nZAxisId		:=in_nZAxisId,
 				nQ1AxisId		:=0,
 				nQ2AxisId		:=0,
 				nQ3AxisId		:=0,
@@ -171,7 +177,16 @@ END_VAR]]></Declaration>
 		ELSE
 			PLoad:=FALSE;
 	END_IF;
-
+	
+	IF inout_PrgLaden 
+	AND NOT Reset
+	AND NOT ProgAnw.bBusy 
+	AND in_PName <>'' 
+	THEN
+		PLoad:=TRUE;
+	END_IF
+	
+	
 	Pfad_PNr := CONCAT (in_Pfad, in_PName) ;
 	Pfad_PNr := CONCAT (Pfad_PNr,'.NC') ;
 
@@ -182,6 +197,16 @@ END_VAR]]></Declaration>
 			tTimeOuT	:=T#10S,				
 			bErr		=>,
 			nErrId		=>);
+
+	IF inout_PrgLaden
+	AND ProgAnw.bBusy THEN
+		PLoad_Busy := TRUE;
+	ELSIF inout_PrgLaden
+	AND NOT ProgAnw.bBusy 
+	AND NOT ProgAnw.bErr THEN 
+		PLoad_Busy := FALSE;
+		inout_PrgLaden := FALSE;
+	END_IF
 
 	IF ProgAnw.bBusy 
 	THEN
@@ -393,6 +418,11 @@ END_VAR]]></Declaration>
 	THEN
 		out_FBErr:=TRUE;
 		out_FBErrId:=ProgReset.nErrId;
+	END_IF
+	
+	IF out_FBErr THEN
+		PLoad_Busy := FALSE;
+		inout_PrgLaden := FALSE;
 	END_IF
 	
 //*****************************************************************************************************
