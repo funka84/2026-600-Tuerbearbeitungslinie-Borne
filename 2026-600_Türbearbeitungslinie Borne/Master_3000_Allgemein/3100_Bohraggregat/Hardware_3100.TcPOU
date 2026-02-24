@@ -11,6 +11,8 @@ VAR
 
 	fbNCI_Channel									: FB_Nc_Kanal;
 	
+	fbColl_X_Y										: FB_Collision_2_Axes;
+	
     // Frequenzumrichter **********************************************************
 	fbBohraggr_Schlosskast							: FB_SEW_MOVITRAC_C_CoE;
 	fbBohraggr_Vorbohren							: FB_SEW_MOVITRAC_C_CoE;
@@ -137,7 +139,8 @@ fbStillBohraggr_Stulpfraes		(	in_Sensor:=,
 	in_HomingOption				:= , 
 	in_EndlageRef				:= , 
 	in_DirRef					:= , 
-	in_PosEa					:= ,                                       
+	in_PosEa					:= ,  
+	in_Pos_Coll_Pos				:= GVL_3100.Y_Achse_status.ist_pos,                                     
 	out_ist_pos					=> GVL_3100.X_Achse_status.ist_pos, 
 	out_in_pos					=> GVL_3100.X_Achse_status.in_pos,   
 	out_ziel_pos				=> GVL_3100.X_Achse_status.ziel_pos, 
@@ -230,7 +233,20 @@ fbStillBohraggr_Stulpfraes		(	in_Sensor:=,
 	GVL_Meldungen.Meldungen_3000.Nr_016 := fbZ_Achse.out_Achs_Error OR fbZ_Achse.out_FB_Error OR fbZ_Achse.out_Achs_ErrorID <> 0;		
 	GVL_Meldungen.Meldungen_3000.Nr_017 := FALSE;
 	GVL_Meldungen.Meldungen_3000.Nr_018 := FALSE;
-	]]></ST>
+	
+	
+	
+	fbColl_X_Y(
+	in_Active_Axis_1:= , 
+	in_Active_Axis_2:= , 
+	in_Gap_1_2:= 20, 
+	in_max_1:= 110, 
+	in_min_1:= 5, 
+	in_max_2:= 115, 
+	in_min_2:= 10, 
+	inout_Axis_1:= EAs_3100.ea_X_Achse, 
+	inout_Axis_2:= EAs_3100.ea_Y_Achse, 
+	out_actDistance=> );]]></ST>
       </Implementation>
     </Action>
     <Action Name="A_Umrichter" Id="{7ccba3e4-aa29-4e66-9ecf-ec4915ec5248}">
@@ -329,6 +345,7 @@ fbStillBohraggr_Stulpfraes		(	in_Sensor:=,
 								in_endlage_zur:= EAs_3100.e_FR_3100_Schlossbearbeitung_Bohraggregat_1_Vorlegehub_ist_hinten,
 								in_hand:=GVL_Visu_3100.SteuerStatus.hand,
 								in_auto:=GVL_Visu_3100.SteuerStatus.auto,
+								in_simu :=GVL_0000.bMode_Sim_Ventile,
 								in_quit:=GVL_Visu_3100.SteuerStatus.reset 
 								OR GVL_0000.stoerung_quitt,
 								out_vor=>EAs_3100.a_FR_3100_Schlossbearbeitung_Bohraggregat_1_Vorlegehub_vor,
@@ -352,6 +369,7 @@ fbStillBohraggr_Stulpfraes		(	in_Sensor:=,
 								in_endlage_zur:= EAs_3100.e_FR_3100_Schlossbearbeitung_Bohraggregat_2_Bohrhub_ist_hinten,
 								in_hand:=GVL_Visu_3100.SteuerStatus.hand,
 								in_auto:=GVL_Visu_3100.SteuerStatus.auto,
+								in_simu :=GVL_0000.bMode_Sim_Ventile,
 								in_quit:=GVL_Visu_3100.SteuerStatus.reset 
 								OR GVL_0000.stoerung_quitt,
 								out_vor=>EAs_3100.a_FR_3100_Schlossbearbeitung_Bohraggregat_2_Bohrhub_vor,
@@ -375,6 +393,7 @@ fbStillBohraggr_Stulpfraes		(	in_Sensor:=,
 								in_endlage_zur:= EAs_3100.e_FR_3100_Schlossbearbeitung_Bohraggregat_3_Vorlegehub_ist_hinten,
 								in_hand:=GVL_Visu_3100.SteuerStatus.hand,
 								in_auto:=GVL_Visu_3100.SteuerStatus.auto,
+								in_simu :=GVL_0000.bMode_Sim_Ventile,
 								in_quit:=GVL_Visu_3100.SteuerStatus.reset 
 								OR GVL_0000.stoerung_quitt,
 								out_vor=>EAs_3100.a_FR_3100_Schlossbearbeitung_Bohraggregat_3_Vorlegehub_vor,
@@ -400,6 +419,7 @@ fbStillBohraggr_Stulpfraes		(	in_Sensor:=,
 								AND EAs_3100.e_FR_3100_Schlossbearbeitung_Nullkante_Auslauf_ist_unten,
 								in_hand:=GVL_Visu_3100.SteuerStatus.hand,
 								in_auto:=GVL_Visu_3100.SteuerStatus.auto,
+								in_simu :=GVL_0000.bMode_Sim_Ventile,
 								in_quit:=GVL_Visu_3100.SteuerStatus.reset 
 								OR GVL_0000.stoerung_quitt,
 								out_vor=>EAs_3100.a_FR_3100_Schlossbearbeitung_Nullkante_heben,
@@ -423,6 +443,7 @@ fbStillBohraggr_Stulpfraes		(	in_Sensor:=,
 								in_endlage_zur:= NOT EAs_3100.a_FR_3100_Schlossbearbeitung_Y_Achse_Schienenklemmung_klemmen,
 								in_hand:=GVL_Visu_3100.SteuerStatus.hand,
 								in_auto:=GVL_Visu_3100.SteuerStatus.auto,
+								in_simu :=GVL_0000.bMode_Sim_Ventile,
 								in_quit:=GVL_Visu_3100.SteuerStatus.reset 
 								OR GVL_0000.stoerung_quitt,
 								out_vor=>EAs_3100.a_FR_3100_Schlossbearbeitung_Y_Achse_Schienenklemmung_klemmen,

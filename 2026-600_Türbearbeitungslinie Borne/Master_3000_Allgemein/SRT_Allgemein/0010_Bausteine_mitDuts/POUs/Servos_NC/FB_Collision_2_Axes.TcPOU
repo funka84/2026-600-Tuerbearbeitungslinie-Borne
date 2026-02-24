@@ -1,0 +1,125 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_Collision_2_Axes" Id="{45dec102-38a8-4f8c-8c8a-5d84978a39b0}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Collision_2_Axes
+VAR_INPUT
+	in_Active_Axis_1			: BOOL;
+	in_Active_Axis_2			: BOOL;
+	in_Gap_1_2					: REAL;	
+	in_max_1					: REAL;
+	in_min_1					: REAL;
+	in_max_2					: REAL;
+	in_min_2					: REAL;
+END_VAR
+
+VAR_IN_OUT
+	inout_Axis_1				: AXIS_REF;					(*  Erste Achse  liegt vor der zweiten Achsen*)	
+	inout_Axis_2				: AXIS_REF;					(*  Zweite Achse, liegt hinter der ersten Achsen *)		
+END_VAR
+
+VAR_OUTPUT
+	out_actDistance				: LREAL;
+END_VAR
+VAR
+	fbWritePara_1				: MC_WriteParameter;
+	fbWritePara_2				: MC_WriteParameter;
+	fbWritePara_1_min			: MC_WriteParameter;
+	fbWritePara_1_max			: MC_WriteParameter;
+	fbWritePara_2_min			: MC_WriteParameter;
+	fbWritePara_2_max			: MC_WriteParameter;
+	tmp_1						: DINT;
+	tmp_2						: DINT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+IF NOT in_Active_Axis_1 THEN
+	fbWritePara_1.Execute := FALSE;
+	fbWritePara_1_min.Execute := TRUE;
+	fbWritePara_1_max.Execute := TRUE;
+ELSE
+	fbWritePara_1.Execute := NOT fbWritePara_1.Busy AND REAL_TO_DINT(inout_Axis_2.NcToPlc.ActPos) <> tmp_1;
+	fbWritePara_1_min.Execute := FALSE;
+	fbWritePara_1_max.Execute := FALSE;
+END_IF
+
+tmp_1 := REAL_TO_DINT(inout_Axis_2.NcToPlc.ActPos);
+
+
+IF NOT in_Active_Axis_2 THEN
+	fbWritePara_2.Execute := FALSE;
+	fbWritePara_2_min.Execute := TRUE;
+	fbWritePara_2_max.Execute := TRUE;
+ELSE
+	fbWritePara_2.Execute := NOT fbWritePara_2.Busy AND REAL_TO_DINT(inout_Axis_1.NcToPlc.ActPos) <> tmp_2;
+	fbWritePara_2_min.Execute := FALSE;
+	fbWritePara_2_max.Execute := FALSE;
+END_IF
+
+tmp_2 := REAL_TO_DINT(inout_Axis_1.NcToPlc.ActPos);
+
+
+
+fbWritePara_1(
+	Axis:= inout_Axis_1, 
+	Execute:= , 
+	ParameterNumber:= MC_AxisParameter.SWLimitNeg, 
+	Value:= inout_Axis_2.NcToPlc.ActPos - in_Gap_1_2, 
+	Done=> , 
+	Busy=> , 
+	Error=> , 
+	ErrorID=> );
+	
+fbWritePara_1_min(
+	Axis:= inout_Axis_1, 
+	Execute:= , 
+	ParameterNumber:= MC_AxisParameter.SWLimitNeg, 
+	Value:= in_min_1, 
+	Done=> , 
+	Busy=> , 
+	Error=> , 
+	ErrorID=> );
+	
+fbWritePara_1_max(
+	Axis:= inout_Axis_1, 
+	Execute:= , 
+	ParameterNumber:= MC_AxisParameter.SWLimitPos, 
+	Value:= in_max_1, 
+	Done=> , 
+	Busy=> , 
+	Error=> , 
+	ErrorID=> );
+	
+	
+fbWritePara_2(
+	Axis:= inout_Axis_2, 
+	Execute:= , 
+	ParameterNumber:= MC_AxisParameter.SWLimitPos, 
+	Value:= inout_Axis_1.NcToPlc.ActPos + in_Gap_1_2, 
+	Done=> , 
+	Busy=> , 
+	Error=> , 
+	ErrorID=> );
+	
+fbWritePara_2_min(
+	Axis:= inout_Axis_2, 
+	Execute:= , 
+	ParameterNumber:= MC_AxisParameter.SWLimitNeg, 
+	Value:= in_min_2, 
+	Done=> , 
+	Busy=> , 
+	Error=> , 
+	ErrorID=> );
+	
+fbWritePara_2_max(
+	Axis:= inout_Axis_2, 
+	Execute:= , 
+	ParameterNumber:= MC_AxisParameter.SWLimitPos, 
+	Value:= in_max_2, 
+	Done=> , 
+	Busy=> , 
+	Error=> , 
+	ErrorID=> );]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

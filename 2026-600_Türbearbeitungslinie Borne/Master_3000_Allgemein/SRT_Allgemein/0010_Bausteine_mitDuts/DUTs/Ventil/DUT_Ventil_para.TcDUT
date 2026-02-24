@@ -13,6 +13,8 @@ STRUCT
 	ueberwachungszeit_zur	:TIME:=T#10S;	//Überwachungszeit in ms (0-30000ms)
 	entprellungszeit_vor	:TIME:=T#50MS;	//Entprellungszeit in ms (0-10000ms)
 	entprellungszeit_zur	:TIME:=T#50MS;	//Entprellungszeit in ms (0-10000ms)
+	simulationszeit_vor		:TIME:=T#2000MS;	//Simulationszeit in ms Zustand vor
+	simulationszeit_zur		:TIME:=T#2000MS;	//Simulationszeit in ms Zustand zur
 END_STRUCT
 END_TYPE
 ]]></Declaration>

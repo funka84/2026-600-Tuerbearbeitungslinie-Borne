@@ -95,7 +95,7 @@ THEN
 	// Ablauf starten 
 	//________________________________________________________________________________________
 	100: // Daten anfordern und auf 5 = Daten okay warten
-		IF M_VisuKomm(Nr:=10 , anVisu:= GVL_Visu_3100.KommAnVisu, vonVisu:=GVL_Visu_3100.KommVonVisu, Sperre := Schritt_Freigabe) THEN
+		IF M_VisuKomm(Nr:=10 , anVisu:= GVL_Visu_3100.KommAnVisu, vonVisu:=GVL_Visu_3100.KommVonVisu, Sperre := FALSE) THEN
 			gvl_3100.sk := 110;	
 		END_IF
 		IF GVL_Visu_3100.KommAnVisu = 0
@@ -104,7 +104,7 @@ THEN
 			Schritt_Freigabe := FALSE;
 		END_IF	
 	101: // Daten anfordern und jede Antwort auswerten
-		nReturn := M_VisuKomm_Int(Nr:=10 , anVisu:= GVL_Visu_3100.KommAnVisu, vonVisu:=GVL_Visu_3100.KommVonVisu, Sperre := Schritt_Freigabe);
+		nReturn := M_VisuKomm_Int(Nr:=10 , anVisu:= GVL_Visu_3100.KommAnVisu, vonVisu:=GVL_Visu_3100.KommVonVisu, Sperre := FALSE);
 		IF nReturn = 5 THEN
 			gvl_3100.sk := 110;	
 		END_IF

@@ -21,6 +21,7 @@ VAR_INPUT
 	in_hand			:BOOL;	(*1=Handbetrieb*)
 	in_auto			:BOOL;	(*1=Automatikbetrieb*)
 	in_quit			:BOOL;	(*		*)
+	in_simu			:BOOL;	(* Signale werden simuliert *)
 END_VAR
 
 VAR_OUTPUT
@@ -48,6 +49,10 @@ VAR
 	temp_stoer_vor				:BOOL;
 	temp_stoer_zur				:BOOL;
 	temp_stoer_vor_zur			:BOOL;	
+	ton_vor						: ton;
+	ton_zur						: TON;
+	sim_vor						:BOOL;
+	sim_zur						:BOOL;
 END_VAR
 
 VAR	
@@ -107,6 +112,28 @@ END_VAR
 			entprellungszeit_vor	--- Entprellungszeit in ms (0-10000ms)
 			entprellungszeit_zur	--- Entprellungszeit in ms (0-10000ms)																					*)
 (************************************************************************************************************************************************************)
+
+IF in_simu THEN
+	inout_ansteuerung.in_freigabe_vor := TRUE;
+	inout_ansteuerung.in_freigabe_zur := TRUE;
+	ton_vor(IN:= out_vor, PT:=inout_visu.para.simulationszeit_vor , Q=> , ET=> );
+	ton_zur(IN:= out_zur, PT:=inout_visu.para.simulationszeit_zur , Q=> , ET=> );
+	
+	IF ton_vor.Q THEN
+		sim_vor := TRUE;
+	END_IF
+	IF ton_zur.Q THEN
+		sim_zur := TRUE;
+	END_IF
+	in_endlage_vor := sim_vor;
+	in_endlage_zur := sim_zur;
+	
+	sim_vor R= out_zur;
+	sim_zur R= out_vor;
+ELSE
+	sim_vor := FALSE;
+	sim_zur := FALSE;
+END_IF
 
 
 (****** Zeitvorgabe prüfen **********************************************************************************************************************************)

@@ -80,6 +80,7 @@ IF RT_Auto_Start.Q THEN
 	GVL_Visu_3520.SteuerStatus.auto_Start:=
 	GVL_Visu_3530.SteuerStatus.auto_Start:=
 	GVL_Visu_3540.SteuerStatus.auto_Start:= GVL_Visu_0000.SteuerStatus.auto_start;
+	GVL_Visu_0000.SteuerStatus.auto_start :=FALSE;
 END_IF
 
 IF RT_Auto_Stop.Q THEN
@@ -91,6 +92,7 @@ IF RT_Auto_Stop.Q THEN
 	GVL_Visu_3520.SteuerStatus.auto_stop:=
 	GVL_Visu_3530.SteuerStatus.auto_stop:=
 	GVL_Visu_3540.SteuerStatus.auto_stop:= GVL_Visu_0000.SteuerStatus.auto_stop;
+	GVL_Visu_0000.SteuerStatus.auto_stop := FALSE;
 END_IF
 
 GVL_Visu_3100.SteuerStatus.einlauf_sperre:=
@@ -109,7 +111,16 @@ GVL_Visu_3400.SteuerStatus.auslauf_sperre:=
 GVL_Visu_3510.SteuerStatus.auslauf_sperre:=
 GVL_Visu_3520.SteuerStatus.auslauf_sperre:=
 GVL_Visu_3530.SteuerStatus.auslauf_sperre:=
-GVL_Visu_3540.SteuerStatus.auslauf_sperre:= GVL_Visu_0000.SteuerStatus.auslauf_sperre;]]></ST>
+GVL_Visu_3540.SteuerStatus.auslauf_sperre:= GVL_Visu_0000.SteuerStatus.auslauf_sperre;
+
+GVL_Visu_0000.SteuerStatus.auto_aktiv := 	GVL_Visu_3100.SteuerStatus.auto_aktiv
+											OR GVL_Visu_3200.SteuerStatus.auto_aktiv
+											OR GVL_Visu_3300.SteuerStatus.auto_aktiv
+											OR GVL_Visu_3400.SteuerStatus.auto_aktiv
+											OR GVL_Visu_3510.SteuerStatus.auto_aktiv
+											OR GVL_Visu_3520.SteuerStatus.auto_aktiv
+											OR GVL_Visu_3530.SteuerStatus.auto_aktiv
+											OR GVL_Visu_3540.SteuerStatus.auto_aktiv;]]></ST>
     </Implementation>
     <Method Name="M_VisuKomm" Id="{3bd020ec-9635-409f-b1d7-663929ec8626}">
       <Declaration><![CDATA[

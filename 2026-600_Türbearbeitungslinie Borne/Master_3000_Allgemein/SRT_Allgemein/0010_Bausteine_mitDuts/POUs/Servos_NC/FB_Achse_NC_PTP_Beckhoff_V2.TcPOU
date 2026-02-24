@@ -24,7 +24,7 @@ VAR_INPUT
 	in_HomingOption			:ST_HomingOptions;
 	in_EndlageRef			: BOOL;
 	in_DirRef				:INT;						//1=Positiv 2=Negativ
-	
+	in_Pos_Coll_Pos			:REAL;
 	in_PosEa: LREAL;
 END_VAR
 VAR_OUTPUT
@@ -94,7 +94,6 @@ END_VAR
 //	THEN
 //		inout_Auto_start:=FALSE;
 //	END_IF
-
 
 
 // ***** Achs Status aktualisieren *******************************************************************************************

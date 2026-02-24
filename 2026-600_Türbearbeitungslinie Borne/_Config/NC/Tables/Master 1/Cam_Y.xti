@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<TcSmItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2012/07/TcSmProject" TcSmVersion="1.0" TcVersion="3.1.4026.20" ClassName="CNcTableSlaveDef">
+	<TreeItem Id="1" AxisId="2" RgbColor="255" VeloDisplayPercent="true" YMaximum="100" YMinimum="-10" VMaximum="2000" VMinimum="-2000" AMaximum="1500" AMinimum="-1500" JMaximum="2250" JMinimum="-2250" RoundValue="0.001">
+		<Name>__FILENAME__</Name>
+		<ImageId>138</ImageId>
+	</TreeItem>
+</TcSmItem>

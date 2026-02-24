@@ -224,6 +224,7 @@ fbStillBohraggr_Schluessel_ob	(	in_Sensor:=,
 								in_endlage_zur:= EAs_3400.e_FR_3400_Druecker_Schluesselloch_oben_Bohraggregat_7_Bohrhub_ist_unten,
 								in_hand:=GVL_Visu_3400.SteuerStatus.hand,
 								in_auto:=GVL_Visu_3400.SteuerStatus.auto,
+								in_simu :=GVL_0000.bMode_Sim_Ventile,
 								in_quit:=GVL_Visu_3400.SteuerStatus.reset 
 								OR GVL_0000.stoerung_quitt,
 								out_vor=>EAs_3400.a_FR_3400_Druecker_Schluesselloch_oben_Bohraggregat_7_Bohrhub_heben,
