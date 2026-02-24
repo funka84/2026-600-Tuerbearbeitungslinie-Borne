@@ -16,6 +16,10 @@ VAR_GLOBAL
 	Information_0000			:BOOL;	// Information steht an
 	Warnung_0000				:BOOL;	// Warnung steht an
 	
+	Stoerung_3000				:BOOL;	// Störung steht an
+	Information_3000			:BOOL;	// Information steht an
+	Warnung_3000				:BOOL;	// Warnung steht an
+	
 END_VAR]]></Declaration>
   </GVL>
 </TcPlcObject>

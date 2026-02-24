@@ -5,9 +5,9 @@
 STRUCT
 					  // #MText: Achtung ein Fehler #HText: Achtung eine Hilfe #Prio: 1-10 Error 11-20 Warnung 21-30 Info #BMK:	
 
-	Nr_001		:BOOL;// #MText: #HText: #Prio: #BMK:
-	Nr_002		:BOOL;// #MText: #HText: #Prio: #BMK: 
-	Nr_003		:BOOL;// #MText: #HText: #Prio: #BMK: 
+	Nr_001		:BOOL;// #MText: Steuerspannung AUS #HText: #Prio: #BMK:
+	Nr_002		:BOOL;// #MText: 3000 Fräse - Druckluft kann nicht eingeschalten werden #HText: #Prio: #BMK: =FR.0900+FS1-1B1
+	Nr_003		:BOOL;// #MText: 3000 Fräse - Druckluft kann nicht ausgeschalten werden #HText: #Prio: #BMK: =FR.0900+FS1-1B1
 	Nr_004		:BOOL;// #MText: #HText: #Prio: #BMK: 
 	Nr_005		:BOOL;// #MText: #HText: #Prio: #BMK: 
 	Nr_006		:BOOL;// #MText: #HText: #Prio: #BMK: 
@@ -204,7 +204,7 @@ STRUCT
 	Nr_196		:BOOL;// #MText: #HText: #Prio: #BMK:
 	Nr_197		:BOOL;// #MText: #HText: #Prio: #BMK:
 	Nr_198		:BOOL;// #MText: #HText: #Prio: #BMK:
-	Nr_199		:BOOL;// #MText: #HText: #Prio: #BMK:
+//	Nr_199		:BOOL;// #MText: #HText: #Prio: #BMK:
 	
 END_STRUCT
 END_TYPE

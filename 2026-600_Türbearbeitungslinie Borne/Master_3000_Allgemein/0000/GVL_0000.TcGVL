@@ -1,7 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
   <GVL Name="GVL_0000" Id="{19c7035a-774c-4d73-a9e3-9a88a4831e03}">
-    <Declaration><![CDATA[
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+{attribute 'linkalways'} 
 VAR_GLOBAL
     // Achsen ***************************************************
     //Achse_steuern                     : DUT_Achse_Steuern;
@@ -26,6 +27,15 @@ VAR_GLOBAL
 	stoerung_quitt						:BOOL;
 	sammelstoerung						:BOOL;
 	
+	bAchsen_Freigabe					: BOOL;
+	bAchsen_Reglersperre				: BOOL;
+	bDruckluft_Bereit					: BOOL;
+	
+	bMode_Test							: BOOL;
+	bMode_Sim_Achsen					: BOOL;
+	bMode_Sim_Umrichter					: BOOL;
+	bMode_Sim_Ventile					: BOOL;
+	t1		: BOOL;
 END_VAR
 
 {attribute 'qualified_only'}
@@ -37,9 +47,11 @@ VAR_GLOBAL CONSTANT
 	MAX_CSV_BASE_ROWS 					:INT := 92;
 	iMaxEC								:INT := 0;								// Anzahl der verbauten EtherCat Klemmen
 	MaxECDevices						:INT := 0;
-	                                    
-	ibn0								: BOOL := FALSE;						// Am Ende müssen alle QUerverweise gelöscht werden
-	ibn1								: BOOL := TRUE;							// Am Ende müssen alle QUerverweise gelöscht werden
+	                  
+	cSize_Jobdaten						: INT := 10;                  			// Array Grosse Jobdaten
+	cton_TimeoutSchrittFreigabe			: TIME := T#6S;							// Schritt Timeout wenn die Freigabe entzogen ist
+	cibn0								: BOOL := FALSE;						// Am Ende müssen alle QUerverweise gelöscht werden
+	cibn1								: BOOL := TRUE;							// Am Ende müssen alle QUerverweise gelöscht werden
 	Pfad_NCI							: STRING := 'C:\SRTvisu\';				// Pfad für Fräsprogramme
 END_VAR]]></Declaration>
   </GVL>

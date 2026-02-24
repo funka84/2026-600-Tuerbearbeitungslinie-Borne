@@ -42,8 +42,7 @@ END_VAR
 
 // Beispiel:
 // A_Bereiche();
-// A_Sensorik();
-      ]]></ST>
+// A_Sensorik();]]></ST>
     </Implementation>
   </POU>
 </TcPlcObject>

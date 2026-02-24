@@ -5,7 +5,7 @@
 PROGRAM Hardware_3510
 VAR
     // Servos *********************************************************************
-	fbX_Achse										: FB_Achse_NC_PTP_Beckhoff;  
+	fbX_Achse										: FB_Achse_NC_PTP_Beckhoff_V2;  
 
     // Frequenzumrichter **********************************************************
 	fbTrans_Schlossseite							: FB_SEW_MOVITRAC_C_CoE;
@@ -77,8 +77,8 @@ fbLaengsSchlossseite_Ref		(	in_Sensor:=,
 // ***** Servoregler *****************************************************************
 	//********************************************************************************
 								
-	GVL_3520.X_Achse_steuern.Reglersperre	:= FALSE;
-	GVL_3520.X_Achse_steuern.Freigabe 		:= FALSE;
+	GVL_3520.X_Achse_steuern.Reglersperre	:= GVL_0000.bAchsen_Reglersperre;
+	GVL_3520.X_Achse_steuern.Freigabe 		:= GVL_0000.bAchsen_Freigabe;
 	
 	fbX_Achse(
 	in_Reglersperre				:= GVL_3520.X_Achse_steuern.Reglersperre, 
@@ -89,6 +89,7 @@ fbLaengsSchlossseite_Ref		(	in_Sensor:=,
 	in_Auto						:= GVL_Visu_3520.SteuerStatus.auto,                 
 	in_Auto_Override			:= GVL_Visu_0000.override,    
 	in_Auto_pos					:= , 
+	in_max_Velo					:= 100 ,
 	in_PosFenster				:= 0.05, 
 	in_Ref_pos					:= 0.0, 
 	in_HomingOption				:= , 
@@ -126,7 +127,7 @@ fbLaengsSchlossseite_Ref		(	in_Sensor:=,
 	GVL_Visu_3510.Trans_Schlossseite	.Para.Einheit			:= 1;
 
 	fbTrans_Schlossseite	(	PD_IN	:=EAs_3510.e_Trans_Schlossseite	,
-			IN_ReglerSperre			:=,
+			IN_ReglerSperre			:=GVL_0000.bAchsen_Reglersperre,
 			IN_SteuerStatus			:=GVL_Visu_3510.SteuerStatus,
 			IN_Ethercat_Adresse		:=,
 			IN_Ethercat_Name		:='',
@@ -151,6 +152,8 @@ fbLaengsSchlossseite_Ref		(	in_Sensor:=,
 // ***** Ventile *********************************************************************
 	//********************************************************************************	
 	
+	GVL_3510.Laengsanschl.in_freigabe_vor := GVL_0000.bDruckluft_Bereit;
+	GVL_3510.Laengsanschl.in_freigabe_zur := GVL_0000.bDruckluft_Bereit;
 	GVL_Visu_3510.Laengsanschl.para.ausgang_vor_halten:=TRUE;	
 	GVL_Visu_3510.Laengsanschl.para.ausgang_zur_halten:=TRUE;	
 	GVL_Visu_3510.Laengsanschl.para.ueberwachung_vor_aktiv:=TRUE;	
@@ -172,6 +175,8 @@ fbLaengsSchlossseite_Ref		(	in_Sensor:=,
 							inout_visu:=GVL_Visu_3510.Laengsanschl );
 								
 	
+	GVL_3510.Schienenklemm.in_freigabe_vor := GVL_0000.bDruckluft_Bereit;
+	GVL_3510.Schienenklemm.in_freigabe_zur := GVL_0000.bDruckluft_Bereit;
 	GVL_Visu_3510.Schienenklemm.para.ausgang_vor_halten:=TRUE;	
 	GVL_Visu_3510.Schienenklemm.para.ausgang_zur_halten:=TRUE;	
 	GVL_Visu_3510.Schienenklemm.para.ueberwachung_vor_aktiv:=TRUE;	

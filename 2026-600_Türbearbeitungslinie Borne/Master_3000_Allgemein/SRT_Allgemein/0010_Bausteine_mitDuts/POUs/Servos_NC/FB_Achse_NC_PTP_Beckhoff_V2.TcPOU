@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
-  <POU Name="FB_Achse_NC_PTP_Beckhoff" Id="{27c8e8b9-69df-4a0a-9e2f-aa4d4a79d2a7}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION_BLOCK FB_Achse_NC_PTP_Beckhoff
+  <POU Name="FB_Achse_NC_PTP_Beckhoff_V2" Id="{27c8e8b9-69df-4a0a-9e2f-aa4d4a79d2a7}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Achse_NC_PTP_Beckhoff_V2
 (*
 	Ansteuerung einer Achse über die NC (PTP)
 	Autor O.E.
@@ -86,6 +86,7 @@ VAR
 	tp_reset				:tp;
 	
 	ton_Freigabe			:ton;
+	bLimit_InActive			: BOOL;
 END_VAR
 ]]></Declaration>
     <Implementation>
@@ -133,7 +134,7 @@ END_VAR
 	IF NOT in_Hand
 	THEN
 		inout_service.betriebsart	:= 0;
-		inout_service.override		:= 0;
+	//	inout_service.override		:= 0;
 	END_IF
 
 // ***** Sollposition / Geschwindigkeit umkopieren ***************************************************************************
@@ -393,6 +394,8 @@ FB_PosOffset(Axis:=inout_NC,
 
 // ***** Handbetrieb - Achse tippen ******************************************************************************************
 	//************************************************************************************************************************
+	bLimit_InActive := Achsparameter.fEncSoftEndMax = 0 AND Achsparameter.fEncSoftEndMin = 0;
+
 	IF in_Hand
 		AND inout_service.betriebsart=1
 		AND NOT FB_Jog.CommandAborted
@@ -400,19 +403,21 @@ FB_PosOffset(Axis:=inout_NC,
 		AND ton_Freigabe.Q
 	THEN
 		FB_Jog.JogForward	:= inout_service.plus_start 
-								AND inout_nc.NcToPlc.ActPos < (Achsparameter.fEncSoftEndMax - in_PosFenster);
+								AND (inout_nc.NcToPlc.ActPos < (Achsparameter.fEncSoftEndMax - in_PosFenster) OR bLimit_InActive);
 		FB_Jog.JogBackwards	:= inout_service.minus_stop
-								AND inout_nc.NcToPlc.ActPos > (Achsparameter.fEncSoftEndMin + in_PosFenster);
+								AND (inout_nc.NcToPlc.ActPos > (Achsparameter.fEncSoftEndMin + in_PosFenster) OR bLimit_InActive);
 		
 		// Geschwindigkeit tippen vor den Endlagen reduzieren
 			// letzer 1% des Fahrwegs
 		IF (FB_Jog.JogForward 
+			AND NOT bLimit_InActive
 			AND inout_nc.NcToPlc.ActPos 
-				> Achsparameter.fEncSoftEndMax - ((Achsparameter.fEncSoftEndMax - Achsparameter.fEncSoftEndMin) * 0.01))
+			> Achsparameter.fEncSoftEndMax - ((Achsparameter.fEncSoftEndMax - Achsparameter.fEncSoftEndMin) * 0.01))
 			
 			OR (FB_Jog.JogBackwards
-				AND inout_nc.NcToPlc.ActPos  
-					< Achsparameter.fEncSoftEndMin + ((Achsparameter.fEncSoftEndMax - Achsparameter.fEncSoftEndMin) * 0.01))
+			AND NOT bLimit_InActive
+			AND inout_nc.NcToPlc.ActPos  
+			< Achsparameter.fEncSoftEndMin + ((Achsparameter.fEncSoftEndMax - Achsparameter.fEncSoftEndMin) * 0.01))
 					
 			AND FB_Power.Override > 5
 		THEN
@@ -420,12 +425,14 @@ FB_PosOffset(Axis:=inout_NC,
 			
 			// letzten 5% des Fahrwegs
 		ELSIF (FB_Jog.JogForward 
+			AND NOT bLimit_InActive
 			AND inout_nc.NcToPlc.ActPos 
-				> Achsparameter.fEncSoftEndMax - ((Achsparameter.fEncSoftEndMax - Achsparameter.fEncSoftEndMin) * 0.05))
+			> Achsparameter.fEncSoftEndMax - ((Achsparameter.fEncSoftEndMax - Achsparameter.fEncSoftEndMin) * 0.05))
 			
 			OR (FB_Jog.JogBackwards
-				AND inout_nc.NcToPlc.ActPos  
-					< Achsparameter.fEncSoftEndMin + ((Achsparameter.fEncSoftEndMax - Achsparameter.fEncSoftEndMin) * 0.05))
+			AND NOT bLimit_InActive
+			AND inout_nc.NcToPlc.ActPos  
+			< Achsparameter.fEncSoftEndMin + ((Achsparameter.fEncSoftEndMax - Achsparameter.fEncSoftEndMin) * 0.05))
 					
 			AND FB_Power.Override > 10	
 		THEN

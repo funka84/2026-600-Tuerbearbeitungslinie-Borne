@@ -5,8 +5,8 @@
 PROGRAM Hardware_3300
 VAR
     // Servos *********************************************************************
-	fbX_Achse										: FB_Achse_NC_PTP_Beckhoff; 
-	fbY_Achse										: FB_Achse_NC_PTP_Beckhoff; 
+	fbX_Achse										: FB_Achse_NC_PTP_Beckhoff_V2; 
+	fbY_Achse										: FB_Achse_NC_PTP_Beckhoff_V2; 
 
 	fbNCI_Channel									: FB_Nc_Kanal;
 
@@ -100,8 +100,8 @@ fbStillBohraggr_Schluessel_un	(	in_Sensor:=,
         <ST><![CDATA[					
 // ***** Servoregler *****************************************************************
 	//********************************************************************************
-	GVL_3300.X_Achse_steuern.Reglersperre	:= FALSE;
-	GVL_3300.X_Achse_steuern.Freigabe 		:= FALSE;
+	GVL_3300.X_Achse_steuern.Reglersperre	:= GVL_0000.bAchsen_Reglersperre;
+	GVL_3300.X_Achse_steuern.Freigabe 		:= GVL_0000.bAchsen_Freigabe ;
 	
 	fbX_Achse(
 	in_Reglersperre				:= GVL_3300.X_Achse_steuern.Reglersperre, 
@@ -112,6 +112,7 @@ fbStillBohraggr_Schluessel_un	(	in_Sensor:=,
 	in_Auto						:= GVL_Visu_3300.SteuerStatus.auto,                 
 	in_Auto_Override			:= GVL_Visu_0000.override,    
 	in_Auto_pos					:= , 
+	in_max_Velo					:= 100 ,
 	in_PosFenster				:= 0.05, 
 	in_Ref_pos					:= 0.0, 
 	in_HomingOption				:= , 
@@ -137,8 +138,8 @@ fbStillBohraggr_Schluessel_un	(	in_Sensor:=,
 	//********************************************************************************
 					
 					
-	GVL_3300.Y_Achse_steuern.Reglersperre	:= FALSE;
-	GVL_3300.Y_Achse_steuern.Freigabe 		:= FALSE;
+	GVL_3300.Y_Achse_steuern.Reglersperre	:= GVL_0000.bAchsen_Reglersperre;
+	GVL_3300.Y_Achse_steuern.Freigabe 		:= GVL_0000.bAchsen_Freigabe;
 	
 	fbY_Achse(
 	in_Reglersperre				:= GVL_3300.Y_Achse_steuern.Reglersperre, 
@@ -149,6 +150,7 @@ fbStillBohraggr_Schluessel_un	(	in_Sensor:=,
 	in_Auto						:= GVL_Visu_3300.SteuerStatus.auto,                 
 	in_Auto_Override			:= GVL_Visu_0000.override,    
 	in_Auto_pos					:= , 
+	in_max_Velo					:= 100 ,
 	in_PosFenster				:= 0.05, 
 	in_Ref_pos					:= 0.0, 
 	in_HomingOption				:= , 
@@ -187,7 +189,7 @@ fbStillBohraggr_Schluessel_un	(	in_Sensor:=,
 	GVL_Visu_3300.Bohraggr_Schluessel_un	.Para.Einheit			:= 1;
 
 	fbBohraggr_Schluessel_un	(	PD_IN	:=EAs_3300.e_Bohraggr_Schluessel_un	,
-			IN_ReglerSperre			:=,
+			IN_ReglerSperre			:=GVL_0000.bAchsen_Reglersperre,
 			IN_SteuerStatus			:=GVL_Visu_3300.SteuerStatus,
 			IN_Ethercat_Adresse		:=,
 			IN_Ethercat_Name		:='',
@@ -212,6 +214,8 @@ fbStillBohraggr_Schluessel_un	(	in_Sensor:=,
 // ***** Ventile *********************************************************************
 	//********************************************************************************	
 	
+	GVL_3300.Schluessel_un_Bohrhub.in_freigabe_vor := GVL_0000.bDruckluft_Bereit;
+	GVL_3300.Schluessel_un_Bohrhub.in_freigabe_zur := GVL_0000.bDruckluft_Bereit;
 	GVL_Visu_3300.Schluessel_un_Bohrhub.para.ausgang_vor_halten:=TRUE;	
 	GVL_Visu_3300.Schluessel_un_Bohrhub.para.ausgang_zur_halten:=TRUE;	
 	GVL_Visu_3300.Schluessel_un_Bohrhub.para.ueberwachung_vor_aktiv:=TRUE;	

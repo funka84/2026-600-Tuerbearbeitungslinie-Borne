@@ -1,0 +1,108 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Stoerungen" Id="{11a6ef7a-24a9-4806-8a3f-66a1986bdb67}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM Stoerungen
+VAR CONSTANT
+	Anzahl_Stoer_pro_DUT		:INT:=199;	
+	Anzahl_Stoer_Dut			:INT:=2;	
+END_VAR
+VAR
+	Zaehler						:ARRAY[0..Anzahl_Stoer_Dut] OF INT;
+	ADR_Pointer					:ARRAY[0..Anzahl_Stoer_Dut] OF POINTER TO BOOL;
+	Size_Stoer_DUT				:ARRAY[0..Anzahl_Stoer_Dut] OF INT;
+	Sammelstoer					:ARRAY[0..Anzahl_Stoer_Dut] OF BOOL;
+	Zaehler_1					:INT;
+	Zaehler_2					:INT;
+	Zaehler_3					:INT;
+	
+	Meldungen_0000_default		:DUT_Meldungen_0000;
+	Meldungen_3000_default		:DUT_Meldungen_3000;
+	
+	fl_reset					:F_trig;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[//**********************************************************************************************************
+// Störung reset *******************************************************************************************
+//**********************************************************************************************************
+	fl_reset(clk:=GVL_0000.stoerung_quitt);
+	
+	IF fl_reset.Q
+	THEN
+		FOR Zaehler_3:=0 TO anzahl_Stoer_Dut - 1 DO
+			Sammelstoer[Zaehler_3]:=FALSE; 
+		END_FOR
+
+ 		GVL_0000.sammelstoerung:=FALSE;
+		
+		GVL_Meldungen.Meldungen_0000:=Meldungen_0000_default;
+		GVL_Meldungen.Meldungen_3000:=Meldungen_3000_default;
+	END_IF
+
+// Störungen anstossen *************************************************************************************
+//**********************************************************************************************************
+	IF NOT GVL_0000.stoerung_quitt THEN
+		A_Information();
+		A_Warnung();
+		A_Stoerung();
+	END_IF
+
+
+//**********************************************************************************************************
+// Sammelstörung auwerten **********************************************************************************
+//**********************************************************************************************************
+	// Meldungen den Arrays zuordnen und die Dut Größe ermitteln
+	ADR_Pointer[0]		:=ADR(GVL_Meldungen.Meldungen_0000);
+	Size_Stoer_DUT[0]	:=SIZEOF(GVL_Meldungen.Meldungen_0000);
+	ADR_Pointer[1]		:=ADR(GVL_Meldungen.Meldungen_3000);
+	Size_Stoer_DUT[1]	:=SIZEOF(GVL_Meldungen.Meldungen_3000);
+	
+	
+	FOR Zaehler_1:=0 TO Anzahl_Stoer_Dut - 1 DO
+	
+		FOR Zaehler[Zaehler_1] := 1 TO Size_Stoer_DUT[Zaehler_1] DO
+			IF ADR_Pointer[Zaehler_1]^ THEN
+			 	Sammelstoer[Zaehler_1] := TRUE;
+			  	EXIT;
+			 ELSE
+			  ADR_Pointer[Zaehler_1] := ADR_Pointer[Zaehler_1] + 1;
+			 END_IF 
+		END_FOR
+		
+	END_FOR
+	
+	FOR Zaehler_2:=0 TO anzahl_Stoer_Dut - 1 DO
+		IF Sammelstoer[Zaehler_2] THEN
+			GVL_0000.sammelstoerung:=TRUE;
+		END_IF	
+	END_FOR
+	
+
+
+
+
+
+]]></ST>
+    </Implementation>
+    <Action Name="A_Information" Id="{4796e2d2-0771-4736-a2de-21d74f01a5d7}">
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="A_Stoerung" Id="{49e93ae5-6b43-4dd7-9d7c-b703c44d720a}">
+      <Implementation>
+        <ST><![CDATA[
+// Störung 10 - Druckluft kann nicht eingeschalten werden
+GVL_Meldungen.Meldungen_0000.Nr_002 S= Ablauf_0000.ton_Druckluft_Fehler_Ein.Q;
+
+// Störung 11 - Druckluft kann nicht ausgeschalten werden
+GVL_Meldungen.Meldungen_0000.Nr_003 S= Ablauf_0000.ton_Druckluft_Fehler_Aus.Q;]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="A_Warnung" Id="{094dfd80-9bcc-4a7e-8fb2-ccd6aa5493be}">
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Action>
+  </POU>
+</TcPlcObject>

@@ -5,12 +5,111 @@
 PROGRAM Ablauf_0000
 VAR
     // TODO: lokale Variablen hook test
+	ton_Druckluft_Bereit		: TON;
+	ton_Druckluft_Fehler_Ein	: TON;
+	ton_Druckluft_Fehler_Aus	: TON;
+	
+	tof_Quittieren		: TOF;
+	RT_Auto_Start		: R_TRIG;
+	RT_Auto_Stop		: R_TRIG;
 END_VAR
     ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[
-// TODO: Hauptprogramm-Code fuer Ablauf hier einfuegen
-]]></ST>
+      <ST><![CDATA[// Fehlerhandling
+tof_Quittieren(IN:= GVL_Visu_0000.quittieren, PT:=T#250MS , Q=> GVL_0000.stoerung_quitt, ET=> );
+GVL_Visu_0000.quittieren := FALSE;
+
+
+// Druckluft Bereit, Fehler EIN, Fehler AUS
+ton_Druckluft_Bereit(		IN:= 	GVL_Safety.in_State_FBand_Druckluft.eState = enum_FB_AND.run 
+									AND EAs_0000.e_FR_1000_Allgemein_Druckluft_OK, PT:= T#500MS, Q=> GVL_0000.bDruckluft_Bereit, ET=> );
+
+ton_Druckluft_Fehler_Ein(	IN:= 	GVL_Safety.in_State_FBand_Druckluft.eState = enum_FB_AND.run 
+									AND NOT EAs_0000.e_FR_1000_Allgemein_Druckluft_OK, PT:= T#5000MS, Q=> , ET=> );
+							
+ton_Druckluft_Fehler_Aus(	IN:= 	GVL_Safety.in_State_FBand_Druckluft.eState <> enum_FB_AND.run 
+									AND EAs_0000.e_FR_1000_Allgemein_Druckluft_OK, PT:= T#3000MS, Q=> , ET=> );
+
+
+// Steuerstatus
+RT_Auto_Start(CLK:= GVL_Visu_0000.SteuerStatus.auto_start, Q=> );
+RT_Auto_Stop(CLK:= GVL_Visu_0000.SteuerStatus.auto_stop, Q=> );
+
+GVL_Visu_3100.SteuerStatus.reset:=
+GVL_Visu_3200.SteuerStatus.reset:=
+GVL_Visu_3300.SteuerStatus.reset:=
+GVL_Visu_3400.SteuerStatus.reset:=
+GVL_Visu_3510.SteuerStatus.reset:=
+GVL_Visu_3520.SteuerStatus.reset:=
+GVL_Visu_3530.SteuerStatus.reset:=
+GVL_Visu_3540.SteuerStatus.reset:= GVL_Visu_0000.SteuerStatus.reset;
+
+GVL_Visu_3100.SteuerStatus.hand:=
+GVL_Visu_3200.SteuerStatus.hand:=
+GVL_Visu_3300.SteuerStatus.hand:=
+GVL_Visu_3400.SteuerStatus.hand:=
+GVL_Visu_3510.SteuerStatus.hand:=
+GVL_Visu_3520.SteuerStatus.hand:=
+GVL_Visu_3530.SteuerStatus.hand:=
+GVL_Visu_3540.SteuerStatus.hand:= GVL_Visu_0000.SteuerStatus.hand;
+
+GVL_Visu_3100.SteuerStatus.auto:=
+GVL_Visu_3200.SteuerStatus.auto:=
+GVL_Visu_3300.SteuerStatus.auto:=
+GVL_Visu_3400.SteuerStatus.auto:=
+GVL_Visu_3510.SteuerStatus.auto:=
+GVL_Visu_3520.SteuerStatus.auto:=
+GVL_Visu_3530.SteuerStatus.auto:=
+GVL_Visu_3540.SteuerStatus.auto:= GVL_Visu_0000.SteuerStatus.auto;
+
+GVL_Visu_3100.SteuerStatus.auto_pause:=
+GVL_Visu_3200.SteuerStatus.auto_pause:=
+GVL_Visu_3300.SteuerStatus.auto_pause:=
+GVL_Visu_3400.SteuerStatus.auto_pause:=
+GVL_Visu_3510.SteuerStatus.auto_pause:=
+GVL_Visu_3520.SteuerStatus.auto_pause:=
+GVL_Visu_3530.SteuerStatus.auto_pause:=
+GVL_Visu_3540.SteuerStatus.auto_pause:= GVL_Visu_0000.SteuerStatus.auto_pause;
+
+IF RT_Auto_Start.Q THEN
+	GVL_Visu_3100.SteuerStatus.auto_Start:=
+	GVL_Visu_3200.SteuerStatus.auto_Start:=
+	GVL_Visu_3300.SteuerStatus.auto_Start:=
+	GVL_Visu_3400.SteuerStatus.auto_Start:=
+	GVL_Visu_3510.SteuerStatus.auto_Start:=
+	GVL_Visu_3520.SteuerStatus.auto_Start:=
+	GVL_Visu_3530.SteuerStatus.auto_Start:=
+	GVL_Visu_3540.SteuerStatus.auto_Start:= GVL_Visu_0000.SteuerStatus.auto_start;
+END_IF
+
+IF RT_Auto_Stop.Q THEN
+	GVL_Visu_3100.SteuerStatus.auto_stop:=
+	GVL_Visu_3200.SteuerStatus.auto_stop:=
+	GVL_Visu_3300.SteuerStatus.auto_stop:=
+	GVL_Visu_3400.SteuerStatus.auto_stop:=
+	GVL_Visu_3510.SteuerStatus.auto_stop:=
+	GVL_Visu_3520.SteuerStatus.auto_stop:=
+	GVL_Visu_3530.SteuerStatus.auto_stop:=
+	GVL_Visu_3540.SteuerStatus.auto_stop:= GVL_Visu_0000.SteuerStatus.auto_stop;
+END_IF
+
+GVL_Visu_3100.SteuerStatus.einlauf_sperre:=
+GVL_Visu_3200.SteuerStatus.einlauf_sperre:=
+GVL_Visu_3300.SteuerStatus.einlauf_sperre:=
+GVL_Visu_3400.SteuerStatus.einlauf_sperre:=
+GVL_Visu_3510.SteuerStatus.einlauf_sperre:=
+GVL_Visu_3520.SteuerStatus.einlauf_sperre:=
+GVL_Visu_3530.SteuerStatus.einlauf_sperre:=
+GVL_Visu_3540.SteuerStatus.einlauf_sperre:= GVL_Visu_0000.SteuerStatus.einlauf_sperre;
+
+GVL_Visu_3100.SteuerStatus.auslauf_sperre:=
+GVL_Visu_3200.SteuerStatus.auslauf_sperre:=
+GVL_Visu_3300.SteuerStatus.auslauf_sperre:=
+GVL_Visu_3400.SteuerStatus.auslauf_sperre:=
+GVL_Visu_3510.SteuerStatus.auslauf_sperre:=
+GVL_Visu_3520.SteuerStatus.auslauf_sperre:=
+GVL_Visu_3530.SteuerStatus.auslauf_sperre:=
+GVL_Visu_3540.SteuerStatus.auslauf_sperre:= GVL_Visu_0000.SteuerStatus.auslauf_sperre;]]></ST>
     </Implementation>
     <Method Name="M_VisuKomm" Id="{3bd020ec-9635-409f-b1d7-663929ec8626}">
       <Declaration><![CDATA[

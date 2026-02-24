@@ -5,7 +5,7 @@
 PROGRAM Hardware_3540
 VAR
     // Servos *********************************************************************
-	fbY_Achse										: FB_Achse_NC_PTP_Beckhoff; 
+	fbY_Achse										: FB_Achse_NC_PTP_Beckhoff_V2; 
 
     // Frequenzumrichter **********************************************************
     //fbTransport                					: FB_SEW_MOVITRAC_C_CoE;
@@ -57,8 +57,8 @@ END_VAR
 // ***** Servoregler *****************************************************************
 	//********************************************************************************
 								
-	GVL_3540.Y_Achse_steuern.Reglersperre	:= FALSE;
-	GVL_3540.Y_Achse_steuern.Freigabe 		:= FALSE;
+	GVL_3540.Y_Achse_steuern.Reglersperre	:= GVL_0000.bAchsen_Reglersperre;
+	GVL_3540.Y_Achse_steuern.Freigabe 		:= GVL_0000.bAchsen_Freigabe;
 	
 	fbY_Achse(
 	in_Reglersperre				:= GVL_3540.Y_Achse_steuern.Reglersperre, 
@@ -69,6 +69,7 @@ END_VAR
 	in_Auto						:= GVL_Visu_3540.SteuerStatus.auto,                 
 	in_Auto_Override			:= GVL_Visu_0000.override,    
 	in_Auto_pos					:= , 
+	in_max_Velo					:= 100 ,
 	in_PosFenster				:= 0.05, 
 	in_Ref_pos					:= 0.0, 
 	in_HomingOption				:= , 
@@ -105,6 +106,8 @@ END_VAR
 // ***** Ventile *********************************************************************
 	//********************************************************************************	
 	
+	GVL_3540.Niederhalter.in_freigabe_vor := GVL_0000.bDruckluft_Bereit;
+	GVL_3540.Niederhalter.in_freigabe_zur := GVL_0000.bDruckluft_Bereit;
 	GVL_Visu_3540.Niederhalter.para.ausgang_vor_halten:=TRUE;	
 	GVL_Visu_3540.Niederhalter.para.ausgang_zur_halten:=TRUE;	
 	GVL_Visu_3540.Niederhalter.para.ueberwachung_vor_aktiv:=TRUE;	

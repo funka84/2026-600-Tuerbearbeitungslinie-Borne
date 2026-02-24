@@ -5,8 +5,8 @@
 PROGRAM Hardware_3520
 VAR
     // Servos *********************************************************************
-	fbY_Achse										: FB_Achse_NC_PTP_Beckhoff; 
-	fbX_Achse										: FB_Achse_NC_PTP_Beckhoff; 
+	fbY_Achse										: FB_Achse_NC_PTP_Beckhoff_V2; 
+	fbX_Achse										: FB_Achse_NC_PTP_Beckhoff_V2; 
 
     // Frequenzumrichter **********************************************************
 	fbTrans_Bandseite								: FB_SEW_MOVITRAC_C_CoE;
@@ -66,8 +66,8 @@ fbLaengsBandseite_Ref			(	in_Sensor:=,
 // ***** Servoregler *****************************************************************
 	//********************************************************************************
 								
-	GVL_3520.Y_Achse_steuern.Reglersperre	:= FALSE;
-	GVL_3520.Y_Achse_steuern.Freigabe 		:= FALSE;
+	GVL_3520.Y_Achse_steuern.Reglersperre	:= GVL_0000.bAchsen_Reglersperre;
+	GVL_3520.Y_Achse_steuern.Freigabe 		:= GVL_0000.bAchsen_Freigabe;
 	
 	fbY_Achse(
 	in_Reglersperre				:= GVL_3520.Y_Achse_steuern.Reglersperre, 
@@ -78,6 +78,7 @@ fbLaengsBandseite_Ref			(	in_Sensor:=,
 	in_Auto						:= GVL_Visu_3520.SteuerStatus.auto,                 
 	in_Auto_Override			:= GVL_Visu_0000.override,    
 	in_Auto_pos					:= , 
+	in_max_Velo					:= 100 ,
 	in_PosFenster				:= 0.05, 
 	in_Ref_pos					:= 0.0, 
 	in_HomingOption				:= , 
@@ -102,8 +103,8 @@ fbLaengsBandseite_Ref			(	in_Sensor:=,
 	GVL_Meldungen.Meldungen_3000.Nr_042 := FALSE;
 
 								
-	GVL_3520.X_Achse_steuern.Reglersperre	:= FALSE;
-	GVL_3520.X_Achse_steuern.Freigabe 		:= FALSE;
+	GVL_3520.X_Achse_steuern.Reglersperre	:= GVL_0000.bAchsen_Reglersperre;
+	GVL_3520.X_Achse_steuern.Freigabe 		:= GVL_0000.bAchsen_Freigabe;
 	
 	fbX_Achse(
 	in_Reglersperre				:= GVL_3520.X_Achse_steuern.Reglersperre, 
@@ -114,6 +115,7 @@ fbLaengsBandseite_Ref			(	in_Sensor:=,
 	in_Auto						:= GVL_Visu_3520.SteuerStatus.auto,                 
 	in_Auto_Override			:= GVL_Visu_0000.override,    
 	in_Auto_pos					:= , 
+	in_max_Velo					:= 100 ,
 	in_PosFenster				:= 0.05, 
 	in_Ref_pos					:= 0.0, 
 	in_HomingOption				:= , 
@@ -151,7 +153,7 @@ fbLaengsBandseite_Ref			(	in_Sensor:=,
 	GVL_Visu_3520.Trans_Bandseite	.Para.Einheit			:= 1;
 
 	fbTrans_Bandseite	(	PD_IN	:=EAs_3520.e_Trans_Bandseite	,
-			IN_ReglerSperre			:=,
+			IN_ReglerSperre			:=GVL_0000.bAchsen_Reglersperre,
 			IN_SteuerStatus			:=GVL_Visu_3510.SteuerStatus,
 			IN_Ethercat_Adresse		:=,
 			IN_Ethercat_Name		:='',
@@ -176,6 +178,8 @@ fbLaengsBandseite_Ref			(	in_Sensor:=,
 // ***** Ventile *********************************************************************
 	//********************************************************************************	
 	
+	GVL_3520.Laengsanschl.in_freigabe_vor := GVL_0000.bDruckluft_Bereit;
+	GVL_3520.Laengsanschl.in_freigabe_zur := GVL_0000.bDruckluft_Bereit;
 	GVL_Visu_3520.Laengsanschl.para.ausgang_vor_halten:=TRUE;	
 	GVL_Visu_3520.Laengsanschl.para.ausgang_zur_halten:=TRUE;	
 	GVL_Visu_3520.Laengsanschl.para.ueberwachung_vor_aktiv:=TRUE;	
@@ -197,6 +201,8 @@ fbLaengsBandseite_Ref			(	in_Sensor:=,
 							inout_visu:=GVL_Visu_3520.Laengsanschl );
 								
 	
+	GVL_3520.Schienenklemm.in_freigabe_vor := GVL_0000.bDruckluft_Bereit;
+	GVL_3520.Schienenklemm.in_freigabe_zur := GVL_0000.bDruckluft_Bereit;
 	GVL_Visu_3520.Schienenklemm.para.ausgang_vor_halten:=TRUE;	
 	GVL_Visu_3520.Schienenklemm.para.ausgang_zur_halten:=TRUE;	
 	GVL_Visu_3520.Schienenklemm.para.ueberwachung_vor_aktiv:=TRUE;	

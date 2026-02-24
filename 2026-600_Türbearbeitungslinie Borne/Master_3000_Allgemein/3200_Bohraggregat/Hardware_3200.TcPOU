@@ -5,9 +5,9 @@
 PROGRAM Hardware_3200
 VAR
     // Servos *********************************************************************
-	fbX_Achse										: FB_Achse_NC_PTP_Beckhoff; 
-	fbY_Achse										: FB_Achse_NC_PTP_Beckhoff; 
-	fbZ_Achse										: FB_Achse_NC_PTP_Beckhoff; 
+	fbX_Achse										: FB_Achse_NC_PTP_Beckhoff_V2; 
+	fbY_Achse										: FB_Achse_NC_PTP_Beckhoff_V2; 
+	fbZ_Achse										: FB_Achse_NC_PTP_Beckhoff_V2; 
 
 	fbNCI_Channel									: FB_Nc_Kanal;
 
@@ -111,8 +111,8 @@ fbStillBohraggr_Stulpfraes		(	in_Sensor:=,
         <ST><![CDATA[				
 // ***** Servoregler *****************************************************************
 	//********************************************************************************
-	GVL_3200.X_Achse_steuern.Reglersperre	:= FALSE;
-	GVL_3200.X_Achse_steuern.Freigabe 		:= FALSE;
+	GVL_3200.X_Achse_steuern.Reglersperre	:= GVL_0000.bAchsen_Reglersperre;
+	GVL_3200.X_Achse_steuern.Freigabe 		:= GVL_0000.bAchsen_Freigabe;
 	
 	fbX_Achse(
 	in_Reglersperre				:= GVL_3200.X_Achse_steuern.Reglersperre, 
@@ -123,6 +123,7 @@ fbStillBohraggr_Stulpfraes		(	in_Sensor:=,
 	in_Auto						:= GVL_Visu_3200.SteuerStatus.auto,                 
 	in_Auto_Override			:= GVL_Visu_0000.override,    
 	in_Auto_pos					:= , 
+	in_max_Velo					:= 100 ,
 	in_PosFenster				:= 0.05, 
 	in_Ref_pos					:= 0.0, 
 	in_HomingOption				:= , 
@@ -148,8 +149,8 @@ fbStillBohraggr_Stulpfraes		(	in_Sensor:=,
 	//********************************************************************************
 					
 					
-	GVL_3200.Y_Achse_steuern.Reglersperre	:= FALSE;
-	GVL_3200.Y_Achse_steuern.Freigabe 		:= FALSE;
+	GVL_3200.Y_Achse_steuern.Reglersperre	:= GVL_0000.bAchsen_Reglersperre;
+	GVL_3200.Y_Achse_steuern.Freigabe 		:= GVL_0000.bAchsen_Freigabe;
 	
 	fbY_Achse(
 	in_Reglersperre				:= GVL_3200.Y_Achse_steuern.Reglersperre, 
@@ -160,6 +161,7 @@ fbStillBohraggr_Stulpfraes		(	in_Sensor:=,
 	in_Auto						:= GVL_Visu_3200.SteuerStatus.auto,                 
 	in_Auto_Override			:= GVL_Visu_0000.override,    
 	in_Auto_pos					:= , 
+	in_max_Velo					:= 100 ,
 	in_PosFenster				:= 0.05, 
 	in_Ref_pos					:= 0.0, 
 	in_HomingOption				:= , 
@@ -185,8 +187,8 @@ fbStillBohraggr_Stulpfraes		(	in_Sensor:=,
 	//********************************************************************************
 
 
-	GVL_3200.Z_Achse_steuern.Reglersperre	:= FALSE;
-	GVL_3200.Z_Achse_steuern.Freigabe 		:= FALSE;
+	GVL_3200.Z_Achse_steuern.Reglersperre	:= GVL_0000.bAchsen_Reglersperre;
+	GVL_3200.Z_Achse_steuern.Freigabe 		:= GVL_0000.bAchsen_Freigabe;
 	
 	fbZ_Achse(
 	in_Reglersperre				:= GVL_3200.Z_Achse_steuern.Reglersperre, 
@@ -197,6 +199,7 @@ fbStillBohraggr_Stulpfraes		(	in_Sensor:=,
 	in_Auto						:= GVL_Visu_3200.SteuerStatus.auto,                 
 	in_Auto_Override			:= GVL_Visu_0000.override,    
 	in_Auto_pos					:= , 
+	in_max_Velo					:= 100 ,
 	in_PosFenster				:= 0.05, 
 	in_Ref_pos					:= 0.0, 
 	in_HomingOption				:= , 
@@ -234,7 +237,7 @@ fbStillBohraggr_Stulpfraes		(	in_Sensor:=,
 	GVL_Visu_3200.Bohraggr_Stufenbohr	.Para.Einheit			:= 1;
 
 	fbBohraggr_Stufenbohr	(	PD_IN	:=EAs_3200.e_Bohraggr_Stufenbohr	,
-			IN_ReglerSperre			:=,
+			IN_ReglerSperre			:=GVL_0000.bAchsen_Reglersperre,
 			IN_SteuerStatus			:=GVL_Visu_3200.SteuerStatus,
 			IN_Ethercat_Adresse		:=,
 			IN_Ethercat_Name		:='',
@@ -258,7 +261,7 @@ fbStillBohraggr_Stulpfraes		(	in_Sensor:=,
 	GVL_Visu_3200.Bohraggr_Stulpfraes	.Para.Einheit			:= 1;
 
 	fbBohraggr_Stulpfraes	(	PD_IN	:=EAs_3200.e_Bohraggr_Stulpfraes	,
-			IN_ReglerSperre			:=,
+			IN_ReglerSperre			:=GVL_0000.bAchsen_Reglersperre,
 			IN_SteuerStatus			:=GVL_Visu_3200.SteuerStatus,
 			IN_Ethercat_Adresse		:=,
 			IN_Ethercat_Name		:='',
@@ -283,6 +286,8 @@ fbStillBohraggr_Stulpfraes		(	in_Sensor:=,
 // ***** Ventile *********************************************************************
 	//********************************************************************************	
 	
+	GVL_3200.Vorbohren_Bohrhub.in_freigabe_vor := GVL_0000.bDruckluft_Bereit;
+	GVL_3200.Vorbohren_Bohrhub.in_freigabe_zur := GVL_0000.bDruckluft_Bereit;
 	GVL_Visu_3200.Vorbohren_Bohrhub.para.ausgang_vor_halten:=TRUE;	
 	GVL_Visu_3200.Vorbohren_Bohrhub.para.ausgang_zur_halten:=TRUE;	
 	GVL_Visu_3200.Vorbohren_Bohrhub.para.ueberwachung_vor_aktiv:=TRUE;	
@@ -304,6 +309,8 @@ fbStillBohraggr_Stulpfraes		(	in_Sensor:=,
 								inout_visu:=GVL_Visu_3200.Vorbohren_Bohrhub );
 								
 	
+	GVL_3200.Stulpfraes_Vorlegehub.in_freigabe_vor := GVL_0000.bDruckluft_Bereit;
+	GVL_3200.Stulpfraes_Vorlegehub.in_freigabe_zur := GVL_0000.bDruckluft_Bereit;
 	GVL_Visu_3200.Stulpfraes_Vorlegehub.para.ausgang_vor_halten:=TRUE;	
 	GVL_Visu_3200.Stulpfraes_Vorlegehub.para.ausgang_zur_halten:=TRUE;	
 	GVL_Visu_3200.Stulpfraes_Vorlegehub.para.ueberwachung_vor_aktiv:=TRUE;	
@@ -324,6 +331,8 @@ fbStillBohraggr_Stulpfraes		(	in_Sensor:=,
 								inout_ansteuerung:=GVL_3200.Stulpfraes_Vorlegehub ,
 								inout_visu:=GVL_Visu_3200.Stulpfraes_Vorlegehub );
 								
+	GVL_3200.Pusher.in_freigabe_vor := GVL_0000.bDruckluft_Bereit;
+	GVL_3200.Pusher.in_freigabe_zur := GVL_0000.bDruckluft_Bereit;
 	GVL_Visu_3200.Pusher.para.ausgang_vor_halten:=TRUE;	
 	GVL_Visu_3200.Pusher.para.ausgang_zur_halten:=TRUE;	
 	GVL_Visu_3200.Pusher.para.ueberwachung_vor_aktiv:=TRUE;	
@@ -345,6 +354,8 @@ fbStillBohraggr_Stulpfraes		(	in_Sensor:=,
 								inout_visu:=GVL_Visu_3200.Pusher);
 								
 	
+	GVL_3200.Schienenklemm.in_freigabe_vor := GVL_0000.bDruckluft_Bereit;
+	GVL_3200.Schienenklemm.in_freigabe_zur := GVL_0000.bDruckluft_Bereit;
 	GVL_Visu_3200.Schienenklemm.para.ausgang_vor_halten:=TRUE;	
 	GVL_Visu_3200.Schienenklemm.para.ausgang_zur_halten:=TRUE;	
 	GVL_Visu_3200.Schienenklemm.para.ueberwachung_vor_aktiv:=TRUE;	

@@ -30,9 +30,10 @@ VAR_GLOBAL PERSISTENT
     Schrittnummer           : INT;
     Kopfdaten               : DUT_Kopfdaten;
     Kopfdaten_default       : DUT_Kopfdaten;
-    Jobdaten                : ARRAY[1..10] OF DUT_Jobdaten;
-    Jobdaten_default        : ARRAY[1..10] OF DUT_Jobdaten;
+    Jobdaten                : ARRAY[1..GVL_0000.cSize_Jobdaten] OF DUT_Jobdaten;
+    Jobdaten_default        : ARRAY[1..GVL_0000.cSize_Jobdaten] OF DUT_Jobdaten;
 	aktJob					: DUT_Jobdaten;
+	iJobNr					: INT := 1;
 
     //para_Vorlage             : REAL := 0.0; //#Typ: VParam #Tab:  #Name:  #Einheit:mm #Min: 1 #Max: 100 #Format:F1
 END_VAR

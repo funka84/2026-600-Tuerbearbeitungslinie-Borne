@@ -12,18 +12,18 @@ END_VAR
 ]]></Declaration>
     <Implementation>
       <ST><![CDATA[// Ansteuerung Safety
-GVL_Safety.out_Run_SafeGroup_Fraese := GVL_Visu_0000.quittieren OR GVL_Safety.in_Run_SafeGroup_Fraese;
-GVL_Safety.out_ErrAck_SafeGroup_Fraese := GVL_Visu_0000.quittieren;
+GVL_Safety.out_Run_SafeGroup_Fraese := GVL_0000.stoerung_quitt OR GVL_Safety.in_Run_SafeGroup_Fraese;
+GVL_Safety.out_ErrAck_SafeGroup_Fraese := GVL_0000.stoerung_quitt;
 
 // Verzögerung
-FT_Quittieren(CLK:= GVL_Visu_0000.quittieren, Q=> );
-RT_Quittieren(CLK:= GVL_Visu_0000.quittieren, Q=> );
+FT_Quittieren(CLK:= GVL_0000.stoerung_quitt, Q=> );
+RT_Quittieren(CLK:= GVL_0000.stoerung_quitt, Q=> );
 
-ton_Quittieren(IN:= GVL_Visu_0000.quittieren, PT:=T#100MS , Q=> , ET=> );
-tof_Quittieren(IN:= GVL_Visu_0000.quittieren, PT:=T#200MS , Q=> , ET=> );
+ton_Quittieren(IN:= GVL_0000.stoerung_quitt, PT:=T#100MS , Q=> , ET=> );
+tof_Quittieren(IN:= GVL_0000.stoerung_quitt, PT:=T#200MS , Q=> , ET=> );
 
 //Restart
-GVL_Safety.out_Not_Aus_Restart := NOT GVL_Visu_0000.quittieren AND tof_Quittieren.Q;
+GVL_Safety.out_Not_Aus_Restart := NOT GVL_0000.stoerung_quitt AND tof_Quittieren.Q;
 
 //Rückmeldungen
 GVL_Safety.out_rm_Kreis_3 := NOT EAs_0000.e_FR_0600_Rueckmeldung_von_Safety_Freigabekreis_3;

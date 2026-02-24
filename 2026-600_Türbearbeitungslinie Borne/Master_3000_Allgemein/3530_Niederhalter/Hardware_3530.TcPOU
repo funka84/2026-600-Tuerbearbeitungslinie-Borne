@@ -5,7 +5,7 @@
 PROGRAM Hardware_3530
 VAR
     // Servos *********************************************************************
-    //fbAchse                    					: FB_Achse_NC_PTP_V4_1; 
+    //fbAchse                    					: FB_Achse_NC_PTP_Beckhoff_V2; 
 
     // Frequenzumrichter **********************************************************
     //fbTransport                					: FB_SEW_MOVITRAC_C_CoE;
@@ -67,6 +67,8 @@ END_VAR
 // ***** Ventile *********************************************************************
 	//********************************************************************************	
 	
+	GVL_3530.Niederhalter.in_freigabe_vor := GVL_0000.bDruckluft_Bereit;
+	GVL_3530.Niederhalter.in_freigabe_zur := GVL_0000.bDruckluft_Bereit;
 	GVL_Visu_3530.Niederhalter.para.ausgang_vor_halten:=TRUE;	
 	GVL_Visu_3530.Niederhalter.para.ausgang_zur_halten:=TRUE;	
 	GVL_Visu_3530.Niederhalter.para.ueberwachung_vor_aktiv:=TRUE;	

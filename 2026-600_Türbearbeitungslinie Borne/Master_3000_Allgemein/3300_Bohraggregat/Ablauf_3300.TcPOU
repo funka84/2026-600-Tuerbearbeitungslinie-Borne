@@ -60,7 +60,7 @@ END_IF
 
 // Timer und Flanken
 //________________________________________________________________________________________
-ton_Schritt_Freigabe(IN:= , PT:= T#5S , Q=> , ET=> );
+ton_Schritt_Freigabe(IN:= , PT:= GVL_0000.cton_TimeoutSchrittFreigabe , Q=> , ET=> );
 
 RT_TeilGebucht(CLK:= GVL_Visu_3300.Daten_gebucht, Q=> );
 FT_TeilGebucht(CLK:= GVL_Visu_3300.Daten_gebucht, Q=> );
@@ -130,6 +130,7 @@ END_IF
 
 // Wenn Automatik nicht angewählt ist dann Zustände löschen
 	IF NOT  GVL_Visu_3300.SteuerStatus.auto THEN
+		GVL_Visu_3300.SteuerStatus.auto_aktiv := FALSE;
 		GVL_Visu_3300.SteuerStatus.auto_start := FALSE;
 		GVL_Visu_3300.SteuerStatus.auto_stop := FALSE;
 	END_IF

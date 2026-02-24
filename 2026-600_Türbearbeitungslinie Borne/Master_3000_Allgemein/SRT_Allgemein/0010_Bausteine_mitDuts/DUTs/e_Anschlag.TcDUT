@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="e_Anschlag" Id="{3dc52fb1-f07d-4123-a971-ad966c63fa54}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+{attribute 'strict'}
+{attribute 'to_string'}
+TYPE e_Anschlag :
+(
+	Undefiniert := 0,
+	Links := 1,
+	Rechts := 2
+);
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>
