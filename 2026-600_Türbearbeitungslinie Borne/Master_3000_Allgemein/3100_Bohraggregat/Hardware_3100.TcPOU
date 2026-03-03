@@ -11,7 +11,8 @@ VAR
 
 	fbNCI_Channel									: FB_Nc_Kanal;
 	
-	fbColl_X_Y										: FB_Collision_2_Axes;
+	fbColl_X_Y										: FB_Kollision_2_Achsen;
+	fbColl_X_Y_Z									: FB_Kollision_3_Achsen;
 	
     // Frequenzumrichter **********************************************************
 	fbBohraggr_Schlosskast							: FB_SEW_MOVITRAC_C_CoE;
@@ -246,7 +247,27 @@ fbStillBohraggr_Stulpfraes		(	in_Sensor:=,
 	in_min_2:= 10, 
 	inout_Axis_1:= EAs_3100.ea_X_Achse, 
 	inout_Axis_2:= EAs_3100.ea_Y_Achse, 
-	out_actDistance=> );]]></ST>
+	out_actGap_1_2=> );
+	
+	fbColl_X_Y_Z(
+	in_Active_Axis_1:= , 
+	in_Active_Axis_2:= , 
+	in_Active_Axis_3:= , 
+	in_Quittieren:= , 
+	in_Gap_1_2:= 20, 
+	in_Gap_2_3:= 30, 
+	in_max_1:= 200, 
+	in_min_1:= 0, 
+	in_max_2:= 190, 
+	in_min_2:= 0, 
+	in_max_3:= 180, 
+	in_min_3:= 0, 
+	inout_Axis_1:= EAs_3100.ea_X_Achse, 
+	inout_Axis_2:= EAs_3100.ea_Y_Achse, 
+	inout_Axis_3:= EAs_3100.ea_Z_Achse, 
+	out_actGap_1_2=> , 
+	out_actGap_2_3=> , 
+	out_bError=> );]]></ST>
       </Implementation>
     </Action>
     <Action Name="A_Umrichter" Id="{7ccba3e4-aa29-4e66-9ecf-ec4915ec5248}">

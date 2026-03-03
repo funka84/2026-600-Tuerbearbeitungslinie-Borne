@@ -1,0 +1,154 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_Kollision_2_Achsen" Id="{45dec102-38a8-4f8c-8c8a-5d84978a39b0}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Kollision_2_Achsen
+(*
+         neg. -      Gap      pos. +
+           <-------------------->
+     ===(O)========================(O)====
+         |                          |
+         |                          |
+       Achse 2                   Achse 1
+
+Die Überwachung greift in der Betriebsart: Tippen, Positionieren, Gekoppelte Achsen, NCI
+Die Softwaregrenzen werden zyklisch aktualisiert und heruntergerampt 
+Bewegen sich beide Achsen zeitgleich auf einander zu und haben eine Zielpos. die vorher erreicht werden konnte werden die 
+Achsen heruntergerampt vor der Kollision mit einem Fehler
+*)
+
+
+VAR_INPUT
+	in_Active_Axis_1			: BOOL;		// Achse 1 Koll.überwachung aktivieren für die Achse, wenn aus werden die min und max Werte genommen
+	in_Active_Axis_2			: BOOL;		// Achse 2 Koll.überwachung aktivieren für die Achse, wenn aus werden die min und max Werte genommen
+	in_Quittieren				: BOOL;		// Fehler quittiere 
+	in_Gap_1_2					: REAL;		// Abstand der eingehalten soll zwischen den Achsen, 1mm Abweichung muss mit eingerechnet werden
+	in_max_1					: REAL;		// Achse 1 Softwarelimit min ohne Kollisionsüberwachung
+	in_min_1					: REAL;		// Achse 1 Softwarelimit max ohne Kollisionsüberwachung
+	in_max_2					: REAL;		// Achse 2 Softwarelimit min ohne Kollisionsüberwachung
+	in_min_2					: REAL;		// Achse 2 Softwarelimit max ohne Kollisionsüberwachung
+END_VAR
+
+VAR_IN_OUT
+	inout_Axis_1				: AXIS_REF;	// Erste Achse  liegt vor der zweiten Achsen
+	inout_Axis_2				: AXIS_REF;	// Zweite Achse, liegt hinter der ersten Achsen 	
+END_VAR
+
+VAR_OUTPUT
+	out_actGap_1_2				: LREAL;	// Aktueller Abstand zwischen den Achsen , Abstand ist mit eingerechnet
+	out_bError					: BOOL;		// Fehler Baustein
+END_VAR
+VAR
+	fbWritePara_1				: MC_WriteParameter;
+	fbWritePara_2				: MC_WriteParameter;
+	fbWritePara_1_min			: MC_WriteParameter;
+	fbWritePara_1_max			: MC_WriteParameter;
+	fbWritePara_2_min			: MC_WriteParameter;
+	fbWritePara_2_max			: MC_WriteParameter;
+	fbWritePara_1_min_enb		: MC_WriteParameter;
+	fbWritePara_1_max_enb		: MC_WriteParameter;
+	fbWritePara_2_min_enb		: MC_WriteParameter;
+	fbWritePara_2_max_enb		: MC_WriteParameter;
+	tmp_1						: DINT;
+	tmp_2						: DINT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+// Überwachung steuern Achse 1
+	IF NOT in_Active_Axis_1 THEN
+		fbWritePara_1.Execute := FALSE;
+		fbWritePara_1_min.Execute := TRUE;
+		fbWritePara_1_max.Execute := TRUE;
+		fbWritePara_1_min_enb.Execute := FALSE;
+		fbWritePara_1_max_enb.Execute := FALSE;
+
+		tmp_1 := 0;
+	ELSE
+		fbWritePara_1.Execute := NOT fbWritePara_1.Busy AND LREAL_TO_DINT(inout_Axis_2.NcToPlc.ActPos) <> tmp_1;
+		fbWritePara_1_min.Execute := FALSE;
+		fbWritePara_1_max.Execute := FALSE;
+		fbWritePara_1_min_enb.Execute := TRUE;
+		fbWritePara_1_max_enb.Execute := TRUE;
+		tmp_1 := LREAL_TO_DINT(inout_Axis_2.NcToPlc.ActPos);
+	END_IF
+
+
+// Überwachung steuern Achse 2
+	IF NOT in_Active_Axis_2 THEN
+		fbWritePara_2.Execute := FALSE;
+		fbWritePara_2_min.Execute := TRUE;
+		fbWritePara_2_max.Execute := TRUE;
+		fbWritePara_2_min_enb.Execute := FALSE;
+		fbWritePara_2_max_enb.Execute := FALSE;
+		tmp_2 := 0;
+	ELSE
+		fbWritePara_2.Execute := NOT fbWritePara_2.Busy AND LREAL_TO_DINT(inout_Axis_1.NcToPlc.ActPos) <> tmp_2;
+		fbWritePara_2_min.Execute := FALSE;
+		fbWritePara_2_max.Execute := FALSE;
+		fbWritePara_2_min_enb.Execute := TRUE;
+		fbWritePara_2_max_enb.Execute := TRUE;
+		tmp_2 := LREAL_TO_DINT(inout_Axis_1.NcToPlc.ActPos);
+	END_IF
+
+
+// Abstand zwischen den Achsen
+	out_actGap_1_2 := inout_Axis_1.NcToPlc.ActPos - inout_Axis_2.NcToPlc.ActPos - in_Gap_1_2;
+
+// Parameter für die Achsen schreiben
+	fbWritePara_1(
+		Axis:= inout_Axis_1, 
+		ParameterNumber:= MC_AxisParameter.SWLimitNeg, 
+		Value:= inout_Axis_2.NcToPlc.ActPos + in_Gap_1_2);	
+	fbWritePara_1_min(
+		Axis:= inout_Axis_1, 
+		ParameterNumber:= MC_AxisParameter.SWLimitNeg, 
+		Value:= in_min_1);	
+	fbWritePara_1_max(
+		Axis:= inout_Axis_1, 
+		ParameterNumber:= MC_AxisParameter.SWLimitPos, 
+		Value:= in_max_1);
+	fbWritePara_1_min_enb(
+		Axis:= inout_Axis_1, 
+		ParameterNumber:= MC_AxisParameter.EnableLimitNeg, 
+		Value:= 1);	
+	fbWritePara_1_max_enb(
+		Axis:= inout_Axis_1, 
+		ParameterNumber:= MC_AxisParameter.EnableLimitPos, 
+		Value:= 1);
+		
+	fbWritePara_2(
+		Axis:= inout_Axis_2, 
+		ParameterNumber:= MC_AxisParameter.SWLimitPos, 
+		Value:= inout_Axis_1.NcToPlc.ActPos - in_Gap_1_2);
+	fbWritePara_2_min(
+		Axis:= inout_Axis_2, 
+		ParameterNumber:= MC_AxisParameter.SWLimitNeg, 
+		Value:= in_min_2);
+	fbWritePara_2_max(
+		Axis:= inout_Axis_2,
+		ParameterNumber:= MC_AxisParameter.SWLimitPos, 
+		Value:= in_max_2);
+	fbWritePara_2_min_enb(
+		Axis:= inout_Axis_1, 
+		ParameterNumber:= MC_AxisParameter.EnableLimitNeg, 
+		Value:= 1);	
+	fbWritePara_2_max_enb(
+		Axis:= inout_Axis_1, 
+		ParameterNumber:= MC_AxisParameter.EnableLimitPos, 
+		Value:= 1);
+		
+// Fehlerhandling
+	IF 	in_Quittieren THEN
+		out_bError := FALSE;
+	ELSIF fbWritePara_1.Error
+	OR  fbWritePara_2.Error
+	OR  fbWritePara_1_min.Error
+	OR  fbWritePara_1_max.Error
+	OR  fbWritePara_2_min.Error
+	OR  fbWritePara_2_max.Error
+	THEN
+		out_bError := TRUE;
+	END_IF]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>
