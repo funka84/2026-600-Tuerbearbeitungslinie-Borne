@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="DUT_Achse_Kollision" Id="{49f25d16-8998-466b-8a80-3fc6c2f04054}">
+    <Declaration><![CDATA[TYPE DUT_Achse_Kollision :
+STRUCT
+	bAktivieren			: BOOL;		// Kollisionsüberwachung für Achse aktivieren
+	rLimit_Min			: LREAL;	// Softwaregrenze Min
+	rLimit_Max			: LREAL;	// Softwaregrenze Min
+	
+	bIsActive			: BOOL;
+	rGap_AxisBefore		: LREAL;	// Aktueller Abstand zur Achse
+	rGap_AxisAfter		: LREAL;	// Aktueller Abstand zur Achse
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

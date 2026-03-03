@@ -248,6 +248,9 @@
     <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\Safety\ST_InfoDataGroup.TcDUT">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\Servo\DUT_Achse_Kollision.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\Servo\DUT_Achse_koppeln.TcDUT">
       <SubType>Code</SubType>
     </Compile>
@@ -324,6 +327,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\Servos_NC\FB_Kollision_2_Achsen.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\Servos_NC\FB_Kollision_1_Achsen.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\Servos_NC\FB_Kollision_3_Achsen.TcPOU">

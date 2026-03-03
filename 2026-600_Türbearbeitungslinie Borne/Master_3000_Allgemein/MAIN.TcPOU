@@ -12,15 +12,15 @@ END_VAR
 // ----------------------------------------------------------
 // Hardware-Aufrufe
 // ----------------------------------------------------------
-Hardware_0000();
-Hardware_3100();
-Hardware_3200();
-Hardware_3300();
-Hardware_3400();
-Hardware_3510();
-Hardware_3520();
-Hardware_3530();
-Hardware_3540();
+//Hardware_0000();
+//Hardware_3100();
+//Hardware_3200();
+//Hardware_3300();
+//Hardware_3400();
+//Hardware_3510();
+//Hardware_3520();
+//Hardware_3530();
+//Hardware_3540();
 
 // ----------------------------------------------------------
 // Ablauf-Aufrufe

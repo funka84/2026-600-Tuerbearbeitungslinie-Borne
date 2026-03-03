@@ -1,8 +1,7 @@
 <?xml version="1.0"?>
 <TcSmProject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2012/07/TcSmProject" TcSmVersion="1.0" TcVersion="3.1.4026.20">
-	<Project ProjectGUID="{BC373FBB-E0D6-49B2-9E47-53C654F8CA13}" TargetNetId="169.254.68.135.1.1" Target64Bit="true" ShowHideConfigurations="#x6">
+	<Project ProjectGUID="{BC373FBB-E0D6-49B2-9E47-53C654F8CA13}" TargetNetId="172.18.238.153.1.1" Target64Bit="true" ShowHideConfigurations="#x6">
 		<System>
-			<Settings DontCheckTarget="169.254.68.135.1.1"/>
 			<Licenses>
 				<Target>
 					<ManualSelect>{4156C772-5DC6-40A9-B3F8-C3D5A097513C}</ManualSelect>

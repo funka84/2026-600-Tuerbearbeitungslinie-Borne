@@ -1,0 +1,116 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_Kollision_1_Achsen" Id="{783a31b3-519e-48e9-81e3-56e377ce653e}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Kollision_1_Achsen
+(*
+         neg. -      Gap      pos. +
+           <-------------------->
+     ===(O)========================(O)====
+         |                          |
+         |                          |
+       Achse 2                   Achse 1
+
+Die Überwachung greift in der Betriebsart: Tippen, Positionieren, Gekoppelte Achsen, NCI
+Die Softwaregrenzen werden zyklisch aktualisiert und heruntergerampt 
+Bewegen sich beide Achsen zeitgleich auf einander zu und haben eine Zielpos. die vorher erreicht werden konnte werden die 
+Achsen heruntergerampt vor der Kollision mit einem Fehler
+*)
+
+
+VAR_INPUT
+	in_Active_Axis_1			: BOOL;		// Achse 1 Koll.überwachung aktivieren für die Achse, wenn aus werden die min und max Werte genommen
+	in_Quittieren				: BOOL;		// Fehler quittiere 
+	in_max_1					: REAL;		// Achse 1 Softwarelimit min ohne Kollisionsüberwachung
+	in_min_1					: REAL;		// Achse 1 Softwarelimit max ohne Kollisionsüberwachung
+	in_max_enb					: REAL;		// Achse 1 Softwarelimit min mit Kollisionsüberwachung
+	in_min_enb					: REAL;		// Achse 1 Softwarelimit max mit Kollisionsüberwachung
+END_VAR
+
+VAR_IN_OUT
+	inout_Axis_1				: AXIS_REF;	// Achsenstruktur	
+END_VAR
+
+VAR_OUTPUT
+	out_bError					: BOOL;		// Fehler Baustein
+END_VAR
+VAR
+	fbWritePara_1_min			: MC_WriteParameter;
+	fbWritePara_1_max			: MC_WriteParameter;
+	fbWritePara_1_min_enb		: MC_WriteParameter;
+	fbWritePara_1_max_enb		: MC_WriteParameter;
+	tmp_1						: LREAL;
+	tmp_2						: LREAL;
+	tmp_min						: LREAL;
+	tmp_max						: LREAL;
+	RT_Error					: R_TRIG;
+	FT_Error					: F_TRIG;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+// Überwachung steuern Achse 1
+	IF NOT in_Active_Axis_1 THEN
+		tmp_min := in_min_1;
+		tmp_max := in_max_1;
+		fbWritePara_1_min.Execute := TRUE AND NOT RT_Error.Q;
+		fbWritePara_1_max.Execute := TRUE AND NOT RT_Error.Q;
+		fbWritePara_1_min_enb.Execute := TRUE AND NOT RT_Error.Q;
+		fbWritePara_1_max_enb.Execute := TRUE AND NOT RT_Error.Q;
+		tmp_1 := in_min_1;
+		tmp_2 := in_max_1;
+	ELSE
+		tmp_min := in_min_enb;
+		tmp_max := in_max_enb;
+		fbWritePara_1_min.Execute := tmp_1 <> tmp_min AND NOT RT_Error.Q;
+		fbWritePara_1_max.Execute := tmp_2 <> tmp_max AND NOT RT_Error.Q;
+		fbWritePara_1_min_enb.Execute := TRUE AND NOT RT_Error.Q;
+		fbWritePara_1_max_enb.Execute := TRUE AND NOT RT_Error.Q;
+		
+		tmp_1 := tmp_min;
+		tmp_2 := tmp_max;
+	END_IF
+
+RT_Error(CLK:= fbWritePara_1_min.Error
+				OR fbWritePara_1_max.Error
+				OR fbWritePara_1_min_enb.Error
+				OR fbWritePara_1_max_enb.Error, Q=> );
+FT_Error(CLK:= fbWritePara_1_min.Error
+				OR fbWritePara_1_max.Error
+				OR fbWritePara_1_min_enb.Error
+				OR fbWritePara_1_max_enb.Error, Q=> );
+
+
+// Parameter für die Achsen schreiben
+		
+	fbWritePara_1_min(
+		Axis:= inout_Axis_1, 
+		ParameterNumber:= MC_AxisParameter.SWLimitNeg, 
+		Value:= tmp_min);	
+	fbWritePara_1_max(
+		Axis:= inout_Axis_1, 
+		ParameterNumber:= MC_AxisParameter.SWLimitPos, 
+		Value:= tmp_max);
+		
+	fbWritePara_1_min_enb(
+		Axis:= inout_Axis_1, 
+		ParameterNumber:= MC_AxisParameter.EnableLimitNeg, 
+		Value:= 1);	
+	fbWritePara_1_max_enb(
+		Axis:= inout_Axis_1, 
+		ParameterNumber:= MC_AxisParameter.EnableLimitPos, 
+		Value:= 1);
+		
+		
+		
+// Fehlerhandling
+	IF 	in_Quittieren THEN
+		out_bError := FALSE;
+	ELSIF fbWritePara_1.Error
+	OR  fbWritePara_1_min.Error
+	OR  fbWritePara_1_max.Error
+	THEN
+		out_bError := TRUE;
+	END_IF]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>
