@@ -49,7 +49,9 @@ VAR_GLOBAL CONSTANT
 	MaxECDevices						:INT := 0;
 	                  
 	cSize_Jobdaten						: INT := 10;                  			// Array Grosse Jobdaten
-	cton_TimeoutSchrittFreigabe			: TIME := T#6S;							// Schritt Timeout wenn die Freigabe entzogen ist
+	ctime_TimeoutSchrittFreigabe		: TIME := T#6S;							// Timeout Schritt wenn die Freigabe entzogen ist
+	ctime_TimeoutVisuKomm				: TIME := T#3S;							// Timeout Visukommunikation 
+	ctime_RetryVisuKomm					: TIME := T#750MS;						// Zeit für erneutes Datenabfrage
 	cibn0								: BOOL := FALSE;						// Am Ende müssen alle QUerverweise gelöscht werden
 	cibn1								: BOOL := TRUE;							// Am Ende müssen alle QUerverweise gelöscht werden
 	Pfad_NCI							: STRING := 'C:\SRTvisu\';				// Pfad für Fräsprogramme

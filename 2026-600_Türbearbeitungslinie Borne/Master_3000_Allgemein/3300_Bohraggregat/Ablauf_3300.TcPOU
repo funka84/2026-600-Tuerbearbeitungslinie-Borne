@@ -60,7 +60,7 @@ END_IF
 
 // Timer und Flanken
 //________________________________________________________________________________________
-ton_Schritt_Freigabe(IN:= , PT:= GVL_0000.cton_TimeoutSchrittFreigabe , Q=> , ET=> );
+ton_Schritt_Freigabe(IN:= , PT:= GVL_0000.ctime_TimeoutSchrittFreigabe , Q=> , ET=> );
 
 RT_TeilGebucht(CLK:= GVL_Visu_3300.Daten_gebucht, Q=> );
 FT_TeilGebucht(CLK:= GVL_Visu_3300.Daten_gebucht, Q=> );
@@ -257,8 +257,8 @@ END_VAR
 // Starttrigger belegen als Antwort wird auf die 5= gut oder 9=schlecht gewartet.
 // Kommunikationstimeout nach 5 Sekunden und wird automatisch wieder neugestartet
 
-ton_DatenTimeout(IN:= anVisu <> 0 AND vonVisu = 0 AND NOT Sperre, PT:=T#3S);	
-ton_DatenUngueltig(IN:= sc = 20, PT:=T#500MS);	
+ton_DatenTimeout(IN:= anVisu <> 0 AND vonVisu = 0 AND NOT Sperre, PT:=GVL_0000.ctime_TimeoutVisuKomm);	
+ton_DatenUngueltig(IN:= sc = 20, PT:=GVL_0000.ctime_RetryVisuKomm);	
 
 CASE sc OF
 	0: 	// Anfrage starten und auf Antwort warten
@@ -318,8 +318,8 @@ END_VAR
 // Starttrigger belegen als Antwort wird auf die 5= gut oder 9=schlecht gewartet.
 // Kommunikationstimeout nach 5 Sekunden und wird automatisch wieder neugestartet
 
-ton_DatenTimeout(IN:= anVisu <> 0 AND vonVisu = 0 AND NOT Sperre, PT:=T#3S);	
-ton_DatenUngueltig(IN:= sc = 20, PT:=T#500MS);	
+ton_DatenTimeout(IN:= anVisu <> 0 AND vonVisu = 0 AND NOT Sperre, PT:=GVL_0000.ctime_TimeoutVisuKomm);	
+ton_DatenUngueltig(IN:= sc = 20, PT:=GVL_0000.ctime_RetryVisuKomm);	
 
 CASE sc OF
 	0: 	// Anfrage starten und auf Antwort warten
