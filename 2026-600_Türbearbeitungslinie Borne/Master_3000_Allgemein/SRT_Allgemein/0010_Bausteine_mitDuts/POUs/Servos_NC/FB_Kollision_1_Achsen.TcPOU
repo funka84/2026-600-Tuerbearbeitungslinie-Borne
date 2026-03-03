@@ -105,8 +105,7 @@ FT_Error(CLK:= fbWritePara_1_min.Error
 // Fehlerhandling
 	IF 	in_Quittieren THEN
 		out_bError := FALSE;
-	ELSIF fbWritePara_1.Error
-	OR  fbWritePara_1_min.Error
+	ELSIF  fbWritePara_1_min.Error
 	OR  fbWritePara_1_max.Error
 	THEN
 		out_bError := TRUE;

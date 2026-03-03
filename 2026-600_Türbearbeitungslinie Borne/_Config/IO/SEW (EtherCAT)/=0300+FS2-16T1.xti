@@ -125,7 +125,7 @@
 				<ModuleIdent>0</ModuleIdent>
 				<ModuleIdent>67240065</ModuleIdent>
 				<ModuleIdent>67240066</ModuleIdent>
-				<Module Id="#x03090023" Type="FSoE empty" Class="">
+				<Module Id="#x03090032" Type="FSoE empty" Class="">
 					<Name>Module 2 (FSoE empty)</Name>
 					<ImageId>1003</ImageId>
 					<ModuleData>5900000000000000000000000000000000000000000000000000000000000000</ModuleData>
@@ -152,7 +152,7 @@
 				<ModuleIdent>0</ModuleIdent>
 				<ModuleIdent>67240065</ModuleIdent>
 				<ModuleIdent>67240066</ModuleIdent>
-				<Module Id="#x03090025" Type="FSoE empty" Class="">
+				<Module Id="#x03090034" Type="FSoE empty" Class="">
 					<Name>Module 4 (FSoE empty)</Name>
 					<ImageId>1003</ImageId>
 					<ModuleData>5900000000000000000000000000000000000000000000000000000000000000</ModuleData>

@@ -17,7 +17,7 @@
 		<ImageData Id="1002">424de6000000000000007600000028000000100000000e000000010004000000000070000000000000000000000000000000000000000000000000008000008000000080800080000000800080008080000080808000c0c0c0000000ff0000ff000000ffff00ff000000ff00ff00ffff0000ffffff00ffffffff8ffffffffffffff77ffffffffffffff7787fffffffff8ffffff7fffffff7ffffffff7ffffff8ff7777ff8fffff88ff8888ff88ffff88ff8888ff88fffff8ff7777ff7ffffff7ffffffff7fffffff7ffffff8fffffffff7877ffffffffffffff77fffffffffffffffffffffff</ImageData>
 		<ImageData Id="1003">424dd6020000000000003600000028000000100000000e0000000100180000000000a002000000000000000000000000000000000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000000000000000000000000000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00000000f2ff00f2ff00f2ff00f2ff00f2ff000000ffffffffffffffffffffffffffffffffffffffffffffffff00000000f2ff00f2ff00f2ff00f2ff00f2ff00f2ff00f2ff000000ffffffffffffffffffffffffffffffffffff00000000f2ff00f2ff00f2ff241ced241ced241ced00f2ff00f2ff00f2ff000000ffffffffffffffffffffffffffffff00000000f2ff00f2ff241ced241ced241ced241ced241ced00f2ff00f2ff000000ffffffffffffffffffffffffffffff00000000f2ff00f2ff241ced241ced241ced241ced241ced00f2ff00f2ff000000ffffffffffffffffffffffffffffff00000000f2ff00f2ff00f2ff241ced241ced241ced00f2ff00f2ff00f2ff000000ffffffffffffffffffffffffffffffffffff00000000f2ff00f2ff00f2ff00f2ff00f2ff00f2ff00f2ff000000ffffffffffffffffffffffffffffffffffffffffffffffff00000000f2ff00f2ff00f2ff00f2ff00f2ff000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000000000000000000000000000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff</ImageData>
 	</ImageDatas>
-	<Box Id="33" BoxType="9099" BoxFlags="#x00000020">
+	<Box Id="32" BoxType="9099" BoxFlags="#x00000020">
 		<Name>__FILENAME__</Name>
 		<ImageId>1000</ImageId>
 		<EtherCAT SlaveType="2" PdiType="#x0e08" MboxDataLinkLayer="true" StateMBoxPolling="true" CfgModeSafeOp="true" UnsupportedFrmw="true" CycleMBoxPollingTime="0" CoeType="15" FoeType="1" VendorId="#x00000059" ProductCode="#x0000000b" RevisionNo="#x00000002" InfoDataAddr="true" InfoDataSoeDS401="true" InfoDataDcTimes="true" WdDivider0400="25000" WdTime0410="0" DdTime0420="100" EnableWdDivider0400="true" EnableWdTime0410="true" EnableWdTime0420="true" TimeoutStateChange1="2000" TimeoutStateChange2="9000" TimeoutMailbox2="2000" DownloadSlotCfg="true" PortPhys="17" IdentificationAdo="308" SlotPdoIncrement="16" SlotIndexIncrement="2048" Type="MOVI-C MOVIDRIVE CiA402" Desc="MOVI-C MOVIDRIVE CiA402">
@@ -111,8 +111,8 @@
 				<ModuleIdent>67239938</ModuleIdent>
 				<ModuleIdent>67239939</ModuleIdent>
 				<ModuleIdent>67239940</ModuleIdent>
-				<Module Id="#x03090015" Type="Switching modes of operation" Class="">
-					<Name>=3520+FS2-11M1 (Y-Achse Riemenförderer)</Name>
+				<Module Id="#x03090011" Type="Switching modes of operation" Class="">
+					<Name>=3400+FS2-11M1 (X-Achse)</Name>
 					<ImageId>1002</ImageId>
 					<ModuleData>5900000001000204000000000000000000000000000000000000000000000000</ModuleData>
 					<PdoIndex>6656</PdoIndex>
@@ -125,7 +125,7 @@
 				<ModuleIdent>0</ModuleIdent>
 				<ModuleIdent>67240065</ModuleIdent>
 				<ModuleIdent>67240066</ModuleIdent>
-				<Module Id="#x0309001c" Type="FSoE empty" Class="">
+				<Module Id="#x03090036" Type="FSoE empty" Class="">
 					<Name>Module 2 (FSoE empty)</Name>
 					<ImageId>1003</ImageId>
 					<ModuleData>5900000000000000000000000000000000000000000000000000000000000000</ModuleData>
@@ -138,8 +138,8 @@
 				<ModuleIdent>67239938</ModuleIdent>
 				<ModuleIdent>67239939</ModuleIdent>
 				<ModuleIdent>67239940</ModuleIdent>
-				<Module Id="#x03090022" Type="Switching modes of operation" Class="">
-					<Name>=3540+FS2-11M1 (Y-Achse)</Name>
+				<Module Id="#x0309001e" Type="Switching modes of operation" Class="">
+					<Name>=3400+FS2-12M1 (Y-Achse)</Name>
 					<ImageId>1002</ImageId>
 					<ModuleData>5900000001000204000000000000000000000000000000000000000000000000</ModuleData>
 					<PdoIndex>6688</PdoIndex>
@@ -152,7 +152,7 @@
 				<ModuleIdent>0</ModuleIdent>
 				<ModuleIdent>67240065</ModuleIdent>
 				<ModuleIdent>67240066</ModuleIdent>
-				<Module Id="#x03090024" Type="FSoE empty" Class="">
+				<Module Id="#x03090038" Type="FSoE empty" Class="">
 					<Name>Module 4 (FSoE empty)</Name>
 					<ImageId>1003</ImageId>
 					<ModuleData>5900000000000000000000000000000000000000000000000000000000000000</ModuleData>

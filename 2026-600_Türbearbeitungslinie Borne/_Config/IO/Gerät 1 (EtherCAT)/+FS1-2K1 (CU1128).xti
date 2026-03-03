@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<TcSmItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2012/07/TcSmProject" TcSmVersion="1.0" TcVersion="3.1.4026.20" ClassName="CFlbTermDef" SubType="9099">
+	<ImageDatas>
+		<ImageData Id="1000">424de6000000000000007600000028000000100000000e000000010004000000000000000000120b0000120b00001000000010000000b00034ff411f91ffff00ffff999999ffa3a3cfffd0d0d0ffdbdbdbff000000ff000000ff000000ff000000ff000000ff000000ff000000ff000000ff000000ff23333333333333222355066666666342000000666644444423660666666663422316666666666342111111666644444423166666666663422316666666666342111111666644444423166666666663422346666666666342444444666644444423466666666663422333333333333322</ImageData>
+		<ImageData Id="1001">424de6000000000000007600000028000000100000000e000000010004000000000000000000120b0000120b00001000000010000000411f91ffff00ffff999999ffa3a3cfffd0d0d0ffdbdbdbff000000ff000000ff000000ff000000ff000000ff000000ff000000ff000000ff000000ff000000ff12222222222222111244355555555201333333555500000012553555555552011235555555555231333333555533333312355555555552311235555555555231333333555533333312355555555552311205555555555231000000555533333312055555555552311222222222222211</ImageData>
+		<ImageData Id="1002">424de6000000000000007600000028000000100000000e000000010004000000000000000000120b0000120b00001000000010000000411f91ffff00ffff999999ffa3a3cfffd0d0d0ffdbdbdbff000000ff000000ff000000ff000000ff000000ff000000ff000000ff000000ff000000ff000000ff12222222222222111244355555555231333333555533333312553555555552311235555555555201333333555500000012355555555552011235555555555201333333555500000012355555555552011235555555555201333333555500000012355555555552011222222222222211</ImageData>
+	</ImageDatas>
+	<Box Id="38" BoxType="9099">
+		<Name>__FILENAME__</Name>
+		<ImageId>1000</ImageId>
+		<EtherCAT SlaveType="1" PdiType="#x0d00" CycleMBoxPollingTime="0" VendorId="#x00000002" ProductCode="#x04685432" RevisionNo="#x00020000" PortPhys="4881" SubdevicePorts="4" MaxSlotCount="256" MaxSlotGroupCount="1" SlotPdoIncrement="1" SlotIndexIncrement="16" Type="CU1128 6x EtherCAT junction" Desc="CU1128"/>
+		<Box File="+FS1-3K1 (EK1100).xti" Id="1">
+			<EtherCAT PortABoxInfo="#x03000026"/>
+		</Box>
+		<Box File="=3100+FS2-16T1 (Bohraggr Schlosskastenfräser).xti" Id="21">
+			<EtherCAT PortABoxInfo="#x01000026"/>
+		</Box>
+		<Box File="=3100+FS2-17T1 (Bohraggr Vorbohren).xti" Id="22">
+			<EtherCAT PortABoxInfo="#x01000015"/>
+		</Box>
+		<Box File="=3100+FS2-18T1 (Bohraggr Stulpfräser).xti" Id="23">
+			<EtherCAT PortABoxInfo="#x01000016"/>
+		</Box>
+		<Box File="=3200+FS2-16T1 (Bohraggr Stufenbohrer).xti" Id="24">
+			<EtherCAT PortABoxInfo="#x01000017"/>
+		</Box>
+		<Box File="=3200+FS2-17T1 (Bohraggr Stulpfräser).xti" Id="25">
+			<EtherCAT PortABoxInfo="#x01000018"/>
+		</Box>
+		<Box File="=3300+FS2-16T1 (Bohraggr Schlüsselloch unten).xti" Id="41">
+			<EtherCAT PortABoxInfo="#x01000019"/>
+		</Box>
+		<Box File="=3400+FS2-16T1 (Bohraggr Schlüsselloch oben).xti" Id="42">
+			<EtherCAT PortABoxInfo="#x01000029"/>
+		</Box>
+		<Box Id="39" BoxType="9099">
+			<Name>+FS1-2K1 (CU1128-B)</Name>
+			<ImageId>1001</ImageId>
+			<EtherCAT SlaveType="1" PdiType="#x0d00" CycleMBoxPollingTime="0" VendorId="#x00000002" ProductCode="#x04685432" RevisionNo="#x00020001" PortPhys="4883" SubdevicePorts="5" MaxSlotCount="256" MaxSlotGroupCount="1" SlotPdoIncrement="1" SlotIndexIncrement="16" Type="CU1128 6x EtherCAT junction - Dev A" Desc="CU1128-B" PortABoxInfo="#x02000026"/>
+			<Box File="=3510+FS2-16T1 (Transport Schlossseite X-Achse).xti" Id="26">
+				<EtherCAT PortABoxInfo="#x03000027"/>
+			</Box>
+			<Box File="=3520+FS2-16T1 (Transport Bandseite X-Achse).xti" Id="27">
+				<EtherCAT PortABoxInfo="#x0100001a"/>
+			</Box>
+		</Box>
+		<Box Id="40" BoxType="9099">
+			<Name>+FS1-2K1 (CU1128-C)</Name>
+			<ImageId>1002</ImageId>
+			<EtherCAT SlaveType="1" PdiType="#x0d00" CycleMBoxPollingTime="0" VendorId="#x00000002" ProductCode="#x04685432" RevisionNo="#x00020002" PortPhys="4371" SubDeviceOut="true" SubdevicePorts="1" MaxSlotCount="256" MaxSlotGroupCount="1" SlotPdoIncrement="1" SlotIndexIncrement="16" Type="CU1128 6x EtherCAT junction - Dev B" Desc="CU1128-C" PortABoxInfo="#x02000027"/>
+			<Box File="+K110-1K1 (EK1100).xti" Id="7">
+				<EtherCAT PortABoxInfo="#x03000028"/>
+			</Box>
+		</Box>
+	</Box>
+</TcSmItem>

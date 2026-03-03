@@ -1424,7 +1424,7 @@ External Setpoint Generation:
 			</Relations>
 		</DataType>
 	</DataTypes>
-	<Axis Id="3" CreateSymbols="true" AxisType="1" SimulationMode="true">
+	<Axis Id="3" CreateSymbols="true" AxisType="1">
 		<Name>__FILENAME__</Name>
 		<AxisPara>
 			<OtherSettings AllowMotionCmdToSlave="true"/>
@@ -1568,7 +1568,7 @@ External Setpoint Generation:
 	</Axis>
 	<Mappings>
 		<OwnerA>
-			<OwnerB Name="TIID^Device 1 (EtherCAT)^=0300+FS2-14T1">
+			<OwnerB Name="TIID^SEW (EtherCAT)^=0300+FS2-14T1">
 				<Link VarA="Drive^Inputs^In^nDataIn3[0]" VarB="=3100+FS2-14M1 (Z-Achse)^Inputs^Torque actual value"/>
 				<Link VarA="Drive^Inputs^In^nDcOutputTime" VarB="InfoData^DcOutputShift"/>
 				<Link VarA="Drive^Inputs^In^nState1" VarB="=3100+FS2-14M1 (Z-Achse)^Inputs^Status word" Size="8"/>

@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <TcSmItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2012/07/TcSmProject" TcSmVersion="1.0" TcVersion="3.1.4026.20" ClassName="CDevEthernetProtocolNvDef" SubType="112">
-	<Device Id="2" Disabled="true" DevType="112" AmsPort="28674" AmsNetId="169.254.68.135.3.1" RemoteName="Gerät 2 (EtherCAT Automation Protocol)" SimulationMode="true">
+	<Device Id="2" DevType="112" AmsPort="28674" AmsNetId="169.254.68.135.3.1" RemoteName="Gerät 2 (EtherCAT Automation Protocol)">
 		<Name>__FILENAME__</Name>
 		<AddressInfo>
 			<Pnp>
-				<DeviceDesc></DeviceDesc>
-				<DeviceName></DeviceName>
-				<DeviceData>000000000000</DeviceData>
+				<DeviceDesc>X105_FREE (TwinCAT-Intel PCI Ethernet Adapter (Giga</DeviceDesc>
+				<DeviceName>\DEVICE\{8C0B6BFA-9823-4226-BC24-8951892A5A69}</DeviceName>
+				<DeviceData>000105ab7706</DeviceData>
 			</Pnp>
 		</AddressInfo>
 		<Image Id="5" AddrType="1" ImageType="3">
@@ -14,7 +14,7 @@
 		</Image>
 		<Box File="Data_Out (Publisher).xti" Id="34"/>
 		<Box File="Data_In (Subscriber).xti" Id="35"/>
-		<Ethernet/>
+		<Ethernet DeviceDesc="X105_FREE (TwinCAT-Intel PCI Ethernet Adapter (Gigabit) V2 #3)"/>
 		<Eap EapDeviceGuid="{7E719D4C-275B-46AA-9368-0F90BF7A25AB}"/>
 	</Device>
 </TcSmItem>

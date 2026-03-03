@@ -7,7 +7,7 @@
 		<Name>__FILENAME__</Name>
 		<ImageId>1000</ImageId>
 		<EtherCAT SlaveType="1" PdiType="#x0d00" CycleMBoxPollingTime="0" VendorId="#x00000002" ProductCode="#x044c2c52" RevisionNo="#x00120000" PortPhys="305" MaxSlotCount="256" MaxSlotGroupCount="1" SlotPdoIncrement="1" SlotIndexIncrement="16" Type="EK1100 EtherCAT-Koppler (2A E-Bus)" Desc="EK1100"/>
-		<Box File="+FS1-3K2 (EL6070-0033).xti" Id="19">
+		<Box File="+FS1-3K2 (EL6070).xti" Id="19">
 			<EtherCAT PortABoxInfo="#x01000001"/>
 		</Box>
 		<Box File="+FS1-3K3 (EL1918).xti" Id="4">
