@@ -17,7 +17,7 @@ VAR
 END_VAR
     ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[i := i + 3;
+      <ST><![CDATA[i := i + 1;
 
 // Fehlerhandling
 tof_Quittieren(IN:= GVL_Visu_0000.quittieren, PT:=T#250MS , Q=> GVL_0000.stoerung_quitt, ET=> );
