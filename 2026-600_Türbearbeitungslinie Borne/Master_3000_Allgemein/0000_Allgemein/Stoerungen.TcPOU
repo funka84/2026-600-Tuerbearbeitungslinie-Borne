@@ -133,7 +133,18 @@ GVL_Meldungen.Meldungen_0000.Nr_015 S= NOT GVL_Safety.fb_Info_FS1_3K3.bChannel3 
 
 // Störung 16 - Stillstandsüberwachung 
 GVL_Meldungen.Meldungen_0000.Nr_016 S= NOT GVL_Safety.fb_Info_FS1_3K3.bChannel5 OR NOT GVL_Safety.fb_Info_FS1_3K3.bChannel6;
-]]></ST>
+
+// Störung 17 - Antrieb =3510+FS1-6T1 Kommunikation gestört, Steuerspannung einschalten
+GVL_Meldungen.Meldungen_0000.Nr_017 := EAs_3510.e_state_X_Achse.eState <> enum_State.STATE_OP AND  GVL_Safety.in_State_FBrs_Steuerspannung.eState <> enum_FB_RS.set;
+
+// Störung 18 - Antrieb =3510+FS1-6T1 Kommunikation gestört, Steuerspannung einschalten
+GVL_Meldungen.Meldungen_0000.Nr_018 := EAs_3510.e_state_X_Achse.eState <> enum_State.STATE_OP AND  GVL_Safety.in_State_FBrs_Steuerspannung.eState = enum_FB_RS.set;
+
+// Störung 19 - Antrieb =3510+FS1-6T1 Kommunikation gestört, Steuerspannung einschalten
+GVL_Meldungen.Meldungen_0000.Nr_019 := EAs_3520.e_state_X_Achse.eState <> enum_State.STATE_OP AND  GVL_Safety.in_State_FBrs_Steuerspannung.eState <> enum_FB_RS.set;
+
+// Störung 20 - Antrieb =3510+FS1-6T1 Kommunikation gestört, Steuerspannung einschalten
+GVL_Meldungen.Meldungen_0000.Nr_020 := EAs_3520.e_state_X_Achse.eState <> enum_State.STATE_OP AND  GVL_Safety.in_State_FBrs_Steuerspannung.eState = enum_FB_RS.set;]]></ST>
       </Implementation>
     </Action>
     <Action Name="A_Warnung" Id="{094dfd80-9bcc-4a7e-8fb2-ccd6aa5493be}">

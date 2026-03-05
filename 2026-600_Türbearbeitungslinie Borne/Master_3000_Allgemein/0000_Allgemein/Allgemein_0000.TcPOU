@@ -41,6 +41,18 @@ EAs_3000.a_Fehler := (GVL_Meldungen.Stoerung_0000 OR GVL_Meldungen.Stoerung_3000
 
 ton_SEW_Einschalten(IN:= , PT:= , Q=> , ET=> );
 tof_SEW_Ausschalten(IN:= , PT:= , Q=> , ET=> );
+
+
+// ----------------------------------------------------------
+// Freigabe für die Anlage
+// ----------------------------------------------------------
+GVL_3000.bFreigabe := 	GVL_Safety.in_State_FBrs_Steuerspannung.eState = enum_FB_RS.set
+						AND GVL_3000.bDruckluft_Bereit
+						AND EAs_3000.e_FR_0300_SEW_Bremswiderstand_Versorgungsmodul_ist_OK
+						AND EAs_3000.a_FR_0300_SEW_Netzschuetz_Versorgungsmodul_EIN_1Min_10sec_Ein_Ausschaltzeit
+						AND EAs_3510.e_state_X_Achse.eState <> enum_State.STATE_OP
+						AND EAs_3520.e_state_X_Achse.eState <> enum_State.STATE_OP;
+						
 ]]></ST>
     </Implementation>
     <Action Name="A_USB_Panel" Id="{0e863f73-6350-42e1-8bf4-50589a2aab1a}">

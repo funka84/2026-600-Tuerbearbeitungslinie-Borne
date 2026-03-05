@@ -21,10 +21,10 @@ STRUCT
 	Nr_014		:BOOL;// #MText: 3000 Fräse - Not-Halt Hauptbedienstelle +FS1 betätigt #HText: #Prio: #BMK: 
 	Nr_015		:BOOL;// #MText: 3000 Fräse - Not-Halt Schaltschrank +FS1 betätigt +FS1#HText: #Prio: #BMK:     
 	Nr_016		:BOOL;// #MText: 3000 Fräse - Stillstandsüberwachung +FS1 #HText: #Prio: #BMK:
-	Nr_017		:BOOL;// #MText: #HText: #Prio: #BMK:     
-	Nr_018		:BOOL;// #MText: #HText: #Prio: #BMK:
-	Nr_019		:BOOL;// #MText: #HText: #Prio: #BMK:     
-	Nr_020		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_017		:BOOL;// #MText: 3000 Fräse - Antrieb =3510+FS1-6T1 Kommunikation gestört, Steuerspannung einschalten #HText: #Prio:11 #BMK:     
+	Nr_018		:BOOL;// #MText: 3000 Fräse - Antrieb =3510+FS1-6T1 Kommunikation gestört #HText: #Prio:1 #BMK:  
+	Nr_019		:BOOL;// #MText: 3000 Fräse - Antrieb =3520+FS1-6T1 Kommunikation gestört, Steuerspannung einschalten #HText: #Prio:11 #BMK:  
+	Nr_020		:BOOL;// #MText: 3000 Fräse - Antrieb =3520+FS1-6T1 Kommunikation gestört #HText: #Prio:1 #BMK:  
 	Nr_021		:BOOL;// #MText: #HText: #Prio: #BMK:     
 	Nr_022		:BOOL;// #MText: #HText: #Prio: #BMK:     
 	Nr_023		:BOOL;// #MText: #HText: #Prio: #BMK:      
@@ -204,7 +204,7 @@ STRUCT
 	Nr_196		:BOOL;// #MText: #HText: #Prio: #BMK:
 	Nr_197		:BOOL;// #MText: #HText: #Prio: #BMK:
 	Nr_198		:BOOL;// #MText: #HText: #Prio: #BMK:
-	Nr_199		:BOOL;// #MText: #HText: #Prio: #BMK:
+//	Nr_199		:BOOL;// #MText: #HText: #Prio: #BMK:
 	
 END_STRUCT
 END_TYPE

@@ -30,6 +30,7 @@ VAR_GLOBAL
 	bAchsen_Freigabe					: BOOL;
 	bAchsen_Reglersperre				: BOOL;
 	bDruckluft_Bereit					: BOOL;
+	bFreigabe							: BOOL; // Freigabe für Anlage, Steuerspannung eingeschaltet, Druckluft Ok, Versorungsmodul ok, HotConnect Gruppe State OP
 	
 	bMode_Test							: BOOL;
 	bMode_Sim_Achsen					: BOOL;

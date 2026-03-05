@@ -275,6 +275,12 @@
 				<Link VarA="PlcTask Outputs^EAs_3400.a_Bohraggr_Schluessel_ob^PD_4_Sollverzoegerung" VarB="Module 1 (Standard 16 PD)^Outputs 16 PD^PO 4" AutoLink="true"/>
 				<Link VarA="PlcTask Outputs^EAs_3400.a_Bohraggr_Schluessel_ob^PD_5_Digitalausgaenge" VarB="Module 1 (Standard 16 PD)^Outputs 16 PD^PO 5" AutoLink="true"/>
 			</OwnerB>
+			<OwnerB Name="TIID^Device 1 (EtherCAT)^=3510+FS1-6T1">
+				<Link VarA="PlcTask Inputs^EAs_3510.e_state_X_Achse" VarB="InfoData^State" AutoLink="true"/>
+			</OwnerB>
+			<OwnerB Name="TIID^Device 1 (EtherCAT)^=3520+FS1-6T1">
+				<Link VarA="PlcTask Inputs^EAs_3520.e_state_X_Achse" VarB="InfoData^State" AutoLink="true"/>
+			</OwnerB>
 			<OwnerB Name="TIID^Panel (USB)^Box 0 (CPX8XX)">
 				<Link VarA="PlcTask Inputs^EAs_3000.ea_USB_Bereich_1.Eingang.E1" VarB="Term 2 (CPx9xx-8)^Channel 1^Taste 1" AutoLink="true" Size="1"/>
 				<Link VarA="PlcTask Inputs^EAs_3000.ea_USB_Bereich_1.Eingang.E2" VarB="Term 2 (CPx9xx-8)^Channel 1^Taste 2" AutoLink="true" Size="1"/>

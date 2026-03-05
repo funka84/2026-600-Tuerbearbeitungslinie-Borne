@@ -25,8 +25,10 @@ VAR_GLOBAL
     //_______________________________________________________
 	{attribute 'TcNcAxis':='=3510+FS1-6T1 (X-Laengsanschlag)'}	
 	ea_X_Achse					: Axis_ref;				// Schnittstellen Struktur zwischen NC<->SPS
-	
-	
+	    
+  	{attribute 'TcLinkTo':= 'TIID^Device 1 (EtherCAT)^=3510+FS1-6T1^InfoData^State'}
+	e_state_X_Achse				AT %I* : union_State;		// Überwachung Kommunikations Schrittmotor Nanotec
+				
     // Eingaenge
     //_______________________________________________________
 
