@@ -1427,10 +1427,11 @@ External Setpoint Generation:
 	<Axis Id="2" CreateSymbols="true" AxisType="1">
 		<Name>__FILENAME__</Name>
 		<AxisPara>
+			<Velo SlowManual="10" FastManual="60"/>
 			<OtherSettings AllowMotionCmdToSlave="true"/>
 		</AxisPara>
 		<Encoder Name="Enc" EncType="19">
-			<EncPara MaxCount="#xffffffff">
+			<EncPara ScaleFactorNumerator="3.05176e-05" MaxCount="#xffffffff">
 				<SoftEndMinControl Enable="true"/>
 				<SoftEndMaxControl Enable="true" Range="20"/>
 			</EncPara>

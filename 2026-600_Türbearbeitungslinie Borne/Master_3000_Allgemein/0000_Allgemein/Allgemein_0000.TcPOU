@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Allgemein_0000" Id="{cf1946db-6017-4363-9c54-14c7693b2a70}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM Allgemein_0000
+VAR
+	tof_Quittieren				: TOF;
+	ton_SEW_Einschalten			: TON;
+	tof_SEW_Ausschalten			: TOF;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+A_USB_Panel();
+
+// ----------------------------------------------------------
+// Signale weiterleiten
+// ----------------------------------------------------------
+GVL_Visu_3000.override 						:= GVL_Visu_0000.override;
+GVL_Visu_3000.SteuerStatus.reset 			:= GVL_Visu_0000.SteuerStatus.reset;
+GVL_Visu_3000.SteuerStatus.auto_pause 		:= GVL_Visu_0000.SteuerStatus.auto_pause;
+GVL_Visu_3000.SteuerStatus.auto_start 		:= GVL_Visu_0000.SteuerStatus.auto_start;
+GVL_Visu_3000.SteuerStatus.auto_stop 		:= GVL_Visu_0000.SteuerStatus.auto_stop;
+GVL_Visu_3000.SteuerStatus.grundstellung 	:= GVL_Visu_0000.SteuerStatus.grundstellung;
+
+tof_Quittieren(IN:= GVL_Visu_0000.quittieren OR EAs_3000.e_Quittieren, PT:= T#750MS, Q=> GVL_Visu_3000.quittieren, ET=> );
+	
+// ----------------------------------------------------------
+// Steuerspannung
+// ----------------------------------------------------------
+GVL_Safety.out_Steuer_Ein := EAs_3000.e_Steuerspannung_ein;
+GVL_Safety.out_Steuer_Aus := EAs_3000.e_Steuerspannung_aus;
+
+EAs_3000.a_Led_Steuerspannung_ein := GVL_Safety.in_State_FBrs_Steuerspannung.eState = enum_FB_RS.set;
+EAs_3000.a_Led_Steuerspannung_aus := GVL_Safety.in_State_FBrs_Steuerspannung.eState = enum_FB_RS.safe;
+
+EAs_3000.a_Fehler := (GVL_Meldungen.Stoerung_0000 OR GVL_Meldungen.Stoerung_3000) AND GVL_Blink.t_500ms;
+
+// ----------------------------------------------------------
+// SEW Versorgungsmodul
+// ----------------------------------------------------------
+
+ton_SEW_Einschalten(IN:= , PT:= , Q=> , ET=> );
+tof_SEW_Ausschalten(IN:= , PT:= , Q=> , ET=> );
+]]></ST>
+    </Implementation>
+    <Action Name="A_USB_Panel" Id="{0e863f73-6350-42e1-8bf4-50589a2aab1a}">
+      <Implementation>
+        <ST><![CDATA[EAs_3000.e_Steuerspannung_ein 			:= EAs_3000.ea_USB_Bereich_1.Eingang.E1;
+EAs_3000.e_Steuerspannung_aus 			:= EAs_3000.ea_USB_Bereich_1.Eingang.E2;
+
+EAs_3000.e_Quittieren 					:= EAs_3000.ea_USB_Bereich_3.Eingang.E4;
+
+EAs_3000.ea_USB_Bereich_1.Ausgang.A1 	:= EAs_3000.a_Led_Steuerspannung_ein;
+EAs_3000.ea_USB_Bereich_1.Ausgang.A2 	:= EAs_3000.a_Led_Steuerspannung_aus;
+
+EAs_3000.ea_USB_Bereich_3.Ausgang.A4 	:= EAs_3000.a_Fehler;]]></ST>
+      </Implementation>
+    </Action>
+  </POU>
+</TcPlcObject>

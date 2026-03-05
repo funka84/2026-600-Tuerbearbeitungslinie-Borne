@@ -5,22 +5,22 @@
 STRUCT
 					  // #MText: Achtung ein Fehler #HText: Achtung eine Hilfe #Prio: 1-10 Error 11-20 Warnung 21-30 Info #BMK:	
 
-	Nr_001		:BOOL;// #MText: Steuerspannung AUS #HText: #Prio: #BMK:
+	Nr_001		:BOOL;// #MText: 3000 Fräse - Steuerspannung AUS #HText: #Prio: #BMK:
 	Nr_002		:BOOL;// #MText: 3000 Fräse - Druckluft kann nicht eingeschalten werden #HText: #Prio: #BMK: =FR.0900+FS1-1B1
 	Nr_003		:BOOL;// #MText: 3000 Fräse - Druckluft kann nicht ausgeschalten werden #HText: #Prio: #BMK: =FR.0900+FS1-1B1
-	Nr_004		:BOOL;// #MText: #HText: #Prio: #BMK: 
-	Nr_005		:BOOL;// #MText: #HText: #Prio: #BMK: 
-	Nr_006		:BOOL;// #MText: #HText: #Prio: #BMK: 
-	Nr_007		:BOOL;// #MText: #HText: #Prio: #BMK: 
+	Nr_004		:BOOL;// #MText: 3000 Fräse - Safety nicht betriebsbereit #HText: #Prio: 1 #BMK: 
+	Nr_005		:BOOL;// #MText: 3000 Fräse - Safety Funktionsstörung #HText: #Prio:1  #BMK: 
+	Nr_006		:BOOL;// #MText: 3000 Fräse - Safety Kommunikationsstörung #HText: #Prio:1  #BMK: 
+	Nr_007		:BOOL;// #MText: 3000 Fräse - Safety unbekannter Fehler #HText: #Prio:1  #BMK: 
 	Nr_008		:BOOL;// #MText: #HText: #Prio: #BMK: 
 	Nr_009		:BOOL;// #MText: #HText: #Prio: #BMK: 
-	Nr_010		:BOOL;// #MText: #HText: #Prio: #BMK: 
-	Nr_011		:BOOL;// #MText: #HText: #Prio: #BMK: 
-	Nr_012		:BOOL;// #MText: #HText: #Prio: #BMK: 
-	Nr_013		:BOOL;// #MText: #HText: #Prio: #BMK: 
-	Nr_014		:BOOL;// #MText: #HText: #Prio: #BMK: 
-	Nr_015		:BOOL;// #MText: #HText: #Prio: #BMK:     
-	Nr_016		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_010		:BOOL;// #MText: 3000 Fräse - Lastüberwachung 24V hat gelöst #HText: #Prio: 1 #BMK: 
+	Nr_011		:BOOL;// #MText: 3000 Fräse - SEW Bremswiderstand Versorungsmodul nicht betriebsbereit #HText: #Prio: #BMK: 
+	Nr_012		:BOOL;// #MText: 3000 Fräse - Schaltschranktür ist geöffnet oder Klimagerät nicht betriebsbereit #HText: #Prio: 11 #BMK: 
+	Nr_013		:BOOL;// #MText: 3000 Fräse - UPS Versorgung ist noch nicht ausreichend geladen#HText: #Prio: 21 #BMK: 
+	Nr_014		:BOOL;// #MText: 3000 Fräse - Not-Halt Hauptbedienstelle +FS1 betätigt #HText: #Prio: #BMK: 
+	Nr_015		:BOOL;// #MText: 3000 Fräse - Not-Halt Schaltschrank +FS1 betätigt +FS1#HText: #Prio: #BMK:     
+	Nr_016		:BOOL;// #MText: 3000 Fräse - Stillstandsüberwachung +FS1 #HText: #Prio: #BMK:
 	Nr_017		:BOOL;// #MText: #HText: #Prio: #BMK:     
 	Nr_018		:BOOL;// #MText: #HText: #Prio: #BMK:
 	Nr_019		:BOOL;// #MText: #HText: #Prio: #BMK:     
@@ -204,7 +204,7 @@ STRUCT
 	Nr_196		:BOOL;// #MText: #HText: #Prio: #BMK:
 	Nr_197		:BOOL;// #MText: #HText: #Prio: #BMK:
 	Nr_198		:BOOL;// #MText: #HText: #Prio: #BMK:
-//	Nr_199		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_199		:BOOL;// #MText: #HText: #Prio: #BMK:
 	
 END_STRUCT
 END_TYPE

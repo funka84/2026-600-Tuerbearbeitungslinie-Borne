@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
-  <POU Name="Hardware_0000" Id="{7e4181ca-3c1f-4c32-9b47-e2bd1bbdcb2c}" SpecialFunc="None">
+  <POU Name="Hardware_3000" Id="{7e4181ca-3c1f-4c32-9b47-e2bd1bbdcb2c}" SpecialFunc="None">
     <Declaration><![CDATA[
-PROGRAM Hardware_0000
+PROGRAM Hardware_3000
 VAR
     // Servos *********************************************************************
     //fbAchse                    : FB_Achse_NC_PTP_V4_1; 

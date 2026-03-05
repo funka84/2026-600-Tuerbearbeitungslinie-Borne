@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<GlobalVariables Crc="3685817969" Id="ff1423bb-5c3b-4e89-aa8e-98007f7cc55f" FileFormatVersion="1.0">
+<GlobalVariables Crc="3237566041" Id="ff1423bb-5c3b-4e89-aa8e-98007f7cc55f" FileFormatVersion="1.0">
   <Variable Id="3cea40c9-af43-4bfa-8900-21ff7db80c71">
     <Name>in_RM_Kreis_3</Name>
     <SourceUsages>
@@ -121,6 +121,36 @@
         <ChannelId>1</ChannelId>
         <FunctionId>1131179972</FunctionId>
       </AliasDeviceIoUsage>
+    </TargetUsages>
+  </Variable>
+  <Variable Id="27401051-d9c3-4965-9540-e7197947d9ef">
+    <Name>in_Steuer_Ein</Name>
+    <SourceUsages>
+      <AliasDeviceIoUsage Id="e451b278-e297-4c5b-9cb5-7e597da45a56">
+        <SdsId>29</SdsId>
+        <ChannelId>1</ChannelId>
+        <FunctionId>1131179973</FunctionId>
+      </AliasDeviceIoUsage>
+    </SourceUsages>
+    <TargetUsages>
+      <FbPortUsage Id="4f6ab1d7-5267-4887-9128-4e39376f816f">
+        <ModelElementId>65724295-db34-4512-82b2-84ebebfcc53e</ModelElementId>
+      </FbPortUsage>
+    </TargetUsages>
+  </Variable>
+  <Variable Id="19c17eba-9fd2-4124-a3dd-136530845cda">
+    <Name>in_Steuer_Aus</Name>
+    <SourceUsages>
+      <AliasDeviceIoUsage Id="c13ed76b-6ddf-44cd-a001-f13d92ddad12">
+        <SdsId>30</SdsId>
+        <ChannelId>1</ChannelId>
+        <FunctionId>1131179973</FunctionId>
+      </AliasDeviceIoUsage>
+    </SourceUsages>
+    <TargetUsages>
+      <FbPortUsage Id="1999f621-dbf6-4457-b179-7f5d3ffd50a0">
+        <ModelElementId>4ac0093e-9f70-4d9a-beae-6fd6326de437</ModelElementId>
+      </FbPortUsage>
     </TargetUsages>
   </Variable>
 </GlobalVariables>

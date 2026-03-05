@@ -6,7 +6,7 @@
 TYPE enum_FB_RS :
 (
 	undefine := 0,
-	stop =: 2,
+	stop := 2,
 	safe := 3,
 	set := 9
 );

@@ -10,9 +10,16 @@ END_VAR
     <Implementation>
       <ST><![CDATA[
 // ----------------------------------------------------------
+// Allgemein
+// ----------------------------------------------------------
+Allgemein_0000();
+
+PRG_Blink();
+
+// ----------------------------------------------------------
 // Hardware-Aufrufe
 // ----------------------------------------------------------
-Hardware_0000();
+Hardware_3000();
 Hardware_3100();
 Hardware_3200();
 Hardware_3300();
@@ -28,7 +35,7 @@ Hardware_3540();
 Ablauf_Safety();
 Stoerungen();
 
-Ablauf_0000();
+Ablauf_3000();
 Ablauf_3100();
 Ablauf_3200();
 Ablauf_3300();
@@ -38,6 +45,16 @@ Ablauf_3520();
 Ablauf_3530();
 Ablauf_3540();
 
+// ----------------------------------------------------------
+// Signale löschen
+// ----------------------------------------------------------
+GVL_Visu_0000.SteuerStatus.reset:=FALSE;
+GVL_Visu_0000.SteuerStatus.auto_start:=FALSE;
+GVL_Visu_0000.SteuerStatus.auto_stop:=FALSE;
+GVL_Visu_0000.SteuerStatus.auto_pause:=FALSE;
+GVL_Visu_0000.SteuerStatus.grundstellung:=FALSE;
+GVL_Visu_0000.quittieren := FALSE;
+	
       ]]></ST>
     </Implementation>
   </POU>

@@ -48,7 +48,7 @@ GVL_3100.Tuer_Freigabe := GVL_3100.Tuer_Anwahl AND NOT Schritt_Freigabe;
 
 IF GVL_3100.sk_Freigabe 
 AND NOT GVL_3100.Tuer_Anwahl
-AND NOT GVL_Visu_0000.SteuerStatus.auto_pause THEN
+AND NOT GVL_Visu_3000.SteuerStatus.auto_pause THEN
 	Schritt_Freigabe := TRUE;
 	ton_Schritt_Freigabe.IN := FALSE;
 ELSE
@@ -61,7 +61,7 @@ END_IF
 
 // Timer und Flanken
 //________________________________________________________________________________________
-ton_Schritt_Freigabe(IN:= , PT:= GVL_0000.ctime_TimeoutSchrittFreigabe, Q=> , ET=> );
+ton_Schritt_Freigabe(IN:= , PT:= GVL_3000.ctime_TimeoutSchrittFreigabe, Q=> , ET=> );
 
 RT_TeilGebucht(CLK:= GVL_Visu_3100.Daten_gebucht, Q=> );
 FT_TeilGebucht(CLK:= GVL_Visu_3100.Daten_gebucht, Q=> );
@@ -179,7 +179,6 @@ END_IF
 	IF GVL_Visu_3100.SteuerStatus.reset THEN
 		GVL_3100.sk := 0;
 		Schritt_Freigabe := FALSE;	
-		GVL_Visu_3100.SteuerStatus.reset := FALSE;
 		GVL_Visu_3100.KommAnVisu := 0;
 		GVL_Visu_3100.KommVonVisu := 0;
 	END_IF
@@ -191,7 +190,7 @@ END_IF
     <Action Name="A_Read_GCode" Id="{21d95c9a-afe4-4e1c-a2ab-6842ff14166c}">
       <Implementation>
         <ST><![CDATA[	
-	strGcodeFile := CONCAT(GVL_0000.Pfad_NCI,GVL_VISU_3100.aktJob.Programm);
+	strGcodeFile := CONCAT(GVL_3000.Pfad_NCI,GVL_VISU_3100.aktJob.Programm);
 	strGcodeFile := CONCAT(strGcodeFile, '.nc');
 	
 	FB_Open(
@@ -292,8 +291,8 @@ END_VAR
 // Starttrigger belegen als Antwort wird auf die 5= gut oder 9=schlecht gewartet.
 // Kommunikationstimeout nach 5 Sekunden und wird automatisch wieder neugestartet
 
-ton_DatenTimeout(IN:= anVisu <> 0 AND vonVisu = 0 AND NOT Sperre, PT:=GVL_0000.ctime_TimeoutVisuKomm);	
-ton_DatenUngueltig(IN:= sc = 20, PT:=GVL_0000.ctime_RetryVisuKomm);	
+ton_DatenTimeout(IN:= anVisu <> 0 AND vonVisu = 0 AND NOT Sperre, PT:=GVL_3000.ctime_TimeoutVisuKomm);	
+ton_DatenUngueltig(IN:= sc = 20, PT:=GVL_3000.ctime_RetryVisuKomm);	
 
 CASE sc OF
 	0: 	// Anfrage starten und auf Antwort warten
@@ -353,8 +352,8 @@ END_VAR
 // Starttrigger belegen als Antwort wird auf die 5= gut oder 9=schlecht gewartet.
 // Kommunikationstimeout nach 5 Sekunden und wird automatisch wieder neugestartet
 
-ton_DatenTimeout(IN:= anVisu <> 0 AND vonVisu = 0 AND NOT Sperre, PT:=GVL_0000.ctime_TimeoutVisuKomm);	
-ton_DatenUngueltig(IN:= sc = 20, PT:=GVL_0000.ctime_RetryVisuKomm);	
+ton_DatenTimeout(IN:= anVisu <> 0 AND vonVisu = 0 AND NOT Sperre, PT:=GVL_3000.ctime_TimeoutVisuKomm);	
+ton_DatenUngueltig(IN:= sc = 20, PT:=GVL_3000.ctime_RetryVisuKomm);	
 
 CASE sc OF
 	0: 	// Anfrage starten und auf Antwort warten

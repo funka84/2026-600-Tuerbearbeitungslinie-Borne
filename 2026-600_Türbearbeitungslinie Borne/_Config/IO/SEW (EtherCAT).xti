@@ -30,6 +30,6 @@
 		<Box File="=0300+FS2-18T1.xti" Id="33">
 			<EtherCAT PortABoxInfo="#x01000020"/>
 		</Box>
-		<EtherCAT DcSyncMode="2"/>
+		<EtherCAT EpMacAddr="020105300000" DcSyncMode="2" EpIpAddr="-1062728962" EpMaxCon="32" EpFirstConAddr="57344" EnableVirtualSwitch="true" MaxSwitchPorts="2" MaxSwitchFrames="120" MaxSwitchMACs="100"/>
 	</Device>
 </TcSmItem>

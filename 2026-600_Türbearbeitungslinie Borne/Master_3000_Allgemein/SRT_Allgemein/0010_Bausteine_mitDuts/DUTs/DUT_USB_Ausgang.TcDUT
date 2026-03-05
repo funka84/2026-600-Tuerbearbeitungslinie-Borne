@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="DUT_USB_Ausgang" Id="{7adc1ccf-4e7e-4e0c-8f03-6116e30a8025}">
+    <Declaration><![CDATA[TYPE DUT_USB_Ausgang :
+STRUCT
+	A1		AT %Q* : BOOL;
+	A2		AT %Q* : BOOL;
+	A3		AT %Q* : BOOL;
+	A4		AT %Q* : BOOL;
+	A5		AT %Q* : BOOL;
+	A6		AT %Q* : BOOL;
+	A7		AT %Q* : BOOL;
+	A8		AT %Q* : BOOL;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

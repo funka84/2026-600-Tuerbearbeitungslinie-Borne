@@ -172,6 +172,7 @@ END_VAR]]></Declaration>
 		AND NOT Reset
 		AND NOT ProgAnw.bBusy 
 		AND in_PName <>''
+		AND in_PName <>'0'
 	THEN
 		PLoad:=TRUE;
 		ELSE

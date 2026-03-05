@@ -1,0 +1,382 @@
+<?xml version="1.0"?>
+<TcSmItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2012/07/TcSmProject" TcSmVersion="1.0" TcVersion="3.1.4026.20" ClassName="CBk9500Def" SubType="9591">
+	<Box Id="3" BoxType="9591" AmsPort="28160">
+		<Name>__FILENAME__</Name>
+		<ImageId>88</ImageId>
+		<Vars VarGrpType="1">
+			<Name>Eingänge</Name>
+			<Var>
+				<Name>PanelState</Name>
+				<Type>BITARR32</Type>
+			</Var>
+			<Var>
+				<Name>CouplerState</Name>
+				<Comment><![CDATA[0x0000 = No error
+0x0001 = Terminal bus error
+0x0002 = Configuration error]]></Comment>
+				<Type>UINT</Type>
+				<BitOffs>32</BitOffs>
+			</Var>
+			<Var>
+				<Name>BoxState</Name>
+				<Comment><![CDATA[0x0000 = No error
+0x0001 = No actual inputs
+0x0004 = Not found
+]]></Comment>
+				<Type>UINT</Type>
+				<BitOffs>80</BitOffs>
+			</Var>
+			<Var>
+				<Name>MissedCnt</Name>
+				<Comment><![CDATA[Incremented each time new
+inputs missed]]></Comment>
+				<Type>UINT</Type>
+				<BitOffs>96</BitOffs>
+			</Var>
+		</Vars>
+		<Vars VarGrpType="2">
+			<Name>Ausgänge</Name>
+			<Var>
+				<Name>PanelCtrl</Name>
+				<Comment><![CDATA[PanelCtrl[5] = Back Light Off
+]]></Comment>
+				<Type>BITARR32</Type>
+			</Var>
+		</Vars>
+		<BusCoupler ComplexTermSupport="true" NewHardware="true">
+			<Flags SupportVirtualTerms="true" HasNoEndTerm="true"/>
+			<Term Id="1" TermType="#x3ea" Fieldbus="9">
+				<Name>Klemme 1 (KL1002)</Name>
+				<ImageId>7</ImageId>
+				<Vars VarGrpType="3">
+					<Name>Kanal 1</Name>
+					<Var>
+						<Name>Eingang</Name>
+						<Type>BIT</Type>
+						<BitOffs>48</BitOffs>
+						<InOut>0</InOut>
+					</Var>
+				</Vars>
+				<Vars VarGrpType="3">
+					<Name>Kanal 2</Name>
+					<Var>
+						<Name>Eingang</Name>
+						<Type>BIT</Type>
+						<BitOffs>49</BitOffs>
+						<InOut>0</InOut>
+					</Var>
+				</Vars>
+			</Term>
+			<Term Id="2" TermType="#x370026ac" Fieldbus="9">
+				<Name>Klemme 2 (CPx9xx-8)</Name>
+				<ImageId>62</ImageId>
+				<Vars VarGrpType="3">
+					<Name>Kanal 1</Name>
+					<Var>
+						<Name>Taste 1</Name>
+						<Type>BIT</Type>
+						<BitOffs>50</BitOffs>
+						<InOut>0</InOut>
+					</Var>
+					<Var>
+						<Name>Taste 2</Name>
+						<Type>BIT</Type>
+						<BitOffs>51</BitOffs>
+						<InOut>0</InOut>
+					</Var>
+					<Var>
+						<Name>Taste 3</Name>
+						<Type>BIT</Type>
+						<BitOffs>52</BitOffs>
+						<InOut>0</InOut>
+					</Var>
+					<Var>
+						<Name>Taste 4</Name>
+						<Type>BIT</Type>
+						<BitOffs>53</BitOffs>
+						<InOut>0</InOut>
+					</Var>
+					<Var>
+						<Name>Taste 5</Name>
+						<Type>BIT</Type>
+						<BitOffs>54</BitOffs>
+						<InOut>0</InOut>
+					</Var>
+					<Var>
+						<Name>Taste 6</Name>
+						<Type>BIT</Type>
+						<BitOffs>55</BitOffs>
+						<InOut>0</InOut>
+					</Var>
+					<Var>
+						<Name>Taste 7</Name>
+						<Type>BIT</Type>
+						<BitOffs>56</BitOffs>
+						<InOut>0</InOut>
+					</Var>
+					<Var>
+						<Name>Taste 8</Name>
+						<Type>BIT</Type>
+						<BitOffs>57</BitOffs>
+						<InOut>0</InOut>
+					</Var>
+					<Var>
+						<Name>LED 1</Name>
+						<Type>BIT</Type>
+						<BitOffs>32</BitOffs>
+						<InOut>1</InOut>
+					</Var>
+					<Var>
+						<Name>LED 2</Name>
+						<Type>BIT</Type>
+						<BitOffs>33</BitOffs>
+						<InOut>1</InOut>
+					</Var>
+					<Var>
+						<Name>LED 3</Name>
+						<Type>BIT</Type>
+						<BitOffs>34</BitOffs>
+						<InOut>1</InOut>
+					</Var>
+					<Var>
+						<Name>LED 4</Name>
+						<Type>BIT</Type>
+						<BitOffs>35</BitOffs>
+						<InOut>1</InOut>
+					</Var>
+					<Var>
+						<Name>LED 5</Name>
+						<Type>BIT</Type>
+						<BitOffs>36</BitOffs>
+						<InOut>1</InOut>
+					</Var>
+					<Var>
+						<Name>LED 6</Name>
+						<Type>BIT</Type>
+						<BitOffs>37</BitOffs>
+						<InOut>1</InOut>
+					</Var>
+					<Var>
+						<Name>LED 7</Name>
+						<Type>BIT</Type>
+						<BitOffs>38</BitOffs>
+						<InOut>1</InOut>
+					</Var>
+					<Var>
+						<Name>LED 8</Name>
+						<Type>BIT</Type>
+						<BitOffs>39</BitOffs>
+						<InOut>1</InOut>
+					</Var>
+				</Vars>
+			</Term>
+			<Term Id="3" TermType="#x370026ac" Fieldbus="9">
+				<Name>Klemme 3 (CPx9xx-8)</Name>
+				<ImageId>62</ImageId>
+				<Vars VarGrpType="3">
+					<Name>Kanal 1</Name>
+					<Var>
+						<Name>Taste 1</Name>
+						<Type>BIT</Type>
+						<BitOffs>58</BitOffs>
+						<InOut>0</InOut>
+					</Var>
+					<Var>
+						<Name>Taste 2</Name>
+						<Type>BIT</Type>
+						<BitOffs>59</BitOffs>
+						<InOut>0</InOut>
+					</Var>
+					<Var>
+						<Name>Taste 3</Name>
+						<Type>BIT</Type>
+						<BitOffs>60</BitOffs>
+						<InOut>0</InOut>
+					</Var>
+					<Var>
+						<Name>Taste 4</Name>
+						<Type>BIT</Type>
+						<BitOffs>61</BitOffs>
+						<InOut>0</InOut>
+					</Var>
+					<Var>
+						<Name>Taste 5</Name>
+						<Type>BIT</Type>
+						<BitOffs>62</BitOffs>
+						<InOut>0</InOut>
+					</Var>
+					<Var>
+						<Name>Taste 6</Name>
+						<Type>BIT</Type>
+						<BitOffs>63</BitOffs>
+						<InOut>0</InOut>
+					</Var>
+					<Var>
+						<Name>Taste 7</Name>
+						<Type>BIT</Type>
+						<BitOffs>64</BitOffs>
+						<InOut>0</InOut>
+					</Var>
+					<Var>
+						<Name>Taste 8</Name>
+						<Type>BIT</Type>
+						<BitOffs>65</BitOffs>
+						<InOut>0</InOut>
+					</Var>
+					<Var>
+						<Name>LED 1</Name>
+						<Type>BIT</Type>
+						<BitOffs>40</BitOffs>
+						<InOut>1</InOut>
+					</Var>
+					<Var>
+						<Name>LED 2</Name>
+						<Type>BIT</Type>
+						<BitOffs>41</BitOffs>
+						<InOut>1</InOut>
+					</Var>
+					<Var>
+						<Name>LED 3</Name>
+						<Type>BIT</Type>
+						<BitOffs>42</BitOffs>
+						<InOut>1</InOut>
+					</Var>
+					<Var>
+						<Name>LED 4</Name>
+						<Type>BIT</Type>
+						<BitOffs>43</BitOffs>
+						<InOut>1</InOut>
+					</Var>
+					<Var>
+						<Name>LED 5</Name>
+						<Type>BIT</Type>
+						<BitOffs>44</BitOffs>
+						<InOut>1</InOut>
+					</Var>
+					<Var>
+						<Name>LED 6</Name>
+						<Type>BIT</Type>
+						<BitOffs>45</BitOffs>
+						<InOut>1</InOut>
+					</Var>
+					<Var>
+						<Name>LED 7</Name>
+						<Type>BIT</Type>
+						<BitOffs>46</BitOffs>
+						<InOut>1</InOut>
+					</Var>
+					<Var>
+						<Name>LED 8</Name>
+						<Type>BIT</Type>
+						<BitOffs>47</BitOffs>
+						<InOut>1</InOut>
+					</Var>
+				</Vars>
+			</Term>
+			<Term Id="4" TermType="#x370026ac" Fieldbus="9">
+				<Name>Klemme 4 (CPx9xx-8)</Name>
+				<ImageId>62</ImageId>
+				<Vars VarGrpType="3">
+					<Name>Kanal 1</Name>
+					<Var>
+						<Name>Taste 1</Name>
+						<Type>BIT</Type>
+						<BitOffs>66</BitOffs>
+						<InOut>0</InOut>
+					</Var>
+					<Var>
+						<Name>Taste 2</Name>
+						<Type>BIT</Type>
+						<BitOffs>67</BitOffs>
+						<InOut>0</InOut>
+					</Var>
+					<Var>
+						<Name>Taste 3</Name>
+						<Type>BIT</Type>
+						<BitOffs>68</BitOffs>
+						<InOut>0</InOut>
+					</Var>
+					<Var>
+						<Name>Taste 4</Name>
+						<Type>BIT</Type>
+						<BitOffs>69</BitOffs>
+						<InOut>0</InOut>
+					</Var>
+					<Var>
+						<Name>Taste 5</Name>
+						<Type>BIT</Type>
+						<BitOffs>70</BitOffs>
+						<InOut>0</InOut>
+					</Var>
+					<Var>
+						<Name>Taste 6</Name>
+						<Type>BIT</Type>
+						<BitOffs>71</BitOffs>
+						<InOut>0</InOut>
+					</Var>
+					<Var>
+						<Name>Taste 7</Name>
+						<Type>BIT</Type>
+						<BitOffs>72</BitOffs>
+						<InOut>0</InOut>
+					</Var>
+					<Var>
+						<Name>Taste 8</Name>
+						<Type>BIT</Type>
+						<BitOffs>73</BitOffs>
+						<InOut>0</InOut>
+					</Var>
+					<Var>
+						<Name>LED 1</Name>
+						<Type>BIT</Type>
+						<BitOffs>48</BitOffs>
+						<InOut>1</InOut>
+					</Var>
+					<Var>
+						<Name>LED 2</Name>
+						<Type>BIT</Type>
+						<BitOffs>49</BitOffs>
+						<InOut>1</InOut>
+					</Var>
+					<Var>
+						<Name>LED 3</Name>
+						<Type>BIT</Type>
+						<BitOffs>50</BitOffs>
+						<InOut>1</InOut>
+					</Var>
+					<Var>
+						<Name>LED 4</Name>
+						<Type>BIT</Type>
+						<BitOffs>51</BitOffs>
+						<InOut>1</InOut>
+					</Var>
+					<Var>
+						<Name>LED 5</Name>
+						<Type>BIT</Type>
+						<BitOffs>52</BitOffs>
+						<InOut>1</InOut>
+					</Var>
+					<Var>
+						<Name>LED 6</Name>
+						<Type>BIT</Type>
+						<BitOffs>53</BitOffs>
+						<InOut>1</InOut>
+					</Var>
+					<Var>
+						<Name>LED 7</Name>
+						<Type>BIT</Type>
+						<BitOffs>54</BitOffs>
+						<InOut>1</InOut>
+					</Var>
+					<Var>
+						<Name>LED 8</Name>
+						<Type>BIT</Type>
+						<BitOffs>55</BitOffs>
+						<InOut>1</InOut>
+					</Var>
+				</Vars>
+			</Term>
+		</BusCoupler>
+		<Usb DeviceHandle="\\?\usb#vid_0978&amp;pid_2801#6&amp;a25819e&amp;0&amp;3#{7e0092ca-e39e-4116-85d5-b32dfc26eeda}" AutoDivider="true"/>
+	</Box>
+</TcSmItem>

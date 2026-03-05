@@ -19,6 +19,11 @@ VAR_GLOBAL
 		
 		{attribute 'TcLinkTo':='TIID^Device 1 (EtherCAT)^+FS1-2K1 (CU1128)^+FS1-3K1 (EK1100)^+FS1-3K3 (EL1918)^StandardInputs^SafeGroup_Fraese.fromSafety_Other_Err_20'}
 		in_Other_Err AT%I*:BOOL; (*  *)
+		
+		{attribute 'TcLinkTo':='TIID^Device 1 (EtherCAT)^+FS1-2K1 (CU1128)^+FS1-3K1 (EK1100)^+FS1-3K3 (EL1918)^Device Info Data^Internal I/O'}
+		e_Info_FS1_3K3	AT%I*:DUT_EL1918_Logic;	//	+S2-11K4 (EL1918)
+		fb_Info_FS1_3K3 : FB_InfoConnection_1918_Logic;
+		
     // Ausgänge
     //_______________________________________________________
 	
@@ -34,7 +39,12 @@ VAR_GLOBAL
 		{attribute 'TcLinkTo':='TIID^Device 1 (EtherCAT)^+FS1-2K1 (CU1128)^+FS1-3K1 (EK1100)^+FS1-3K3 (EL1918)^StandardOutputs^SafeGroup_Fraese.toSafety_RM_Kreis_3_4'}
 		out_rm_Kreis_3 AT%Q*:BOOL; (* Rückmeldung Freigabekreis 3*)
 		
-
+		{attribute 'TcLinkTo':='TIID^Device 1 (EtherCAT)^+FS1-2K1 (CU1128)^+FS1-3K1 (EK1100)^+FS1-3K3 (EL1918)^StandardOutputs^SafeGroup_Fraese.toSafety_Steuer_Ein_29'}
+		out_Steuer_Ein AT%Q*:BOOL; (* Steuerspannung einschalten*)
+		
+		{attribute 'TcLinkTo':='TIID^Device 1 (EtherCAT)^+FS1-2K1 (CU1128)^+FS1-3K1 (EK1100)^+FS1-3K3 (EL1918)^StandardOutputs^SafeGroup_Fraese.toSafety_Steuer_Aus_30'}
+		out_Steuer_Aus AT%Q*:BOOL; (* Steuerspannung einschalten*)
+		
     // Intern
     //_______________________________________________________
 			
@@ -56,6 +66,8 @@ VAR_GLOBAL
 		{attribute 'TcLinkTo':='.byState := TIID^Device 1 (EtherCAT)^+FS1-2K1 (CU1128)^+FS1-3K1 (EK1100)^+FS1-3K3 (EL1918)^Function Block Info Data^SafeGroup_Fraese.Druckluft.FB_AND_Druckluft Info Data^State'}
 		in_State_FBand_Druckluft AT%I*:union_STATE_AND;
 		
+		{attribute 'TcLinkTo':='.byState := TIID^Device 1 (EtherCAT)^+FS1-2K1 (CU1128)^+FS1-3K1 (EK1100)^+FS1-3K3 (EL1918)^Function Block Info Data^SafeGroup_Fraese.Steuerspannung_einschalten.FB_RS_Steuerspannung Info Data'}
+		in_State_FBrs_Steuerspannung AT%I*:union_STATE_RS;
 		
 END_VAR
 

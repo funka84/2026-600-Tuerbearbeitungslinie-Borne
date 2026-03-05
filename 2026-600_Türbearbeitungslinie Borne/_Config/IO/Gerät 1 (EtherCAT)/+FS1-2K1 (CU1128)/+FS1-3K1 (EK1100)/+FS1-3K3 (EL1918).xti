@@ -67,6 +67,15 @@
 			</ArrayInfo>
 		</DataType>
 		<DataType>
+			<Name GUID="{18071995-0000-0000-0000-002000000001}" IecBaseType="true" AutoDeleteType="true" HideSubItems="true">ARRAY [0..0] OF BIT</Name>
+			<BitSize>1</BitSize>
+			<BaseType GUID="{18071995-0000-0000-0000-000000000010}">BIT</BaseType>
+			<ArrayInfo>
+				<LBound>0</LBound>
+				<Elements>1</Elements>
+			</ArrayInfo>
+		</DataType>
+		<DataType>
 			<Name GUID="{73F57572-A2C9-F88F-FFC6-9BA3A895E419}" AutoDeleteType="true">INFODATA_FB_1</Name>
 			<BitSize>8</BitSize>
 			<SubItem>
@@ -74,6 +83,22 @@
 				<Type GUID="{18071995-0000-0000-0000-000000000002}">USINT</Type>
 				<BitSize>8</BitSize>
 				<BitOffs>0</BitOffs>
+			</SubItem>
+		</DataType>
+		<DataType>
+			<Name GUID="{B58EB5A9-5C77-50D0-B105-373176B4123A}" AutoDeleteType="true">INFODATA_0_2_0</Name>
+			<BitSize>16</BitSize>
+			<SubItem>
+				<Name>Input Safe Data Byte 0</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000001}">BYTE</Type>
+				<BitSize>8</BitSize>
+				<BitOffs>0</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>Input Safe Data Byte 1</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000001}">BYTE</Type>
+				<BitSize>8</BitSize>
+				<BitOffs>8</BitOffs>
 			</SubItem>
 		</DataType>
 		<DataType>
@@ -90,13 +115,13 @@
 		<ImageData Id="1000">424dd6020000000000003600000028000000100000000e0000000100180000000000a002000000000000000000000000000000000000ff00ffff00ffff00ffff00ffff00ffff00ff008066008099008066008099008066ff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ff00ffff00000000ffff000000008099ff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ff00ffff00ffff00ffff00ffff008066ff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ff00ffff00ffff00ffff00ffff008099ff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ff00ffff00000000ffff000000008066ff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ff00ffffff000000ffffff0000008099ff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ff00ffff00ffff00ffff00ffff008066ff00ffff00ffff00ffff00ffff00ff66009999006666009999006666009999006600ffff00000000ffff000000008099ff00ffff00ffff00ffff00ffff00ff99006666009999006666009999006666009900ffff0000ff00ffff0000ff008066ff00ffff00ffff00ffff00ffff00ff66009999006666009999006666009999006600ffff00ffff00ffff00ffff008099ff00ffff00ffff00ffff00ffff00ff99006666009999006666009999006666009900ffff00000000ffff000000008066ff00ffff00ffff00ffff00ffff00ff66009999006666009999006666009999006600ffff00ffff00ffff00ffff008099ff00ffff00ffff00ffff00ffff00ff99006666009999006666009999006666009900ffff00800000ffff008000008066ff00ffff00ffff00ffff00ffff00ff66009999006666009999006666009999006600ffff00ffff00ffff00ffff008099ff00ffff00ffff00ffff00ffff00ff</ImageData>
 	</ImageDatas>
 	<Box Id="4" BoxType="9099" BoxFlags="#x00000020">
-		<Name>__FILENAME__</Name>
+		<Name>+FS1-3K3 (EL1918)</Name>
 		<ImageId>1000</ImageId>
 		<EtherCAT SlaveType="2" PdiType="#x0005" MboxDataLinkLayer="true" StateMBoxPolling="true" CycleMBoxPollingTime="0" CoeType="3" FoeType="1" VendorId="#x00000002" ProductCode="#x077e3052" RevisionNo="#x00110000" InfoDataAddr="true" RepeatSupport="true" TimeoutStateChange1="5000" TimeoutMailbox2="10000" TComSupport="true" PortPhys="51" DebugMemory="8" SafetyLogicSupported="true" MaxSlotCount="2" Type="EL1918, 8K. Safety Eingang 24V, TwinSAFE" Desc="EL1918">
 			<SyncMan>001000012600010001000000000100010001001026010000</SyncMan>
 			<SyncMan>001100012200010002000000000100010001001122010000</SyncMan>
 			<SyncMan>001210002400010003000000000000000800001224010000</SyncMan>
-			<SyncMan>001d16002000010004000000000000000900001d20010000</SyncMan>
+			<SyncMan>001d19002000010004000000000000000900001d20010000</SyncMan>
 			<SyncMan>002e00002400000003000000000000000000002e24000000</SyncMan>
 			<SyncMan>002f00002000000004000000000000000000002f20000000</SyncMan>
 			<Fmmu>0000000000000000001200020100000001000000060000000200000000000000</Fmmu>
@@ -114,7 +139,7 @@
 				<Entry Name="SafeGroup_Fraese.+FS1-3K4 (EL2904) - Module 2_2 TxPDO" Index="#x7000" Sub="#x01">
 					<Type GUID="{2438F91B-E188-4ED7-8594-54354F9ED6A4}" Namespace="Safety">FSOE_6</Type>
 				</Entry>
-				<Entry Name="SafeGroup_Fraese.+FS1-SafetyKomm_14 TxPDO" Index="#x7000" Sub="#x02">
+				<Entry Name="SafeGroup_Allgemein.+FS1-SafetyKomm_28 TxPDO" Index="#x7000" Sub="#x02">
 					<Type GUID="{B05FDAB7-3241-ACD3-D16C-0FDAF8825BC9}">FSOE_7</Type>
 				</Entry>
 			</Pdo>
@@ -122,7 +147,7 @@
 				<Entry Name="SafeGroup_Fraese.+FS1-3K4 (EL2904) - Module 2_2 RxPDO" Index="#x6000" Sub="#x01">
 					<Type GUID="{2438F91B-E188-4ED7-8594-54354F9ED6A4}" Namespace="Safety">FSOE_6</Type>
 				</Entry>
-				<Entry Name="SafeGroup_Fraese.+FS1-SafetyKomm_14 RxPDO" Index="#x6000" Sub="#x02">
+				<Entry Name="SafeGroup_Allgemein.+FS1-SafetyKomm_28 RxPDO" Index="#x6000" Sub="#x02">
 					<Type GUID="{B05FDAB7-3241-ACD3-D16C-0FDAF8825BC9}">FSOE_7</Type>
 				</Entry>
 			</Pdo>
@@ -156,8 +181,17 @@
 				<Entry Name="SafeGroup_Fraese.toSafety_ErrAck_SafeGroup_Fraese_16" Index="#x6000" Sub="#x04">
 					<Type>BIT</Type>
 				</Entry>
+				<Entry Name="SafeGroup_Allgemein.ErrorAcknowledgement_22" Index="#x6000" Sub="#x05">
+					<Type>BIT</Type>
+				</Entry>
+				<Entry Name="SafeGroup_Fraese.toSafety_Steuer_Ein_29" Index="#x6000" Sub="#x06">
+					<Type>BIT</Type>
+				</Entry>
+				<Entry Name="SafeGroup_Fraese.toSafety_Steuer_Aus_30" Index="#x6000" Sub="#x07">
+					<Type>BIT</Type>
+				</Entry>
 				<Entry>
-					<Type GUID="{18071995-0000-0000-0000-002000000004}">ARRAY [0..3] OF BIT</Type>
+					<Type GUID="{18071995-0000-0000-0000-002000000001}">ARRAY [0..0] OF BIT</Type>
 				</Entry>
 			</Pdo>
 			<Pdo Name="Function Block Info Data" Index="#x1bf8" Flags="#x2011" SyncMan="3">
@@ -178,6 +212,14 @@
 				</Entry>
 				<Entry Name="SafeGroup_Fraese.Druckluft.FB_AND_Druckluft Info Data" Index="#x7000" Sub="#x06">
 					<Type GUID="{73F57572-A2C9-F88F-FFC6-9BA3A895E419}">INFODATA_FB_1</Type>
+				</Entry>
+				<Entry Name="SafeGroup_Fraese.Steuerspannung_einschalten.FB_RS_Steuerspannung Info Data" Index="#x7000" Sub="#x07">
+					<Type GUID="{73F57572-A2C9-F88F-FFC6-9BA3A895E419}">INFODATA_FB_1</Type>
+				</Entry>
+			</Pdo>
+			<Pdo Name="Device Info Data" Index="#x1bfe" Flags="#x2011" SyncMan="3">
+				<Entry Name="Internal I/O" Index="#x7000" Sub="#x01" Flags="#x00008000">
+					<Type GUID="{B58EB5A9-5C77-50D0-B105-373176B4123A}">INFODATA_0_2_0</Type>
 				</Entry>
 			</Pdo>
 			<Pdo Name="FSLOGIC Inputs" Index="#x1bff" Flags="#x0091" SyncMan="3">
@@ -211,7 +253,7 @@
 				<ModuleIdent>691</ModuleIdent>
 				<Module Id="#x03090002" Type="FSLOGIC" Class="FSLOGIC">
 					<Name>Module 2 (FSLOGIC)</Name>
-					<ImageId>549</ImageId>
+					<ImageId>550</ImageId>
 					<ModuleData>02000000b3020000000004000000000000000000000000000000000000000000</ModuleData>
 					<PdoIndex>7167</PdoIndex>
 					<PdoIndex>6143</PdoIndex>

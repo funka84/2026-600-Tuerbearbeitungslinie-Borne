@@ -67,8 +67,8 @@ END_VAR
 // ***** Ventile *********************************************************************
 	//********************************************************************************	
 	
-	GVL_3530.Niederhalter.in_freigabe_vor := GVL_0000.bDruckluft_Bereit;
-	GVL_3530.Niederhalter.in_freigabe_zur := GVL_0000.bDruckluft_Bereit;
+	GVL_3530.Niederhalter.in_freigabe_vor := GVL_3000.bDruckluft_Bereit;
+	GVL_3530.Niederhalter.in_freigabe_zur := GVL_3000.bDruckluft_Bereit;
 	GVL_Visu_3530.Niederhalter.para.ausgang_vor_halten:=TRUE;	
 	GVL_Visu_3530.Niederhalter.para.ausgang_zur_halten:=TRUE;	
 	GVL_Visu_3530.Niederhalter.para.ueberwachung_vor_aktiv:=TRUE;	
@@ -81,9 +81,9 @@ END_VAR
 							AND EAs_3530.e_FR_3530_Niederhalter_Schlossseite_Niederhalter_Auslauf_ist_unten,
 							in_hand:=GVL_Visu_3530.SteuerStatus.hand,
 							in_auto:=GVL_Visu_3530.SteuerStatus.auto,
-								in_simu :=GVL_0000.bMode_Sim_Ventile,
+								in_simu :=GVL_3000.bMode_Sim_Ventile,
 							in_quit:=GVL_Visu_3530.SteuerStatus.reset 
-							OR GVL_0000.stoerung_quitt,
+							OR GVL_3000.stoerung_quitt,
 							out_vor=>EAs_3530.a_FR_3530_Niederhalter_Schlossseite_Niederhalter_heben,
 							out_zur=>EAs_3530.a_FR_3530_Niederhalter_Schlossseite_Niederhalter_senken,
 							out_stoerung_vor=> GVL_Meldungen.Meldungen_3000.Nr_094,

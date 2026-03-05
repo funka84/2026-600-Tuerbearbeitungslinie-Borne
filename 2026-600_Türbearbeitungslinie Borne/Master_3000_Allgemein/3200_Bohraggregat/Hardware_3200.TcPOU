@@ -86,7 +86,11 @@ END_VAR
 		
 		
 	GVL_Meldungen.Diagnose_3000.Nr_101	:= UDINT_TO_DINT(fbNCI_Channel.out_FBErrId);	
-	GVL_Meldungen.Meldungen_3000.Nr_101 := fbNCI_Channel.out_FBErr ;	]]></ST>
+	GVL_Meldungen.Meldungen_3000.Nr_101 := fbNCI_Channel.out_FBErr ;
+	
+	IF fbNCI_Channel.out_FBErr AND GVL_3000.stoerung_quitt THEN
+		GVL_3200.NCI_Steuern.Reset := TRUE;
+	END_IF]]></ST>
       </Implementation>
     </Action>
     <Action Name="A_Sensorik" Id="{4ac82c31-532f-452e-b9fb-8f0239fd9650}">
@@ -111,17 +115,17 @@ fbStillBohraggr_Stulpfraes		(	in_Sensor:=,
         <ST><![CDATA[				
 // ***** Servoregler *****************************************************************
 	//********************************************************************************
-	GVL_3200.X_Achse_steuern.Reglersperre	:= GVL_0000.bAchsen_Reglersperre;
-	GVL_3200.X_Achse_steuern.Freigabe 		:= GVL_0000.bAchsen_Freigabe;
+	GVL_3200.X_Achse_steuern.Reglersperre	:= GVL_3000.bAchsen_Reglersperre;
+	GVL_3200.X_Achse_steuern.Freigabe 		:= GVL_3000.bAchsen_Freigabe;
 	
 	fbX_Achse(
 	in_Reglersperre				:= GVL_3200.X_Achse_steuern.Reglersperre, 
 	in_Freigabe					:= GVL_3200.X_Achse_steuern.Freigabe,
 	in_Reset					:= GVL_Visu_3200.SteuerStatus.reset   
-								OR GVL_0000.stoerung_quitt,                      
+								OR GVL_3000.stoerung_quitt,                      
 	in_Hand						:= GVL_Visu_3200.SteuerStatus.hand,              
 	in_Auto						:= GVL_Visu_3200.SteuerStatus.auto,                 
-	in_Auto_Override			:= GVL_Visu_0000.override,    
+	in_Auto_Override			:= GVL_Visu_3000.override,    
 	in_Auto_pos					:= , 
 	in_max_Velo					:= 100 ,
 	in_PosFenster				:= 0.05, 
@@ -149,17 +153,17 @@ fbStillBohraggr_Stulpfraes		(	in_Sensor:=,
 	//********************************************************************************
 					
 					
-	GVL_3200.Y_Achse_steuern.Reglersperre	:= GVL_0000.bAchsen_Reglersperre;
-	GVL_3200.Y_Achse_steuern.Freigabe 		:= GVL_0000.bAchsen_Freigabe;
+	GVL_3200.Y_Achse_steuern.Reglersperre	:= GVL_3000.bAchsen_Reglersperre;
+	GVL_3200.Y_Achse_steuern.Freigabe 		:= GVL_3000.bAchsen_Freigabe;
 	
 	fbY_Achse(
 	in_Reglersperre				:= GVL_3200.Y_Achse_steuern.Reglersperre, 
 	in_Freigabe					:= GVL_3200.Y_Achse_steuern.Freigabe,
 	in_Reset					:= GVL_Visu_3200.SteuerStatus.reset   
-								OR GVL_0000.stoerung_quitt,                      
+								OR GVL_3000.stoerung_quitt,                      
 	in_Hand						:= GVL_Visu_3200.SteuerStatus.hand,              
 	in_Auto						:= GVL_Visu_3200.SteuerStatus.auto,                 
-	in_Auto_Override			:= GVL_Visu_0000.override,    
+	in_Auto_Override			:= GVL_Visu_3000.override,    
 	in_Auto_pos					:= , 
 	in_max_Velo					:= 100 ,
 	in_PosFenster				:= 0.05, 
@@ -187,17 +191,17 @@ fbStillBohraggr_Stulpfraes		(	in_Sensor:=,
 	//********************************************************************************
 
 
-	GVL_3200.Z_Achse_steuern.Reglersperre	:= GVL_0000.bAchsen_Reglersperre;
-	GVL_3200.Z_Achse_steuern.Freigabe 		:= GVL_0000.bAchsen_Freigabe;
+	GVL_3200.Z_Achse_steuern.Reglersperre	:= GVL_3000.bAchsen_Reglersperre;
+	GVL_3200.Z_Achse_steuern.Freigabe 		:= GVL_3000.bAchsen_Freigabe;
 	
 	fbZ_Achse(
 	in_Reglersperre				:= GVL_3200.Z_Achse_steuern.Reglersperre, 
 	in_Freigabe					:= GVL_3200.Z_Achse_steuern.Freigabe,
 	in_Reset					:= GVL_Visu_3200.SteuerStatus.reset   
-								OR GVL_0000.stoerung_quitt,                      
+								OR GVL_3000.stoerung_quitt,                      
 	in_Hand						:= GVL_Visu_3200.SteuerStatus.hand,              
 	in_Auto						:= GVL_Visu_3200.SteuerStatus.auto,                 
-	in_Auto_Override			:= GVL_Visu_0000.override,    
+	in_Auto_Override			:= GVL_Visu_3000.override,    
 	in_Auto_pos					:= , 
 	in_max_Velo					:= 100 ,
 	in_PosFenster				:= 0.05, 
@@ -237,12 +241,12 @@ fbStillBohraggr_Stulpfraes		(	in_Sensor:=,
 	GVL_Visu_3200.Bohraggr_Stufenbohr	.Para.Einheit			:= 1;
 
 	fbBohraggr_Stufenbohr	(	PD_IN	:=EAs_3200.e_Bohraggr_Stufenbohr	,
-			IN_ReglerSperre			:=GVL_0000.bAchsen_Reglersperre,
+			IN_ReglerSperre			:=GVL_3000.bAchsen_Reglersperre,
 			IN_SteuerStatus			:=GVL_Visu_3200.SteuerStatus,
 			IN_Ethercat_Adresse		:=,
 			IN_Ethercat_Name		:='',
-			IN_QUITTIEREN			:= GVL_0000.stoerung_quitt,
-			IN_OVERRIDE				:= GVL_Visu_0000.override,
+			IN_QUITTIEREN			:= GVL_3000.stoerung_quitt,
+			IN_OVERRIDE				:= GVL_Visu_3000.override,
 			PD_OUT					=> EAs_3200.a_Bohraggr_Stufenbohr	,
 			OUT_Stoerung			=> GVL_Meldungen.Meldungen_3000.Nr_004,
 			OUT_Fehlernummer		=> GVL_Meldungen.Diagnose_3000.Nr_004,
@@ -261,12 +265,12 @@ fbStillBohraggr_Stulpfraes		(	in_Sensor:=,
 	GVL_Visu_3200.Bohraggr_Stulpfraes	.Para.Einheit			:= 1;
 
 	fbBohraggr_Stulpfraes	(	PD_IN	:=EAs_3200.e_Bohraggr_Stulpfraes	,
-			IN_ReglerSperre			:=GVL_0000.bAchsen_Reglersperre,
+			IN_ReglerSperre			:=GVL_3000.bAchsen_Reglersperre,
 			IN_SteuerStatus			:=GVL_Visu_3200.SteuerStatus,
 			IN_Ethercat_Adresse		:=,
 			IN_Ethercat_Name		:='',
-			IN_QUITTIEREN			:= GVL_0000.stoerung_quitt,
-			IN_OVERRIDE				:= GVL_Visu_0000.override,
+			IN_QUITTIEREN			:= GVL_3000.stoerung_quitt,
+			IN_OVERRIDE				:= GVL_Visu_3000.override,
 			PD_OUT					=> EAs_3200.a_Bohraggr_Stulpfraes	,
 			OUT_Stoerung			=> GVL_Meldungen.Meldungen_3000.Nr_005,
 			OUT_Fehlernummer		=> GVL_Meldungen.Diagnose_3000.Nr_005,
@@ -286,8 +290,8 @@ fbStillBohraggr_Stulpfraes		(	in_Sensor:=,
 // ***** Ventile *********************************************************************
 	//********************************************************************************	
 	
-	GVL_3200.Vorbohren_Bohrhub.in_freigabe_vor := GVL_0000.bDruckluft_Bereit;
-	GVL_3200.Vorbohren_Bohrhub.in_freigabe_zur := GVL_0000.bDruckluft_Bereit;
+	GVL_3200.Vorbohren_Bohrhub.in_freigabe_vor := GVL_3000.bDruckluft_Bereit;
+	GVL_3200.Vorbohren_Bohrhub.in_freigabe_zur := GVL_3000.bDruckluft_Bereit;
 	GVL_Visu_3200.Vorbohren_Bohrhub.para.ausgang_vor_halten:=TRUE;	
 	GVL_Visu_3200.Vorbohren_Bohrhub.para.ausgang_zur_halten:=TRUE;	
 	GVL_Visu_3200.Vorbohren_Bohrhub.para.ueberwachung_vor_aktiv:=TRUE;	
@@ -298,9 +302,9 @@ fbStillBohraggr_Stulpfraes		(	in_Sensor:=,
 								in_endlage_zur:= EAs_3200.e_FR_3200_Bandbearbeitung_Bohraggregat_4_Bohrhub_ist_hinten,
 								in_hand:=GVL_Visu_3200.SteuerStatus.hand,
 								in_auto:=GVL_Visu_3200.SteuerStatus.auto,
-								in_simu :=GVL_0000.bMode_Sim_Ventile,
+								in_simu :=GVL_3000.bMode_Sim_Ventile,
 								in_quit:=GVL_Visu_3200.SteuerStatus.reset 
-								OR GVL_0000.stoerung_quitt,
+								OR GVL_3000.stoerung_quitt,
 								out_vor=>EAs_3200.a_FR_3200_Bandbearbeitung_Bohraggregat_4_Bohrhub_vor,
 								out_zur=>EAs_3200.a_FR_3200_Bandbearbeitung_Bohraggregat_4_Bohrhub_zurueck,
 								out_stoerung_vor=> GVL_Meldungen.Meldungen_3000.Nr_058,
@@ -310,8 +314,8 @@ fbStillBohraggr_Stulpfraes		(	in_Sensor:=,
 								inout_visu:=GVL_Visu_3200.Vorbohren_Bohrhub );
 								
 	
-	GVL_3200.Stulpfraes_Vorlegehub.in_freigabe_vor := GVL_0000.bDruckluft_Bereit;
-	GVL_3200.Stulpfraes_Vorlegehub.in_freigabe_zur := GVL_0000.bDruckluft_Bereit;
+	GVL_3200.Stulpfraes_Vorlegehub.in_freigabe_vor := GVL_3000.bDruckluft_Bereit;
+	GVL_3200.Stulpfraes_Vorlegehub.in_freigabe_zur := GVL_3000.bDruckluft_Bereit;
 	GVL_Visu_3200.Stulpfraes_Vorlegehub.para.ausgang_vor_halten:=TRUE;	
 	GVL_Visu_3200.Stulpfraes_Vorlegehub.para.ausgang_zur_halten:=TRUE;	
 	GVL_Visu_3200.Stulpfraes_Vorlegehub.para.ueberwachung_vor_aktiv:=TRUE;	
@@ -322,9 +326,9 @@ fbStillBohraggr_Stulpfraes		(	in_Sensor:=,
 								in_endlage_zur:= EAs_3200.e_FR_3200_Bandbearbeitung_Bohraggregat_5_Vorlegehub_ist_hinten,
 								in_hand:=GVL_Visu_3200.SteuerStatus.hand,
 								in_auto:=GVL_Visu_3200.SteuerStatus.auto,
-								in_simu :=GVL_0000.bMode_Sim_Ventile,
+								in_simu :=GVL_3000.bMode_Sim_Ventile,
 								in_quit:=GVL_Visu_3200.SteuerStatus.reset 
-								OR GVL_0000.stoerung_quitt,
+								OR GVL_3000.stoerung_quitt,
 								out_vor=>EAs_3200.a_FR_3200_Bandbearbeitung_Bohraggregat_5_Vorlegehub_vor,
 								out_zur=>EAs_3200.a_FR_3200_Bandbearbeitung_Bohraggregat_5_Vorlegehub_zurueck,
 								out_stoerung_vor=> GVL_Meldungen.Meldungen_3000.Nr_061,
@@ -333,8 +337,8 @@ fbStillBohraggr_Stulpfraes		(	in_Sensor:=,
 								inout_ansteuerung:=GVL_3200.Stulpfraes_Vorlegehub ,
 								inout_visu:=GVL_Visu_3200.Stulpfraes_Vorlegehub );
 								
-	GVL_3200.Pusher.in_freigabe_vor := GVL_0000.bDruckluft_Bereit;
-	GVL_3200.Pusher.in_freigabe_zur := GVL_0000.bDruckluft_Bereit;
+	GVL_3200.Pusher.in_freigabe_vor := GVL_3000.bDruckluft_Bereit;
+	GVL_3200.Pusher.in_freigabe_zur := GVL_3000.bDruckluft_Bereit;
 	GVL_Visu_3200.Pusher.para.ausgang_vor_halten:=TRUE;	
 	GVL_Visu_3200.Pusher.para.ausgang_zur_halten:=TRUE;	
 	GVL_Visu_3200.Pusher.para.ueberwachung_vor_aktiv:=TRUE;	
@@ -345,9 +349,9 @@ fbStillBohraggr_Stulpfraes		(	in_Sensor:=,
 								in_endlage_zur:= EAs_3200.e_FR_3200_Bandbearbeitung_Pusher_ist_hinten,
 								in_hand:=GVL_Visu_3200.SteuerStatus.hand,
 								in_auto:=GVL_Visu_3200.SteuerStatus.auto,
-								in_simu :=GVL_0000.bMode_Sim_Ventile,
+								in_simu :=GVL_3000.bMode_Sim_Ventile,
 								in_quit:=GVL_Visu_3200.SteuerStatus.reset 
-								OR GVL_0000.stoerung_quitt,
+								OR GVL_3000.stoerung_quitt,
 								out_vor=>EAs_3200.a_FR_3200_Bandbearbeitung_Pusher_vor,
 								out_zur=>EAs_3200.a_FR_3200_Bandbearbeitung_Pusher_zurueck,
 								out_stoerung_vor=> GVL_Meldungen.Meldungen_3000.Nr_064,
@@ -357,8 +361,8 @@ fbStillBohraggr_Stulpfraes		(	in_Sensor:=,
 								inout_visu:=GVL_Visu_3200.Pusher);
 								
 	
-	GVL_3200.Schienenklemm.in_freigabe_vor := GVL_0000.bDruckluft_Bereit;
-	GVL_3200.Schienenklemm.in_freigabe_zur := GVL_0000.bDruckluft_Bereit;
+	GVL_3200.Schienenklemm.in_freigabe_vor := GVL_3000.bDruckluft_Bereit;
+	GVL_3200.Schienenklemm.in_freigabe_zur := GVL_3000.bDruckluft_Bereit;
 	GVL_Visu_3200.Schienenklemm.para.ausgang_vor_halten:=TRUE;	
 	GVL_Visu_3200.Schienenklemm.para.ausgang_zur_halten:=TRUE;	
 	GVL_Visu_3200.Schienenklemm.para.ueberwachung_vor_aktiv:=TRUE;	
@@ -369,9 +373,9 @@ fbStillBohraggr_Stulpfraes		(	in_Sensor:=,
 								in_endlage_zur:= NOT EAs_3200.a_FR_3200_Bandbearbeitung_Y_Achse_Schienenklemmung_klemmen,
 								in_hand:=GVL_Visu_3200.SteuerStatus.hand,
 								in_auto:=GVL_Visu_3200.SteuerStatus.auto,
-								in_simu :=GVL_0000.bMode_Sim_Ventile,
+								in_simu :=GVL_3000.bMode_Sim_Ventile,
 								in_quit:=GVL_Visu_3200.SteuerStatus.reset 
-								OR GVL_0000.stoerung_quitt,
+								OR GVL_3000.stoerung_quitt,
 								out_vor=>EAs_3200.a_FR_3200_Bandbearbeitung_Y_Achse_Schienenklemmung_klemmen,
 								out_zur=>,
 								out_stoerung_vor=> GVL_Meldungen.Meldungen_3000.Nr_085,

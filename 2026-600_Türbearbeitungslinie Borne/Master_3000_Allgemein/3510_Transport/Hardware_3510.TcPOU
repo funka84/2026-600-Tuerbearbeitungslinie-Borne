@@ -77,17 +77,17 @@ fbLaengsSchlossseite_Ref		(	in_Sensor:=,
 // ***** Servoregler *****************************************************************
 	//********************************************************************************
 								
-	GVL_3510.X_Achse_steuern.Reglersperre	:= GVL_0000.bAchsen_Reglersperre;
-	GVL_3510.X_Achse_steuern.Freigabe 		:= GVL_0000.bAchsen_Freigabe;
+	GVL_3510.X_Achse_steuern.Reglersperre	:= GVL_3000.bAchsen_Reglersperre;
+	GVL_3510.X_Achse_steuern.Freigabe 		:= GVL_3000.bAchsen_Freigabe;
 	
 	fbX_Achse(
 	in_Reglersperre				:= GVL_3510.X_Achse_steuern.Reglersperre, 
 	in_Freigabe					:= GVL_3510.X_Achse_steuern.Freigabe,
 	in_Reset					:= GVL_Visu_3510.SteuerStatus.reset   
-								OR GVL_0000.stoerung_quitt,                      
+								OR GVL_3000.stoerung_quitt,                      
 	in_Hand						:= GVL_Visu_3510.SteuerStatus.hand,              
 	in_Auto						:= GVL_Visu_3510.SteuerStatus.auto,                 
-	in_Auto_Override			:= GVL_Visu_0000.override,    
+	in_Auto_Override			:= GVL_Visu_3000.override,    
 	in_Auto_pos					:= , 
 	in_max_Velo					:= 100 ,
 	in_PosFenster				:= 0.05, 
@@ -127,12 +127,12 @@ fbLaengsSchlossseite_Ref		(	in_Sensor:=,
 	GVL_Visu_3510.Trans_Schlossseite	.Para.Einheit			:= 1;
 
 	fbTrans_Schlossseite	(	PD_IN	:=EAs_3510.e_Trans_Schlossseite	,
-			IN_ReglerSperre			:=GVL_0000.bAchsen_Reglersperre,
+			IN_ReglerSperre			:=GVL_3000.bAchsen_Reglersperre,
 			IN_SteuerStatus			:=GVL_Visu_3510.SteuerStatus,
 			IN_Ethercat_Adresse		:=,
 			IN_Ethercat_Name		:='',
-			IN_QUITTIEREN			:= GVL_0000.stoerung_quitt,
-			IN_OVERRIDE				:= GVL_Visu_0000.override,
+			IN_QUITTIEREN			:= GVL_3000.stoerung_quitt,
+			IN_OVERRIDE				:= GVL_Visu_3000.override,
 			PD_OUT					=> EAs_3510.a_Trans_Schlossseite	,
 			OUT_Stoerung			=> GVL_Meldungen.Meldungen_3000.Nr_008,
 			OUT_Fehlernummer		=> GVL_Meldungen.Diagnose_3000.Nr_008,
@@ -152,8 +152,8 @@ fbLaengsSchlossseite_Ref		(	in_Sensor:=,
 // ***** Ventile *********************************************************************
 	//********************************************************************************	
 	
-	GVL_3510.Laengsanschl.in_freigabe_vor := GVL_0000.bDruckluft_Bereit;
-	GVL_3510.Laengsanschl.in_freigabe_zur := GVL_0000.bDruckluft_Bereit;
+	GVL_3510.Laengsanschl.in_freigabe_vor := GVL_3000.bDruckluft_Bereit;
+	GVL_3510.Laengsanschl.in_freigabe_zur := GVL_3000.bDruckluft_Bereit;
 	GVL_Visu_3510.Laengsanschl.para.ausgang_vor_halten:=TRUE;	
 	GVL_Visu_3510.Laengsanschl.para.ausgang_zur_halten:=TRUE;	
 	GVL_Visu_3510.Laengsanschl.para.ueberwachung_vor_aktiv:=TRUE;	
@@ -164,9 +164,9 @@ fbLaengsSchlossseite_Ref		(	in_Sensor:=,
 							in_endlage_zur:= ,
 							in_hand:=GVL_Visu_3510.SteuerStatus.hand,
 							in_auto:=GVL_Visu_3510.SteuerStatus.auto,
-								in_simu :=GVL_0000.bMode_Sim_Ventile,
+								in_simu :=GVL_3000.bMode_Sim_Ventile,
 							in_quit:=GVL_Visu_3510.SteuerStatus.reset 
-							OR GVL_0000.stoerung_quitt,
+							OR GVL_3000.stoerung_quitt,
 							out_vor=>,
 							out_zur=>,
 							out_stoerung_vor=> GVL_Meldungen.Meldungen_3000.Nr_073,
@@ -176,8 +176,8 @@ fbLaengsSchlossseite_Ref		(	in_Sensor:=,
 							inout_visu:=GVL_Visu_3510.Laengsanschl );
 								
 	
-	GVL_3510.Schienenklemm.in_freigabe_vor := GVL_0000.bDruckluft_Bereit;
-	GVL_3510.Schienenklemm.in_freigabe_zur := GVL_0000.bDruckluft_Bereit;
+	GVL_3510.Schienenklemm.in_freigabe_vor := GVL_3000.bDruckluft_Bereit;
+	GVL_3510.Schienenklemm.in_freigabe_zur := GVL_3000.bDruckluft_Bereit;
 	GVL_Visu_3510.Schienenklemm.para.ausgang_vor_halten:=TRUE;	
 	GVL_Visu_3510.Schienenklemm.para.ausgang_zur_halten:=TRUE;	
 	GVL_Visu_3510.Schienenklemm.para.ueberwachung_vor_aktiv:=TRUE;	
@@ -188,9 +188,9 @@ fbLaengsSchlossseite_Ref		(	in_Sensor:=,
 								in_endlage_zur:= NOT EAs_3510.a_FR_3510_Transport_Schlossseite_X_Achse_Laengsanschlag_Schienenklemmung_klemmen,
 								in_hand:=GVL_Visu_3510.SteuerStatus.hand,
 								in_auto:=GVL_Visu_3510.SteuerStatus.auto,
-								in_simu :=GVL_0000.bMode_Sim_Ventile,
+								in_simu :=GVL_3000.bMode_Sim_Ventile,
 								in_quit:=GVL_Visu_3510.SteuerStatus.reset 
-								OR GVL_0000.stoerung_quitt,
+								OR GVL_3000.stoerung_quitt,
 								out_vor=>EAs_3510.a_FR_3510_Transport_Schlossseite_X_Achse_Laengsanschlag_Schienenklemmung_klemmen,
 								out_zur=>,
 								out_stoerung_vor=> GVL_Meldungen.Meldungen_3000.Nr_088,

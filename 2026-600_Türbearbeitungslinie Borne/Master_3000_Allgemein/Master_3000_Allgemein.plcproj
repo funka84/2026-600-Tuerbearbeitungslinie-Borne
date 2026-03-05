@@ -18,26 +18,32 @@
     <LibraryReferences>{3cf2c47b-c31f-4fbc-8c30-108934cbcad5}</LibraryReferences>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="0000\Ablauf_0000.TcPOU">
+    <Compile Include="0000_Allgemein\Allgemein_0000.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="0000\EAs_0000.TcGVL">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="0000\GVL_0000.TcGVL">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="0000\GVL_Meldungen.TcGVL">
+    <Compile Include="0000_Allgemein\GVL_Meldungen.TcGVL">
       <SubType>Code</SubType>
       <LinkAlways>true</LinkAlways>
     </Compile>
-    <Compile Include="0000\GVL_Visu_0000.TcGVL">
+    <Compile Include="0000_Allgemein\GVL_Visu_0000.TcGVL">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="0000\Hardware_0000.TcPOU">
+    <Compile Include="0000_Allgemein\Stoerungen.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="0000\Stoerungen.TcPOU">
+    <Compile Include="3000_Fraese\Ablauf_3000.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="3000_Fraese\EAs_3000.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="3000_Fraese\GVL_3000.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="3000_Fraese\GVL_Visu_3000.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="3000_Fraese\Hardware_3000.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="0000_Safety\Ablauf_Safety.TcPOU">
@@ -177,6 +183,15 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\Blink\PRG_Blink.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\DUT_USB_Bereich.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\DUT_USB_Eingang.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\DUT_USB_Ausgang.TcDUT">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\DUT_Visu_SteuerStatus.TcDUT">
@@ -324,6 +339,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\DUTs\Visu\DUT_Kopfdaten.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\Safety\FB_InfoConnection_1918_Logic.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="SRT_Allgemein\0010_Bausteine_mitDuts\POUs\Servos_NC\FB_Kollision_2_Achsen.TcPOU">
@@ -586,7 +604,7 @@
     </PlaceholderReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="0000" />
+    <Folder Include="3000_Fraese" />
     <Folder Include="3100_Bohraggregat" />
     <Folder Include="3200_Bohraggregat" />
     <Folder Include="3300_Bohraggregat" />
@@ -596,6 +614,7 @@
     <Folder Include="3530_Niederhalter" />
     <Folder Include="3540_Niederhalter" />
     <Folder Include="0000_Safety" />
+    <Folder Include="0000_Allgemein" />
     <Folder Include="SRT_Allgemein" />
     <Folder Include="SRT_Allgemein\0010_Bausteine_mitDuts" />
     <Folder Include="SRT_Allgemein\0010_Bausteine_mitDuts\Blink" />
@@ -631,8 +650,8 @@
   <ProjectExtensions>
     <PlcProjectOptions>
       <XmlArchive>
-  <Data>
-    <o xml:space="preserve" t="OptionKey">
+        <Data>
+          <o xml:space="preserve" t="OptionKey">
       <v n="Name">"&lt;ProjectRoot&gt;"</v>
       <d n="SubKeys" t="Hashtable" ckt="String" cvt="OptionKey">
         <v>{192FAD59-8248-4824-A8DE-9177C94C195A}</v>
@@ -702,14 +721,14 @@
       </d>
       <d n="Values" t="Hashtable" />
     </o>
-  </Data>
-  <TypeList>
-    <Type n="Boolean">System.Boolean</Type>
-    <Type n="Hashtable">System.Collections.Hashtable</Type>
-    <Type n="OptionKey">{54dd0eac-a6d8-46f2-8c27-2f43c7e49861}</Type>
-    <Type n="String">System.String</Type>
-  </TypeList>
-</XmlArchive>
+        </Data>
+        <TypeList>
+          <Type n="Boolean">System.Boolean</Type>
+          <Type n="Hashtable">System.Collections.Hashtable</Type>
+          <Type n="OptionKey">{54dd0eac-a6d8-46f2-8c27-2f43c7e49861}</Type>
+          <Type n="String">System.String</Type>
+        </TypeList>
+      </XmlArchive>
     </PlcProjectOptions>
   </ProjectExtensions>
 </Project>

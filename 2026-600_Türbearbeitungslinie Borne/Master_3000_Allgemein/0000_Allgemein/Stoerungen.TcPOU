@@ -25,7 +25,7 @@ END_VAR
       <ST><![CDATA[//**********************************************************************************************************
 // Störung reset *******************************************************************************************
 //**********************************************************************************************************
-	fl_reset(clk:=GVL_0000.stoerung_quitt);
+	fl_reset(clk:=GVL_3000.stoerung_quitt);
 	
 	IF fl_reset.Q
 	THEN
@@ -33,7 +33,7 @@ END_VAR
 			Sammelstoer[Zaehler_3]:=FALSE; 
 		END_FOR
 
- 		GVL_0000.sammelstoerung:=FALSE;
+ 		GVL_3000.sammelstoerung:=FALSE;
 		
 		GVL_Meldungen.Meldungen_0000:=Meldungen_0000_default;
 		GVL_Meldungen.Meldungen_3000:=Meldungen_3000_default;
@@ -41,7 +41,7 @@ END_VAR
 
 // Störungen anstossen *************************************************************************************
 //**********************************************************************************************************
-	IF NOT GVL_0000.stoerung_quitt THEN
+	IF NOT GVL_3000.stoerung_quitt THEN
 		A_Information();
 		A_Warnung();
 		A_Stoerung();
@@ -73,7 +73,7 @@ END_VAR
 	
 	FOR Zaehler_2:=0 TO anzahl_Stoer_Dut - 1 DO
 		IF Sammelstoer[Zaehler_2] THEN
-			GVL_0000.sammelstoerung:=TRUE;
+			GVL_3000.sammelstoerung:=TRUE;
 		END_IF	
 	END_FOR
 	
@@ -92,11 +92,48 @@ END_VAR
     <Action Name="A_Stoerung" Id="{49e93ae5-6b43-4dd7-9d7c-b703c44d720a}">
       <Implementation>
         <ST><![CDATA[
-// Störung 10 - Druckluft kann nicht eingeschalten werden
-GVL_Meldungen.Meldungen_0000.Nr_002 S= Ablauf_0000.ton_Druckluft_Fehler_Ein.Q;
+// Störung 01 - Steuerspannung nicht eingeschaltet
+GVL_Meldungen.Meldungen_0000.Nr_001 := GVL_Safety.in_State_FBrs_Steuerspannung.eState <> enum_FB_RS.set;
 
-// Störung 11 - Druckluft kann nicht ausgeschalten werden
-GVL_Meldungen.Meldungen_0000.Nr_003 S= Ablauf_0000.ton_Druckluft_Fehler_Aus.Q;]]></ST>
+// Störung 2 - Druckluft kann nicht eingeschalten werden
+GVL_Meldungen.Meldungen_0000.Nr_002 S= Ablauf_3000.ton_Druckluft_Fehler_Ein.Q;
+
+// Störung 3 - Druckluft kann nicht ausgeschalten werden
+GVL_Meldungen.Meldungen_0000.Nr_003 S= Ablauf_3000.ton_Druckluft_Fehler_Aus.Q;
+
+// Störung 04 - Safety nicht betriebsbereit
+GVL_Meldungen.Meldungen_0000.Nr_004 := NOT GVL_Safety.in_Run_SafeGroup_Fraese;
+
+// Störung 05 - Safety Funktionsstörung
+GVL_Meldungen.Meldungen_0000.Nr_005:= GVL_Safety.in_FB_Err;
+
+// Störung 06 - Safety Kommunikationsstörung
+GVL_Meldungen.Meldungen_0000.Nr_006 := GVL_Safety.in_Com_Err;
+
+// Störung 07 - Safety unbekannter Fehler
+GVL_Meldungen.Meldungen_0000.Nr_007 := GVL_Safety.in_Other_Err;
+
+// Störung 10 - 24V Lastüberwachung hat ausgelöst
+GVL_Meldungen.Meldungen_0000.Nr_010 := NOT EAs_3000.e_FR_0400_Schaltschrank_24V_Lastueberwachung_ist_OK;
+
+// Störung 11 - SEW Bremswiderstandmodul nicht Ordnung
+GVL_Meldungen.Meldungen_0000.Nr_011 := NOT EAs_3000.e_FR_0300_SEW_Bremswiderstand_Versorgungsmodul_ist_OK;
+
+// Störung 12 - Schaltschranktür ist geöffnet oder Klimagerät nicht betriebsbereit
+GVL_Meldungen.Meldungen_0000.Nr_012 := NOT EAs_3000.e_FR_0101_Schaltschranktuer_ist_zu_und_Klimageraet_ist_Betriebsbereit;
+
+// Störung 13 - UPS Versorgung ist noch nicht ausreichend geladen
+GVL_Meldungen.Meldungen_0000.Nr_013 := NOT EAs_3000.e_FR_0800_24V_UPS_Versorgung_ist_OK_und_zu_80_geladen;
+
+// Störung 14 - Not-Halt Hauptbedienstelle +FS1
+GVL_Meldungen.Meldungen_0000.Nr_014 S= NOT GVL_Safety.fb_Info_FS1_3K3.bChannel1 OR NOT GVL_Safety.fb_Info_FS1_3K3.bChannel2;
+
+// Störung 15 - Not-Halt Schaltschrank +FS1
+GVL_Meldungen.Meldungen_0000.Nr_015 S= NOT GVL_Safety.fb_Info_FS1_3K3.bChannel3 OR NOT GVL_Safety.fb_Info_FS1_3K3.bChannel4;
+
+// Störung 16 - Stillstandsüberwachung 
+GVL_Meldungen.Meldungen_0000.Nr_016 S= NOT GVL_Safety.fb_Info_FS1_3K3.bChannel5 OR NOT GVL_Safety.fb_Info_FS1_3K3.bChannel6;
+]]></ST>
       </Implementation>
     </Action>
     <Action Name="A_Warnung" Id="{094dfd80-9bcc-4a7e-8fb2-ccd6aa5493be}">

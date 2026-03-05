@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_InfoConnection_1918_Logic" Id="{81dfb99c-c7fa-4346-a617-fbd8fc8a32c0}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_InfoConnection_1918_Logic
+VAR_INPUT
+	stEL1918_Logic: DUT_EL1918_Logic;
+END_VAR
+VAR_OUTPUT
+	sState: STRING;
+	bChannel1: BOOL;
+	bChannel2: BOOL;
+	bChannel3: BOOL;
+	bChannel4: BOOL;
+	bChannel5: BOOL;
+	bChannel6: BOOL;
+	bChannel7: BOOL;
+	bChannel8: BOOL;
+END_VAR
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[bChannel1 := stEL1918_Logic.inbyte_1.0; 
+bChannel2 := stEL1918_Logic.inbyte_1.2; 
+bChannel3 := stEL1918_Logic.inbyte_1.4; 
+bChannel4 := stEL1918_Logic.inbyte_1.6; 
+bChannel5 := stEL1918_Logic.inbyte_2.0; 
+bChannel6 := stEL1918_Logic.inbyte_2.2; 
+bChannel7 := stEL1918_Logic.inbyte_2.4; 
+bChannel8 := stEL1918_Logic.inbyte_2.6; 
+
+IF stEL1918_Logic.inbyte_1.1 THEN
+sState := 'Module Fault Signal 1';
+ELSIF stEL1918_Logic.inbyte_1.3 THEN
+sState := 'Module Fault Signal 2';
+ELSIF stEL1918_Logic.inbyte_1.5 THEN
+sState := 'Module Fault Signal 3';
+ELSIF stEL1918_Logic.inbyte_1.7 THEN
+sState := 'Module Fault Signal 4';
+ELSIF stEL1918_Logic.inbyte_2.1 THEN
+sState := 'Module Fault Signal 5';
+ELSIF stEL1918_Logic.inbyte_2.3 THEN
+sState := 'Module Fault Signal 6';
+ELSIF stEL1918_Logic.inbyte_2.5 THEN
+sState := 'Module Fault Signal 7';
+ELSIF stEL1918_Logic.inbyte_2.7 THEN
+sState := 'Module Fault Signal 8';
+ELSE
+sState := '';	
+END_IF
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

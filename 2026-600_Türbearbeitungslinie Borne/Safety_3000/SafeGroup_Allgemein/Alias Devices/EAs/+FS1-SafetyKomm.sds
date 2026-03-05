@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<SafetyDeviceDesc Crc="3399280010" FileFormatVersion="1.9">
+<SafetyDeviceDesc Crc="3744914601" FileFormatVersion="1.9">
   <AliasDeviceType>
     <Type>16</Type>
     <SubType>0</SubType>
     <VendorId>0</VendorId>
   </AliasDeviceType>
-  <SDSID>14</SDSID>
+  <SDSID>28</SDSID>
   <SafetyAliasDevice>
     <ObjectId>0</ObjectId>
     <LinkingMode>Manual</LinkingMode>
@@ -21,7 +21,7 @@
     <DynPortSafeAddress Type="Unset" />
     <Watchdog>100</Watchdog>
     <ComErrAck Type="Unset" />
-    <Messages InputMessageSize="7" OutputMessageSize="7" Tc2ConnectionType="125708370">
+    <Messages InputMessageSize="7" OutputMessageSize="7" Tc2ConnectionType="0">
       <IO>
         <Name>FSoE Cmd</Name>
         <DataType>USINT</DataType>

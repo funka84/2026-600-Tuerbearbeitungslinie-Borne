@@ -10,11 +10,11 @@ VAR_INPUT
 	I_sFileName			:STRING :=	'Parameter.txt';
 	I_sPath				:STRING:= 	'C:\CSV\SEW';
 	I_iMaxCollumns		:INT	:=4;
-	I_stParameter			:ARRAY[0..GVL_0000.MAX_CSV_BASE_ROWS] OF st_MaschParameter;
+	I_stParameter			:ARRAY[0..GVL_3000.MAX_CSV_BASE_ROWS] OF st_MaschParameter;
 END_VAR
 VAR_OUTPUT
 	Q_bBusy				:BOOL;
-	Q_stParameter		:ARRAY[0..GVL_0000.MAX_CSV_BASE_ROWS] OF st_MaschParameter;
+	Q_stParameter		:ARRAY[0..GVL_3000.MAX_CSV_BASE_ROWS] OF st_MaschParameter;
 END_VAR
 VAR
 	i					:INT;
@@ -227,13 +227,13 @@ END_CASE]]></ST>
     </Action>
     <Action Name="ac_Conv_Param_To_String" Id="{e88c7a9b-4eee-4550-ba6b-8602b4f33fb8}">
       <Implementation>
-        <ST><![CDATA[FOR i := 0 TO GVL_0000.MAX_CSV_BASE_ROWS BY 1 DO
+        <ST><![CDATA[FOR i := 0 TO GVL_3000.MAX_CSV_BASE_ROWS BY 1 DO
 	CSV_Write.I_stCSVDatabase[i].sCSV_Column1	:=	I_stParameter[i].sName;
 	CSV_Write.I_stCSVDatabase[i].sCSV_Column2	:=	LREAL_TO_STRING(I_stParameter[i].nWert);
 	CSV_Write.I_stCSVDatabase[i].sCSV_Column3	:=	BOOL_TO_STRING(I_stParameter[i].bWert);
 	CSV_Write.I_stCSVDatabase[i].sCSV_Column4	:=	LREAL_TO_STRING(TIME_TO_LREAL(I_stParameter[i].tWert));
 
-	IF i >= GVL_0000.MAX_CSV_BASE_ROWS
+	IF i >= GVL_3000.MAX_CSV_BASE_ROWS
 	THEN
 		bCvToStrDone	:= 	TRUE;
 	ELSE
@@ -246,14 +246,14 @@ END_FOR]]></ST>
     <Action Name="ac_Conv_String_To_Param" Id="{3d577602-9645-4d1a-ac01-36004d911fe3}">
       <Implementation>
         <ST><![CDATA[;
-FOR i := 0 TO GVL_0000.MAX_CSV_BASE_ROWS BY 1 DO
+FOR i := 0 TO GVL_3000.MAX_CSV_BASE_ROWS BY 1 DO
 
 	Q_stParameter[i].sName			:=		CSV_Read.Q_stCSVDatabase[i].sCSV_Column1;
 	Q_stParameter[i].nWert				:=		STRING_TO_LREAL(CSV_Read.Q_stCSVDatabase[i].sCSV_Column2);
 	Q_stParameter[i].bWert				:=		STRING_TO_BOOL(CSV_Read.Q_stCSVDatabase[i].sCSV_Column3);
 	Q_stParameter[i].tWert				:=		LREAL_TO_TIME(STRING_TO_LREAL(CSV_Read.Q_stCSVDatabase[i].sCSV_Column4));
 
-	IF i >= GVL_0000.MAX_CSV_BASE_ROWS
+	IF i >= GVL_3000.MAX_CSV_BASE_ROWS
 	THEN
 		bStrToCvDone	:= 	TRUE;
 	ELSE

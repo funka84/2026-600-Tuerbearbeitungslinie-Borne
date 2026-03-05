@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <GVL Name="GVL_Visu_0000" Id="{9ec0c5b6-4082-4cad-b140-5355010ec173}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+{attribute 'linkalways'} 
+VAR_GLOBAL
+    SteuerStatus              	: DUT_Visu_SteuerStatus;
+	quittieren					: BOOL;
+	override 					: INT;
+	Connect						: BOOL;
+
+END_VAR
+
+VAR_GLOBAL PERSISTENT
+END_VAR
+    ]]></Declaration>
+  </GVL>
+</TcPlcObject>

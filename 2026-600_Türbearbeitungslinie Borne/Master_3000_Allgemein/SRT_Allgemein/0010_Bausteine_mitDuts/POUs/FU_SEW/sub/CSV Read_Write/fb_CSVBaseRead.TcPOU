@@ -11,7 +11,7 @@ VAR_INPUT
 	I_bReset				: BOOL;
 END_VAR
 VAR_OUTPUT
-	Q_stCSVDatabase	: ARRAY[0..GVL_0000.MAX_CSV_BASE_ROWS] OF st_CSV_Database  ;
+	Q_stCSVDatabase	: ARRAY[0..GVL_3000.MAX_CSV_BASE_ROWS] OF st_CSV_Database  ;
 	Q_bError				: BOOL;
 	Q_sState				: STRING;
 	Q_bDone			: BOOL;
@@ -125,7 +125,7 @@ THEN
 		5:(* Parse single line (record) *)
 			sState := CONCAT('Reading Row -> ',UDINT_TO_STRING(nRow));
 			sState := CONCAT(sState,'/ ');
-			sState := CONCAT(sState,INT_TO_STRING(GVL_0000.MAX_CSV_BASE_ROWS));
+			sState := CONCAT(sState,INT_TO_STRING(GVL_3000.MAX_CSV_BASE_ROWS));
 	
 			fbReader.eCmd := eEnumCmd_First;(* Read first field value *)
 			REPEAT
@@ -133,7 +133,7 @@ THEN
 				IF fbReader.bOk THEN
 					fbReader.eCmd := eEnumCmd_Next;(* Read next field value *)
 	
-					IF ( nRow <= GVL_0000.MAX_CSV_BASE_ROWS ) THEN
+					IF ( nRow <= GVL_3000.MAX_CSV_BASE_ROWS ) THEN
 						IF ( nColumn <= I_iMaxCollumns ) THEN
 							CASE nColumn OF
 								0 :	Q_stCSVDatabase[nRow].sCSV_Column1 := CSVFIELD_TO_STRING( sCSVField, FALSE );

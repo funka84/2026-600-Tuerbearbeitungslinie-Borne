@@ -3,7 +3,7 @@
 	<ImageDatas>
 		<ImageData Id="1000">424de6000000000000007600000028000000100000000e000000010004000000000070000000232e0000232e00001000000010000000c27e4600f6ece300e9cfbb00dfbc9f00d6a88200c98c5a00f3e5da00fffefe00e6c9b200cd946500c6875300dab08e00d3a17800eedaca00c4824c00faf3ee007777777f1f77777777776873aeb67777777d5cf6890527777719eb73425e5677773eeb73eb2eeb77775ae37ba584e577770a0274aa42a0f7770aad79aa98c0f7779a9675aaa8b5777730b765aae8337777fbd73aa5b6df777777769aa52777777777789ee92777777777777777777777</ImageData>
 	</ImageDatas>
-	<Box Id="36" Disabled="true" BoxType="9099" BoxFlags="#x00000020">
+	<Box Id="36" BoxType="9099" BoxFlags="#x00000020">
 		<Name>__FILENAME__</Name>
 		<ImageId>1000</ImageId>
 		<EtherCAT SlaveType="2" PdiType="#x0605" MboxDataLinkLayer="true" StateMBoxPolling="true" UnsupportedFrmw="true" CycleMBoxPollingTime="0" CoeType="13" FoeType="1" VendorId="#x0000026c" ProductCode="#x00000033" RevisionNo="#x08a50000" InfoDataAddr="true" InfoDataSoeDS401="true" TimeoutMailbox2="5000" PortPhys="17" MaxSlotCount="256" MaxSlotGroupCount="1" SlotPdoIncrement="1" SlotIndexIncrement="16" Type="PD4-Ex-E-65-1 EtherCAT Drive (CoE)" Desc="PD4-E591L42-E-65-1">

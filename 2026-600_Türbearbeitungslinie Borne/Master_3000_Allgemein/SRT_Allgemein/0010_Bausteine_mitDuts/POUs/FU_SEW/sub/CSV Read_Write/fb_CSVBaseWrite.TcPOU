@@ -6,7 +6,7 @@ VAR_INPUT
 	I_sFileName			: T_MaxString :='CSVBaseWriterTest'; (* CSV destination file path and name *)
 	I_sFilePath			: T_MaxString :='\HARD DISK\Parameter\IOLINK\';
 	I_sNetId				: T_AmsNetId := '5.36.121.252.1.1';	(* TwinCAT system network address *)
-	I_stCSVDatabase		: ARRAY[0..GVL_0000.MAX_CSV_BASE_ROWS] OF st_CSV_Database  ;
+	I_stCSVDatabase		: ARRAY[0..GVL_3000.MAX_CSV_BASE_ROWS] OF st_CSV_Database  ;
 	I_iMaxCollumns		: INT := 10;	(*	Achtung 10 Spalten Maximal ! *)
 	I_bWrite				: BOOL;
 	I_bReset				: BOOL;
@@ -116,11 +116,11 @@ THEN
 		40:(* Convert one PLC record to CSV format *)
 			sState := CONCAT('Writing Row -> ',UDINT_TO_STRING(nRow));
 			sState := CONCAT(sState,'/ ');
-			sState := CONCAT(sState,INT_TO_STRING(GVL_0000.MAX_CSV_BASE_ROWS));
+			sState := CONCAT(sState,INT_TO_STRING(GVL_3000.MAX_CSV_BASE_ROWS));
 	
 			sCSVLine := '';
 			fbWriter.eCmd := eEnumCmd_First;(* Write first field value *)
-			IF nRow <= GVL_0000.MAX_CSV_BASE_ROWS THEN
+			IF nRow <= GVL_3000.MAX_CSV_BASE_ROWS THEN
 	
 					IF  (I_iMaxCollumns >= 1)
 					THEN

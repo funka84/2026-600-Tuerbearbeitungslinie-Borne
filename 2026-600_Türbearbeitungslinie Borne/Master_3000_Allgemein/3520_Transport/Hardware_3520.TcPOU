@@ -66,17 +66,17 @@ fbLaengsBandseite_Ref			(	in_Sensor:=,
 // ***** Servoregler *****************************************************************
 	//********************************************************************************
 								
-	GVL_3520.Y_Achse_steuern.Reglersperre	:= GVL_0000.bAchsen_Reglersperre;
-	GVL_3520.Y_Achse_steuern.Freigabe 		:= GVL_0000.bAchsen_Freigabe;
+	GVL_3520.Y_Achse_steuern.Reglersperre	:= GVL_3000.bAchsen_Reglersperre;
+	GVL_3520.Y_Achse_steuern.Freigabe 		:= GVL_3000.bAchsen_Freigabe;
 	
 	fbY_Achse(
 	in_Reglersperre				:= GVL_3520.Y_Achse_steuern.Reglersperre, 
 	in_Freigabe					:= GVL_3520.Y_Achse_steuern.Freigabe,
 	in_Reset					:= GVL_Visu_3520.SteuerStatus.reset   
-								OR GVL_0000.stoerung_quitt,                      
+								OR GVL_3000.stoerung_quitt,                      
 	in_Hand						:= GVL_Visu_3520.SteuerStatus.hand,              
 	in_Auto						:= GVL_Visu_3520.SteuerStatus.auto,                 
-	in_Auto_Override			:= GVL_Visu_0000.override,    
+	in_Auto_Override			:= GVL_Visu_3000.override,    
 	in_Auto_pos					:= , 
 	in_max_Velo					:= 100 ,
 	in_PosFenster				:= 0.05, 
@@ -103,17 +103,17 @@ fbLaengsBandseite_Ref			(	in_Sensor:=,
 	GVL_Meldungen.Meldungen_3000.Nr_042 := FALSE;
 
 								
-	GVL_3520.X_Achse_steuern.Reglersperre	:= GVL_0000.bAchsen_Reglersperre;
-	GVL_3520.X_Achse_steuern.Freigabe 		:= GVL_0000.bAchsen_Freigabe;
+	GVL_3520.X_Achse_steuern.Reglersperre	:= GVL_3000.bAchsen_Reglersperre;
+	GVL_3520.X_Achse_steuern.Freigabe 		:= GVL_3000.bAchsen_Freigabe;
 	
 	fbX_Achse(
 	in_Reglersperre				:= GVL_3520.X_Achse_steuern.Reglersperre, 
 	in_Freigabe					:= GVL_3520.X_Achse_steuern.Freigabe,
 	in_Reset					:= GVL_Visu_3520.SteuerStatus.reset   
-								OR GVL_0000.stoerung_quitt,                      
+								OR GVL_3000.stoerung_quitt,                      
 	in_Hand						:= GVL_Visu_3520.SteuerStatus.hand,              
 	in_Auto						:= GVL_Visu_3520.SteuerStatus.auto,                 
-	in_Auto_Override			:= GVL_Visu_0000.override,    
+	in_Auto_Override			:= GVL_Visu_3000.override,    
 	in_Auto_pos					:= , 
 	in_max_Velo					:= 100 ,
 	in_PosFenster				:= 0.05, 
@@ -153,12 +153,12 @@ fbLaengsBandseite_Ref			(	in_Sensor:=,
 	GVL_Visu_3520.Trans_Bandseite	.Para.Einheit			:= 1;
 
 	fbTrans_Bandseite	(	PD_IN	:=EAs_3520.e_Trans_Bandseite	,
-			IN_ReglerSperre			:=GVL_0000.bAchsen_Reglersperre,
+			IN_ReglerSperre			:=GVL_3000.bAchsen_Reglersperre,
 			IN_SteuerStatus			:=GVL_Visu_3510.SteuerStatus,
 			IN_Ethercat_Adresse		:=,
 			IN_Ethercat_Name		:='',
-			IN_QUITTIEREN			:= GVL_0000.stoerung_quitt,
-			IN_OVERRIDE				:= GVL_Visu_0000.override,
+			IN_QUITTIEREN			:= GVL_3000.stoerung_quitt,
+			IN_OVERRIDE				:= GVL_Visu_3000.override,
 			PD_OUT					=> EAs_3520.a_Trans_Bandseite	,
 			OUT_Stoerung			=> GVL_Meldungen.Meldungen_3000.Nr_009,
 			OUT_Fehlernummer		=> GVL_Meldungen.Diagnose_3000.Nr_009,
@@ -178,8 +178,8 @@ fbLaengsBandseite_Ref			(	in_Sensor:=,
 // ***** Ventile *********************************************************************
 	//********************************************************************************	
 	
-	GVL_3520.Laengsanschl.in_freigabe_vor := GVL_0000.bDruckluft_Bereit;
-	GVL_3520.Laengsanschl.in_freigabe_zur := GVL_0000.bDruckluft_Bereit;
+	GVL_3520.Laengsanschl.in_freigabe_vor := GVL_3000.bDruckluft_Bereit;
+	GVL_3520.Laengsanschl.in_freigabe_zur := GVL_3000.bDruckluft_Bereit;
 	GVL_Visu_3520.Laengsanschl.para.ausgang_vor_halten:=TRUE;	
 	GVL_Visu_3520.Laengsanschl.para.ausgang_zur_halten:=TRUE;	
 	GVL_Visu_3520.Laengsanschl.para.ueberwachung_vor_aktiv:=TRUE;	
@@ -190,9 +190,9 @@ fbLaengsBandseite_Ref			(	in_Sensor:=,
 							in_endlage_zur:= EAs_3520.e_FR_3520_Transport_Bandseite_Laengsanschlag_unten,
 							in_hand:=GVL_Visu_3520.SteuerStatus.hand,
 							in_auto:=GVL_Visu_3520.SteuerStatus.auto,
-								in_simu :=GVL_0000.bMode_Sim_Ventile,
+								in_simu :=GVL_3000.bMode_Sim_Ventile,
 							in_quit:=GVL_Visu_3520.SteuerStatus.reset 
-							OR GVL_0000.stoerung_quitt,
+							OR GVL_3000.stoerung_quitt,
 							out_vor=>EAs_3520.a_FR_3520_Transport_Bandseite_Laengsanschlag_heben,
 							out_zur=>EAs_3520.a_FR_3520_Transport_Bandseite_Laengsanschlag_senken,
 							out_stoerung_vor=> GVL_Meldungen.Meldungen_3000.Nr_076,
@@ -202,8 +202,8 @@ fbLaengsBandseite_Ref			(	in_Sensor:=,
 							inout_visu:=GVL_Visu_3520.Laengsanschl );
 								
 	
-	GVL_3520.Schienenklemm.in_freigabe_vor := GVL_0000.bDruckluft_Bereit;
-	GVL_3520.Schienenklemm.in_freigabe_zur := GVL_0000.bDruckluft_Bereit;
+	GVL_3520.Schienenklemm.in_freigabe_vor := GVL_3000.bDruckluft_Bereit;
+	GVL_3520.Schienenklemm.in_freigabe_zur := GVL_3000.bDruckluft_Bereit;
 	GVL_Visu_3520.Schienenklemm.para.ausgang_vor_halten:=TRUE;	
 	GVL_Visu_3520.Schienenklemm.para.ausgang_zur_halten:=TRUE;	
 	GVL_Visu_3520.Schienenklemm.para.ueberwachung_vor_aktiv:=TRUE;	
@@ -214,9 +214,9 @@ fbLaengsBandseite_Ref			(	in_Sensor:=,
 								in_endlage_zur:= NOT EAs_3520.a_FR_3520_Transport_Bandseite_Laengsanschlag_Clamp_X_axis_rail_clamp,
 								in_hand:=GVL_Visu_3520.SteuerStatus.hand,
 								in_auto:=GVL_Visu_3520.SteuerStatus.auto,
-								in_simu :=GVL_0000.bMode_Sim_Ventile,
+								in_simu :=GVL_3000.bMode_Sim_Ventile,
 								in_quit:=GVL_Visu_3520.SteuerStatus.reset 
-								OR GVL_0000.stoerung_quitt,
+								OR GVL_3000.stoerung_quitt,
 								out_vor=>EAs_3520.a_FR_3520_Transport_Bandseite_Laengsanschlag_Clamp_X_axis_rail_clamp,
 								out_zur=>,
 								out_stoerung_vor=> GVL_Meldungen.Meldungen_3000.Nr_091,

@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
-  <GVL Name="GVL_Visu_0000" Id="{4f020a66-2328-4220-85cb-716a07215900}">
+  <GVL Name="GVL_Visu_3000" Id="{4f020a66-2328-4220-85cb-716a07215900}">
     <Declaration><![CDATA[{attribute 'qualified_only'}
 {attribute 'linkalways'} 
 VAR_GLOBAL

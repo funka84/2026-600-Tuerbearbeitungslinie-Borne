@@ -79,7 +79,11 @@ END_VAR
 		inout_NcStatus:= GVL_3400.NCI_Status);
 		
 	GVL_Meldungen.Diagnose_3000.Nr_103	:= UDINT_TO_DINT(fbNCI_Channel.out_FBErrId);	
-	GVL_Meldungen.Meldungen_3000.Nr_103 := fbNCI_Channel.out_FBErr ;	]]></ST>
+	GVL_Meldungen.Meldungen_3000.Nr_103 := fbNCI_Channel.out_FBErr ;	
+	
+	IF fbNCI_Channel.out_FBErr AND GVL_3000.stoerung_quitt THEN
+		GVL_3400.NCI_Steuern.Reset := TRUE;
+	END_IF]]></ST>
       </Implementation>
     </Action>
     <Action Name="A_Sensorik" Id="{f48301a5-8ac6-4220-996a-e13786f2a59c}">
@@ -99,17 +103,17 @@ fbStillBohraggr_Schluessel_ob	(	in_Sensor:=,
         <ST><![CDATA[					
 // ***** Servoregler *****************************************************************
 	//********************************************************************************
-	GVL_3400.X_Achse_steuern.Reglersperre	:= GVL_0000.bAchsen_Reglersperre;
-	GVL_3400.X_Achse_steuern.Freigabe 		:= GVL_0000.bAchsen_Freigabe;
+	GVL_3400.X_Achse_steuern.Reglersperre	:= GVL_3000.bAchsen_Reglersperre;
+	GVL_3400.X_Achse_steuern.Freigabe 		:= GVL_3000.bAchsen_Freigabe;
 	
 	fbX_Achse(
 	in_Reglersperre				:= GVL_3400.X_Achse_steuern.Reglersperre, 
 	in_Freigabe					:= GVL_3400.X_Achse_steuern.Freigabe,
 	in_Reset					:= GVL_Visu_3400.SteuerStatus.reset   
-								OR GVL_0000.stoerung_quitt,                      
+								OR GVL_3000.stoerung_quitt,                      
 	in_Hand						:= GVL_Visu_3400.SteuerStatus.hand,              
 	in_Auto						:= GVL_Visu_3400.SteuerStatus.auto,                 
-	in_Auto_Override			:= GVL_Visu_0000.override,    
+	in_Auto_Override			:= GVL_Visu_3000.override,    
 	in_Auto_pos					:= , 
 	in_max_Velo					:= 100 ,
 	in_PosFenster				:= 0.05, 
@@ -137,17 +141,17 @@ fbStillBohraggr_Schluessel_ob	(	in_Sensor:=,
 	//********************************************************************************
 					
 					
-	GVL_3400.Y_Achse_steuern.Reglersperre	:= GVL_0000.bAchsen_Reglersperre;
-	GVL_3400.Y_Achse_steuern.Freigabe 		:= GVL_0000.bAchsen_Freigabe;
+	GVL_3400.Y_Achse_steuern.Reglersperre	:= GVL_3000.bAchsen_Reglersperre;
+	GVL_3400.Y_Achse_steuern.Freigabe 		:= GVL_3000.bAchsen_Freigabe;
 	
 	fbY_Achse(
 	in_Reglersperre				:= GVL_3400.Y_Achse_steuern.Reglersperre, 
 	in_Freigabe					:= GVL_3400.Y_Achse_steuern.Freigabe,
 	in_Reset					:= GVL_Visu_3400.SteuerStatus.reset   
-								OR GVL_0000.stoerung_quitt,                      
+								OR GVL_3000.stoerung_quitt,                      
 	in_Hand						:= GVL_Visu_3400.SteuerStatus.hand,              
 	in_Auto						:= GVL_Visu_3400.SteuerStatus.auto,                 
-	in_Auto_Override			:= GVL_Visu_0000.override,    
+	in_Auto_Override			:= GVL_Visu_3000.override,    
 	in_Auto_pos					:= , 
 	in_max_Velo					:= 100 ,
 	in_PosFenster				:= 0.05, 
@@ -187,12 +191,12 @@ fbStillBohraggr_Schluessel_ob	(	in_Sensor:=,
 	GVL_Visu_3400.Bohraggr_Schluessel_ob	.Para.Einheit			:= 1;
 
 	fbBohraggr_Schluessel_ob	(	PD_IN	:=EAs_3400.e_Bohraggr_Schluessel_ob	,
-			IN_ReglerSperre			:=GVL_0000.bAchsen_Reglersperre,
+			IN_ReglerSperre			:=GVL_3000.bAchsen_Reglersperre,
 			IN_SteuerStatus			:=GVL_Visu_3400.SteuerStatus,
 			IN_Ethercat_Adresse		:=,
 			IN_Ethercat_Name		:='',
-			IN_QUITTIEREN			:= GVL_0000.stoerung_quitt,
-			IN_OVERRIDE				:= GVL_Visu_0000.override,
+			IN_QUITTIEREN			:= GVL_3000.stoerung_quitt,
+			IN_OVERRIDE				:= GVL_Visu_3000.override,
 			PD_OUT					=> EAs_3400.a_Bohraggr_Schluessel_ob	,
 			OUT_Stoerung			=> GVL_Meldungen.Meldungen_3000.Nr_007,
 			OUT_Fehlernummer		=> GVL_Meldungen.Diagnose_3000.Nr_007,
@@ -212,8 +216,8 @@ fbStillBohraggr_Schluessel_ob	(	in_Sensor:=,
 // ***** Ventile *********************************************************************
 	//********************************************************************************	
 	
-	GVL_3400.Schluessel_ob_Bohrhub.in_freigabe_vor := GVL_0000.bDruckluft_Bereit;
-	GVL_3400.Schluessel_ob_Bohrhub.in_freigabe_zur := GVL_0000.bDruckluft_Bereit;
+	GVL_3400.Schluessel_ob_Bohrhub.in_freigabe_vor := GVL_3000.bDruckluft_Bereit;
+	GVL_3400.Schluessel_ob_Bohrhub.in_freigabe_zur := GVL_3000.bDruckluft_Bereit;
 	GVL_Visu_3400.Schluessel_ob_Bohrhub.para.ausgang_vor_halten:=TRUE;	
 	GVL_Visu_3400.Schluessel_ob_Bohrhub.para.ausgang_zur_halten:=TRUE;	
 	GVL_Visu_3400.Schluessel_ob_Bohrhub.para.ueberwachung_vor_aktiv:=TRUE;	
@@ -224,9 +228,9 @@ fbStillBohraggr_Schluessel_ob	(	in_Sensor:=,
 								in_endlage_zur:= EAs_3400.e_FR_3400_Druecker_Schluesselloch_oben_Bohraggregat_7_Bohrhub_ist_unten,
 								in_hand:=GVL_Visu_3400.SteuerStatus.hand,
 								in_auto:=GVL_Visu_3400.SteuerStatus.auto,
-								in_simu :=GVL_0000.bMode_Sim_Ventile,
+								in_simu :=GVL_3000.bMode_Sim_Ventile,
 								in_quit:=GVL_Visu_3400.SteuerStatus.reset 
-								OR GVL_0000.stoerung_quitt,
+								OR GVL_3000.stoerung_quitt,
 								out_vor=>EAs_3400.a_FR_3400_Druecker_Schluesselloch_oben_Bohraggregat_7_Bohrhub_heben,
 								out_zur=>EAs_3400.a_FR_3400_Druecker_Schluesselloch_oben_Bohraggregat_7_Bohrhub_senken,
 								out_stoerung_vor=> GVL_Meldungen.Meldungen_3000.Nr_070,

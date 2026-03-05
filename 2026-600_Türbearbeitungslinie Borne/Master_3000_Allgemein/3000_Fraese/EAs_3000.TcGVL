@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
-  <GVL Name="EAs_0000" Id="{8d95b41e-53fd-4c57-b2f9-33e769da0790}">
+  <GVL Name="EAs_3000" Id="{8d95b41e-53fd-4c57-b2f9-33e769da0790}">
     <Declaration><![CDATA[{attribute 'qualified_only'}
 {attribute 'linkalways'} 
 VAR_GLOBAL
@@ -9,29 +9,71 @@ VAR_GLOBAL
     //_______________________________________________________
 
 	// +BP1-1A1
-        {attribute 'TcLinkTo' := ''}
-        e_Steuerspannung_ein AT %I* : BOOL; (* =FR.0500 Hauptbedienpanel Steuerspannung einschalten *)
+	 	{attribute 'TcLinkTo' := '	.Eingang.E1  	:= TIID^Panel (USB)^Box 0 (CPX8XX)^Term 2 (CPx9xx-8)^Channel 1^Taste 1;
+									.Eingang.E2  	:= TIID^Panel (USB)^Box 0 (CPX8XX)^Term 2 (CPx9xx-8)^Channel 1^Taste 2;
+									.Eingang.E3  	:= TIID^Panel (USB)^Box 0 (CPX8XX)^Term 2 (CPx9xx-8)^Channel 1^Taste 3;
+									.Eingang.E4  	:= TIID^Panel (USB)^Box 0 (CPX8XX)^Term 2 (CPx9xx-8)^Channel 1^Taste 4;
+									.Eingang.E5  	:= TIID^Panel (USB)^Box 0 (CPX8XX)^Term 2 (CPx9xx-8)^Channel 1^Taste 5;
+									.Eingang.E6  	:= TIID^Panel (USB)^Box 0 (CPX8XX)^Term 2 (CPx9xx-8)^Channel 1^Taste 6;
+									.Eingang.E7  	:= TIID^Panel (USB)^Box 0 (CPX8XX)^Term 2 (CPx9xx-8)^Channel 1^Taste 7;
+									.Eingang.E8  	:= TIID^Panel (USB)^Box 0 (CPX8XX)^Term 2 (CPx9xx-8)^Channel 1^Taste 8;
+									.Ausgang.A1 	:= TIID^Panel (USB)^Box 0 (CPX8XX)^Term 2 (CPx9xx-8)^Channel 1^LED 1;
+									.Ausgang.A2 	:= TIID^Panel (USB)^Box 0 (CPX8XX)^Term 2 (CPx9xx-8)^Channel 1^LED 2;
+									.Ausgang.A3 	:= TIID^Panel (USB)^Box 0 (CPX8XX)^Term 2 (CPx9xx-8)^Channel 1^LED 3;
+									.Ausgang.A4 	:= TIID^Panel (USB)^Box 0 (CPX8XX)^Term 2 (CPx9xx-8)^Channel 1^LED 4;
+									.Ausgang.A5 	:= TIID^Panel (USB)^Box 0 (CPX8XX)^Term 2 (CPx9xx-8)^Channel 1^LED 5;
+									.Ausgang.A6 	:= TIID^Panel (USB)^Box 0 (CPX8XX)^Term 2 (CPx9xx-8)^Channel 1^LED 6;
+									.Ausgang.A7 	:= TIID^Panel (USB)^Box 0 (CPX8XX)^Term 2 (CPx9xx-8)^Channel 1^LED 7;
+									.Ausgang.A8  	:= TIID^Panel (USB)^Box 0 (CPX8XX)^Term 2 (CPx9xx-8)^Channel 1^LED 8'}
+		ea_USB_Bereich_1		: DUT_USB_Bereich;
+	 	{attribute 'TcLinkTo' := '	.Eingang.E1  	:= TIID^Panel (USB)^Box 0 (CPX8XX)^Term 3 (CPx9xx-8)^Channel 1^Taste 1;
+									.Eingang.E2  	:= TIID^Panel (USB)^Box 0 (CPX8XX)^Term 3 (CPx9xx-8)^Channel 1^Taste 2;
+									.Eingang.E3  	:= TIID^Panel (USB)^Box 0 (CPX8XX)^Term 3 (CPx9xx-8)^Channel 1^Taste 3;
+									.Eingang.E4  	:= TIID^Panel (USB)^Box 0 (CPX8XX)^Term 3 (CPx9xx-8)^Channel 1^Taste 4;
+									.Eingang.E5  	:= TIID^Panel (USB)^Box 0 (CPX8XX)^Term 3 (CPx9xx-8)^Channel 1^Taste 5;
+									.Eingang.E6  	:= TIID^Panel (USB)^Box 0 (CPX8XX)^Term 3 (CPx9xx-8)^Channel 1^Taste 6;
+									.Eingang.E7  	:= TIID^Panel (USB)^Box 0 (CPX8XX)^Term 3 (CPx9xx-8)^Channel 1^Taste 7;
+									.Eingang.E8  	:= TIID^Panel (USB)^Box 0 (CPX8XX)^Term 3 (CPx9xx-8)^Channel 1^Taste 8;
+									.Ausgang.A1 	:= TIID^Panel (USB)^Box 0 (CPX8XX)^Term 3 (CPx9xx-8)^Channel 1^LED 1;
+									.Ausgang.A2 	:= TIID^Panel (USB)^Box 0 (CPX8XX)^Term 3 (CPx9xx-8)^Channel 1^LED 2;
+									.Ausgang.A3 	:= TIID^Panel (USB)^Box 0 (CPX8XX)^Term 3 (CPx9xx-8)^Channel 1^LED 3;
+									.Ausgang.A4 	:= TIID^Panel (USB)^Box 0 (CPX8XX)^Term 3 (CPx9xx-8)^Channel 1^LED 4;
+									.Ausgang.A5 	:= TIID^Panel (USB)^Box 0 (CPX8XX)^Term 3 (CPx9xx-8)^Channel 1^LED 5;
+									.Ausgang.A6 	:= TIID^Panel (USB)^Box 0 (CPX8XX)^Term 3 (CPx9xx-8)^Channel 1^LED 6;
+									.Ausgang.A7 	:= TIID^Panel (USB)^Box 0 (CPX8XX)^Term 3 (CPx9xx-8)^Channel 1^LED 7;
+									.Ausgang.A8  	:= TIID^Panel (USB)^Box 0 (CPX8XX)^Term 3 (CPx9xx-8)^Channel 1^LED 8'}
+		ea_USB_Bereich_2		: DUT_USB_Bereich;
+	 	{attribute 'TcLinkTo' := '	.Eingang.E1  	:= TIID^Panel (USB)^Box 0 (CPX8XX)^Term 4 (CPx9xx-8)^Channel 1^Taste 1;
+									.Eingang.E2  	:= TIID^Panel (USB)^Box 0 (CPX8XX)^Term 4 (CPx9xx-8)^Channel 1^Taste 2;
+									.Eingang.E3  	:= TIID^Panel (USB)^Box 0 (CPX8XX)^Term 4 (CPx9xx-8)^Channel 1^Taste 3;
+									.Eingang.E4  	:= TIID^Panel (USB)^Box 0 (CPX8XX)^Term 4 (CPx9xx-8)^Channel 1^Taste 4;
+									.Eingang.E5  	:= TIID^Panel (USB)^Box 0 (CPX8XX)^Term 4 (CPx9xx-8)^Channel 1^Taste 5;
+									.Eingang.E6  	:= TIID^Panel (USB)^Box 0 (CPX8XX)^Term 4 (CPx9xx-8)^Channel 1^Taste 6;
+									.Eingang.E7  	:= TIID^Panel (USB)^Box 0 (CPX8XX)^Term 4 (CPx9xx-8)^Channel 1^Taste 7;
+									.Eingang.E8  	:= TIID^Panel (USB)^Box 0 (CPX8XX)^Term 4 (CPx9xx-8)^Channel 1^Taste 8;
+									.Ausgang.A1 	:= TIID^Panel (USB)^Box 0 (CPX8XX)^Term 4 (CPx9xx-8)^Channel 1^LED 1;
+									.Ausgang.A2 	:= TIID^Panel (USB)^Box 0 (CPX8XX)^Term 4 (CPx9xx-8)^Channel 1^LED 2;
+									.Ausgang.A3 	:= TIID^Panel (USB)^Box 0 (CPX8XX)^Term 4 (CPx9xx-8)^Channel 1^LED 3;
+									.Ausgang.A4 	:= TIID^Panel (USB)^Box 0 (CPX8XX)^Term 4 (CPx9xx-8)^Channel 1^LED 4;
+									.Ausgang.A5 	:= TIID^Panel (USB)^Box 0 (CPX8XX)^Term 4 (CPx9xx-8)^Channel 1^LED 5;
+									.Ausgang.A6 	:= TIID^Panel (USB)^Box 0 (CPX8XX)^Term 4 (CPx9xx-8)^Channel 1^LED 6;
+									.Ausgang.A7 	:= TIID^Panel (USB)^Box 0 (CPX8XX)^Term 4 (CPx9xx-8)^Channel 1^LED 7;
+									.Ausgang.A8  	:= TIID^Panel (USB)^Box 0 (CPX8XX)^Term 4 (CPx9xx-8)^Channel 1^LED 8'}
+		ea_USB_Bereich_3		: DUT_USB_Bereich;
+	
+	
+        e_Steuerspannung_ein : BOOL; (* =FR.0500 Hauptbedienpanel Steuerspannung einschalten *)
 		
-        {attribute 'TcLinkTo' := ''}
-        e_Steuerspannung_aus AT %I* : BOOL; (* =FR.0500 Hauptbedienpanel Steuerspannung ausschalten *)
+        e_Steuerspannung_aus : BOOL; (* =FR.0500 Hauptbedienpanel Steuerspannung ausschalten *)
 		
-        {attribute 'TcLinkTo' := ''}
-        e_USB_res_03 AT %I* : BOOL; (* =FR.0500 Hauptbedienpanel USB Eingangssignal Reserve *)
+        e_Quittieren : BOOL; (* =FR.0500 Hauptbedienpanel Fehler Quittieren *)
 		
-        {attribute 'TcLinkTo' := ''}
-        e_USB_res_04 AT %I* : BOOL; (* =FR.0500 Hauptbedienpanel USB Eingangssignal Reserve *)
-
-        {attribute 'TcLinkTo' := ''}
-		a_Led_Steuerspannung_ein AT %Q* : BOOL; (* =FR.0500 Hauptbedienpanel Led Steuerspannung ist eingeschaltet*)
+		a_Led_Steuerspannung_ein : BOOL; (* =FR.0500 Hauptbedienpanel Led Steuerspannung ist eingeschaltet*)
 		
-        {attribute 'TcLinkTo' := ''}
-        a_Led_Steuerspannung_aus AT %Q* : BOOL; (* =FR.0500 Hauptbedienpanel Led Steuerspannung ist ausgeschaltet*)
+        a_Led_Steuerspannung_aus : BOOL; (* =FR.0500 Hauptbedienpanel Led Steuerspannung ist ausgeschaltet*)
 		
-        {attribute 'TcLinkTo' := ''}
-        a_Led_USB_res_03 AT %Q* : BOOL; (* =FR.0500 Hauptbedienpanel Led Reserve *)
+        a_Fehler : BOOL; (* =FR.0500 Hauptbedienpanel Fehler aktiv *)
 		
-        {attribute 'TcLinkTo' := ''}
-        a_LEd_USB_res_04 AT %Q* : BOOL; (* =FR.0500 Hauptbedienpanel Led Reserve *)
 		
     // +FS1-3K5
         {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+FS1-2K1 (CU1128)^+FS1-3K1 (EK1100)^+FS1-3K5 (EL1809)^Channel 1^Input'}

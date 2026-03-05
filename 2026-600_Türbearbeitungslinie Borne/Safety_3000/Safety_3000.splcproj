@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project Crc="810609147" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+<Project Crc="3685059383" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <SchemaVersion>2.0</SchemaVersion>
@@ -16,7 +16,7 @@
     <IntProjName>Safety_3000</IntProjName>
     <IsNewCreated>false</IsNewCreated>
     <SPlcProjVersion>1.8.0.0</SPlcProjVersion>
-    <NextSdsId>22</NextSdsId>
+    <NextSdsId>31</NextSdsId>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <DebugSymbols>false</DebugSymbols>
@@ -27,9 +27,9 @@
   <ItemGroup>
     <None Include="GVLs\EAs.sgvl" />
     <None Include="GVLs\PLC.sgvl" />
+    <None Include="SafeGroup_Allgemein\Alias Devices\EAs\+FS1-SafetyKomm.sds" />
     <None Include="SafeGroup_Fraese\Alias Devices\EAs\+FS1-3K4 %28EL2904%29 - Module 2.sds" />
     <None Include="SafeGroup_Fraese\Alias Devices\EAs\+FS1-3K3 %28EL1918%29 - Module 1.sds" />
-    <None Include="SafeGroup_Fraese\Alias Devices\EAs\+FS1-SafetyKomm.sds" />
     <None Include="SafeGroup_Fraese\Alias Devices\PLC\fromSafety_Other_Err.sds" />
     <None Include="SafeGroup_Fraese\Alias Devices\PLC\fromSafety_FB_Err.sds" />
     <None Include="SafeGroup_Fraese\Alias Devices\PLC\fromSafety_Com_Err.sds" />
@@ -38,6 +38,8 @@
     <None Include="SafeGroup_Fraese\Alias Devices\PLC\toSafety_ErrAck_SafeGroup_Fraese.sds" />
     <None Include="SafeGroup_Fraese\Alias Devices\PLC\toSafety_Restart_Not_Aus.sds" />
     <None Include="SafeGroup_Fraese\Alias Devices\PLC\toSafety_RM_Kreis_3.sds" />
+    <None Include="SafeGroup_Fraese\Alias Devices\PLC\toSafety_Steuer_Aus.sds" />
+    <None Include="SafeGroup_Fraese\Alias Devices\PLC\toSafety_Steuer_Ein.sds" />
     <None Include="SafeGroup_Fraese\SafeGroup_Fraese.sal" />
     <None Include="SafeGroup_Fraese\SafeGroup_Fraese.sal.diagram">
       <DependentUpon>SafeGroup_Fraese\SafeGroup_Fraese.sal</DependentUpon>
@@ -46,13 +48,22 @@
     <None Include="TargetSystemConfig.xml">
       <Visible>false</Visible>
     </None>
+    <None Include="SafeGroup_Allgemein\Alias Devices\ErrorAcknowledgement.sds" />
+    <None Include="SafeGroup_Allgemein\SafeGroup_Allgemein.sal" />
+    <None Include="SafeGroup_Allgemein\SafeGroup_Allgemein.sal.diagram">
+      <Visible>false</Visible>
+      <DependentUpon>SafeGroup_Allgemein\SafeGroup_Allgemein.sal</DependentUpon>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="GVLs" />
+    <Folder Include="SafeGroup_Allgemein\Alias Devices\EAs" />
     <Folder Include="SafeGroup_Fraese" />
     <Folder Include="SafeGroup_Fraese\Alias Devices" />
     <Folder Include="SafeGroup_Fraese\Alias Devices\EAs" />
     <Folder Include="SafeGroup_Fraese\Alias Devices\PLC" />
+    <Folder Include="SafeGroup_Allgemein" />
+    <Folder Include="SafeGroup_Allgemein\Alias Devices" />
     <Folder Include="User FBs" />
   </ItemGroup>
 </Project>
