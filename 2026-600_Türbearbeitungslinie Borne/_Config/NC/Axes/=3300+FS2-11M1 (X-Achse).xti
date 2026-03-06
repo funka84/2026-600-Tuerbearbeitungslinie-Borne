@@ -1430,7 +1430,7 @@ External Setpoint Generation:
 			<OtherSettings AllowMotionCmdToSlave="true"/>
 		</AxisPara>
 		<Encoder Name="Enc" EncType="19">
-			<EncPara MaxCount="#xffffffff"/>
+			<EncPara ScaleFactorNumerator="3.05176e-05" MaxCount="#xffffffff"/>
 			<Vars VarGrpType="1">
 				<Name>Eingänge</Name>
 				<Var>
@@ -1573,6 +1573,7 @@ External Setpoint Generation:
 				<Link VarA="Drive^Inputs^In^nState4" VarB="WcState^InputToggle" Size="1" OffsA="1"/>
 				<Link VarA="Drive^Inputs^In^nState4" VarB="WcState^WcState" Size="1"/>
 				<Link VarA="Drive^Inputs^In^nState5" VarB="=3300+FS2-11M1 (X-Achse)^Inputs^Modes of operation display"/>
+				<Link VarA="Drive^Inputs^In^nState8" VarB="=3300+FS2-11M1 (X-Achse)^Inputs^Digital inputs actual value" Size="8"/>
 				<Link VarA="Drive^Outputs^Out^nCtrl1" VarB="=3300+FS2-11M1 (X-Achse)^Outputs^Control word" Size="8"/>
 				<Link VarA="Drive^Outputs^Out^nCtrl2" VarB="=3300+FS2-11M1 (X-Achse)^Outputs^Control word" Size="8" OffsB="8"/>
 				<Link VarA="Drive^Outputs^Out^nCtrl5" VarB="=3300+FS2-11M1 (X-Achse)^Outputs^Modes of operation"/>

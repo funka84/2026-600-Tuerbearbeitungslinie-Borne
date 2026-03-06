@@ -18,6 +18,7 @@ Achsen heruntergerampt vor der Kollision mit einem Fehler
 
 
 VAR_INPUT
+	in_Enable					: BOOL;		// Achse Freigabe / Reglersperre
 	in_Active_Axis_1			: BOOL;		// Achse 1 Koll.überwachung aktivieren für die Achse, wenn aus werden die min und max Werte genommen
 	in_Quittieren				: BOOL;		// Fehler quittiere 
 	in_max_1					: REAL;		// Achse 1 Softwarelimit min ohne Kollisionsüberwachung
@@ -42,29 +43,32 @@ VAR
 	tmp_2						: LREAL;
 	tmp_min						: LREAL;
 	tmp_max						: LREAL;
+	RT_Start					: R_TRIG;
 	RT_Error					: R_TRIG;
 	FT_Error					: F_TRIG;
 END_VAR
 ]]></Declaration>
     <Implementation>
       <ST><![CDATA[
+RT_Start(CLK:= in_Enable, Q=> );
+
 // Überwachung steuern Achse 1
-	IF NOT in_Active_Axis_1 THEN
+	IF NOT in_Active_Axis_1 AND inout_Axis_1.Status.OpMode.PositionAreaMonitoring THEN
 		tmp_min := in_min_1;
 		tmp_max := in_max_1;
-		fbWritePara_1_min.Execute := in_min_1 <> tmp_1 AND NOT RT_Error.Q;
-		fbWritePara_1_max.Execute := in_max_1 <> tmp_2 AND NOT RT_Error.Q;
-		fbWritePara_1_min_enb.Execute := TRUE AND NOT RT_Error.Q;
-		fbWritePara_1_max_enb.Execute := TRUE AND NOT RT_Error.Q;
+		fbWritePara_1_min.Execute := (in_min_1 <> tmp_1 AND NOT RT_Error.Q) OR RT_Start.Q;
+		fbWritePara_1_max.Execute := (in_max_1 <> tmp_2 AND NOT RT_Error.Q) OR RT_Start.Q;
+		fbWritePara_1_min_enb.Execute := in_Enable AND NOT RT_Error.Q;
+		fbWritePara_1_max_enb.Execute := in_Enable AND NOT RT_Error.Q;
 		tmp_1 := in_min_1;
 		tmp_2 := in_max_1;
 	ELSE
 		tmp_min := in_min_enb;
 		tmp_max := in_max_enb;
-		fbWritePara_1_min.Execute := tmp_1 <> tmp_min AND NOT RT_Error.Q;
-		fbWritePara_1_max.Execute := tmp_2 <> tmp_max AND NOT RT_Error.Q;
-		fbWritePara_1_min_enb.Execute := TRUE AND NOT RT_Error.Q;
-		fbWritePara_1_max_enb.Execute := TRUE AND NOT RT_Error.Q;
+		fbWritePara_1_min.Execute := (tmp_1 <> tmp_min AND NOT RT_Error.Q) OR RT_Start.Q;
+		fbWritePara_1_max.Execute := (tmp_2 <> tmp_max AND NOT RT_Error.Q) OR RT_Start.Q;
+		fbWritePara_1_min_enb.Execute := in_Enable AND NOT RT_Error.Q;
+		fbWritePara_1_max_enb.Execute := in_Enable AND NOT RT_Error.Q;
 		
 		tmp_1 := tmp_min;
 		tmp_2 := tmp_max;

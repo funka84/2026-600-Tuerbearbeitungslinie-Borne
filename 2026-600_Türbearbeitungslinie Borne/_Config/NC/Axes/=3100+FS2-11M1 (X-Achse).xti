@@ -1427,13 +1427,12 @@ External Setpoint Generation:
 	<Axis Id="1" CreateSymbols="true" AxisType="1">
 		<Name>__FILENAME__</Name>
 		<AxisPara>
-			<General UnitName="m" UnitFlags="#x00000001"/>
-			<Dynamic Acceleration="500" Deceleration="500" Jerk="500"/>
-			<Velo RefSearch="50" RefSync="10" FastManual="250"/>
+			<Dynamic Jerk="2000"/>
+			<Velo RefSearch="50" RefSync="10" SlowManual="80" FastManual="80"/>
 			<OtherSettings AllowMotionCmdToSlave="true"/>
 		</AxisPara>
 		<Encoder Name="Enc" EncType="19">
-			<EncPara ScaleFactorNumerator="3.05176e-05" MaxCount="#xffffffff">
+			<EncPara ScaleFactorNumerator="3.05176e-05" Offset="20" MaxCount="#xffffffff">
 				<SoftEndMinControl Enable="true"/>
 				<SoftEndMaxControl Enable="true" Range="50"/>
 				<Inc RefSearchInverse="true" RefSyncInverse="false" HomingSensorSource="10"/>

@@ -49,6 +49,12 @@ VAR_IN_OUT
 END_VAR
 
 VAR
+	
+	FB_Read_RefPos			: MC_ReadParameter;
+	FB_Write_RefPos			: MC_WriteParameterPersistent;
+	stParaSet				: MC_AxisParameter;
+	
+	FB_DriveOperationMode	: MC_WriteDriveOperationMode;
 	FB_ReadPos				: MC_ReadActualPosition;	(*  Aktuelle Istposition auslesen *)
 	FB_ReadErrorID			: MC_ReadAxisError;			(*  FehlerID der Achse auslesen  *)
 	FB_ReadStatus			: MC_ReadStatus;
@@ -87,6 +93,7 @@ VAR
 	
 	ton_Freigabe			:ton;
 	bLimit_InActive			: BOOL;
+	bRefPOsRead				: bool;
 END_VAR
 ]]></Declaration>
     <Implementation>
@@ -102,7 +109,21 @@ END_VAR
 
 	out_Achs_Status	:= FB_ReadStatus.Status;
 	out_Achs_Error	:= FB_ReadErrorID.AxisErrorID > 0;
-
+	
+	FB_Read_RefPos.Enable := NOT FB_Read_RefPos.Busy AND NOT bRefPOsRead;
+	IF FB_Read_RefPos.Valid THEN
+		IF FB_Read_RefPos.Value <> in_Ref_pos THEN
+			FB_Write_RefPos.ParameterNumber := MC_AxisParameter.AxisEncoderOffset;
+			FB_Write_RefPos.Value := in_Ref_pos;
+			FB_Write_RefPos.Execute := TRUE; 
+			FB_Read_RefPos.Enable := FALSE;
+		ELSE
+			bRefPOsRead := TRUE;
+			FB_Read_RefPos.Enable := FALSE;
+			FB_Write_RefPos.Execute := FALSE; 
+		END_IF;	
+	END_IF
+	
 // ***** Aktuelle Zielposition ***********************************************************************************************
 	//************************************************************************************************************************
 	IF inout_nc.Status.Moving
@@ -244,7 +265,8 @@ IF in_Reset
 // ***** Referenzieren *******************************************************************************************************
 	//************************************************************************************************************************
 IF FB_Stop.Execute
-	THEN teststop:=TRUE;
+	THEN 
+	teststop:=TRUE;
 END_IF
 
 FB_PosOffset(Axis:=inout_NC,
@@ -277,7 +299,10 @@ FB_PosOffset(Axis:=inout_NC,
 			ELSE
 			sk_ref:=40;	
 			END_IF
-		END_IF
+			sk_ref:=200;
+			inout_service.plus_start := FALSE;				
+			inout_service.minus_stop := FALSE;		
+		END_IF	
 		
 	10:// Prüfen ob Endlage erreicht und startbutton zurücksetzen
 		inout_service.plus_start:=FALSE;
@@ -331,7 +356,55 @@ FB_PosOffset(Axis:=inout_NC,
 			sk_ref:=0;
 	END_IF
 	
+	//###################################################################
+	100: // MC_Home starten
+		FB_Homing.Execute := NOT FB_Homing.Busy;
+		sk_ref:=110;
 		
+	110: // MC_Home warte auf Done
+		IF FB_Homing.Done THEN
+			FB_Homing.Execute := FALSE;
+			sk_ref:=200;
+		ELSIF FB_Homing.Error THEN
+			FB_Homing.Execute := FALSE;
+			sk_ref:=0;
+		END_IF
+		
+		
+		
+	200: // Encoder Nullpunktverschiebung schreiben
+		startRef := TRUE;
+		FB_Write_RefPos.ParameterNumber := MC_AxisParameter.AxisEncoderOffset;
+		FB_Write_RefPos.Value := in_Ref_pos;
+		FB_Write_RefPos.Execute := NOT FB_Power.Status;
+		IF FB_Write_RefPos.Busy THEN
+			sk_ref := 210;
+		END_IF
+		
+	210: // Warte auf Done
+		startRef := TRUE;
+		IF FB_Write_RefPos.Done THEN
+			FB_Write_RefPos.Execute := FALSE;
+			startRef := FALSE;
+			sk_ref := 300;
+		END_IF
+		
+	300: // MC_Home starten
+		FB_Homing.Execute := NOT FB_Homing.Busy;
+		sk_ref:=310;
+		
+	310: // MC_Home warte auf Done
+		IF FB_Homing.Done THEN
+			FB_Homing.Execute := FALSE;
+			sk_ref:=0;
+		ELSIF FB_Homing.Error THEN
+			FB_Homing.Execute := FALSE;
+			sk_ref:=0;
+		END_IF
+			
+	//###################################################################
+			
+	
 	END_CASE;
 	END_IF;
 	
@@ -492,6 +565,13 @@ FB_PosOffset(Axis:=inout_NC,
 		FB_Reset.Execute	:= FALSE;
 		out_FB_Error		:= TRUE;
 		out_FB_ErrorID		:= FB_Reset.ErrorID;
+		
+	ELSIF FB_Homing.Error
+		AND FB_Homing.ErrorID>0
+	THEN	
+		FB_Homing.Execute	:= FALSE;
+		out_FB_Error		:= TRUE;
+		out_FB_ErrorID		:= FB_Homing.ErrorID;
 	END_IF			
 
 					
@@ -563,6 +643,21 @@ FB_PosOffset(Axis:=inout_NC,
 	FB_Reset(	Axis:=inout_NC,
 				Execute:=	);
 				
+	FB_Homing(
+		Axis:= inout_NC, 
+		Execute:= , 
+		Position:= in_Ref_pos, 
+		HomingMode:= MC_HomingMode.MC_DefaultHoming, 
+		BufferMode:= MC_BufferMode.MC_Aborting, 
+		Options:= in_HomingOption, 
+		bCalibrationCam:= , 
+		Done=> , 
+		Busy=> , 
+		Active=> , 
+		CommandAborted=> , 
+		Error=> , 
+		ErrorID=> );
+				
 	FB_Stop(	Axis:=inout_NC,
 				Execute:=,
 				Deceleration:=0,				(* Bei einem Wert von 0 wirkt die mit dem letzten Move-Kommando parametrierte Verzögerung *)
@@ -631,7 +726,39 @@ FB_PosOffset(Axis:=inout_NC,
 				CommandAborted=> 	,
 				Error=> 			,
 				ErrorID=> 			);
-]]></ST>
+
+
+
+FB_Read_RefPos(
+	Axis:= inout_NC, 
+	Enable:= , 
+	ParameterNumber:= MC_AxisParameter.AxisEncoderOffset, 
+	ReadMode:= , 
+	Valid=> , 
+	Busy=> , 
+	Error=> , 
+	ErrorID=> , 
+	Value=> );
+	
+FB_Write_RefPos(
+	Axis:= inout_NC, 
+	Execute:= , 
+	ParameterNumber:= , 
+	Value:= , 
+	Done=> , 
+	Busy=> , 
+	Error=> , 
+	ErrorID=> );
+	
+FB_DriveOperationMode(
+	Axis:= inout_NC, 
+	Execute:= , 
+	DriveOperationMode:= , 
+	Options:= , 
+	Done=> , 
+	Busy=> , 
+	Error=> , 
+	ErrorID=> );]]></ST>
       </Implementation>
     </Action>
   </POU>

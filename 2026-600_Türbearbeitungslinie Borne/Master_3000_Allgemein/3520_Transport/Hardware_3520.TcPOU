@@ -147,10 +147,11 @@ fbLaengsBandseite_Ref			(	in_Sensor:=,
 // ***** Frequenzumrichter ******************************************************
 // ******************************************************************************
 				
-	GVL_Visu_3520.Trans_Bandseite	.Para.Speed_Hand		:= 0;
-	GVL_Visu_3520.Trans_Bandseite	.Para.Beschleunigung 	:= 0;
-	GVL_Visu_3520.Trans_Bandseite	.Para.Verzoegerung 		:= 0;
+	GVL_Visu_3520.Trans_Bandseite	.Para.Speed_Hand		:= 20;
+	GVL_Visu_3520.Trans_Bandseite	.Para.Beschleunigung 	:= 10000;
+	GVL_Visu_3520.Trans_Bandseite	.Para.Verzoegerung 		:= 10000;
 	GVL_Visu_3520.Trans_Bandseite	.Para.Einheit			:= 1;
+	GVL_Visu_3520.Trans_Bandseite	.Para.Kommastelle		:= 1;
 
 	fbTrans_Bandseite	(	PD_IN	:=EAs_3520.e_Trans_Bandseite	,
 			IN_ReglerSperre			:=not GVL_3000.bAchsen_Reglersperre,
@@ -168,7 +169,7 @@ fbLaengsBandseite_Ref			(	in_Sensor:=,
 	
 			GVL_3520.Trans_Bandseite_steuern.vor := FALSE;
 			GVL_3520.Trans_Bandseite_steuern.zur := FALSE;
-			GVL_3520.Trans_Bandseite_steuern.speed := 0;
+			GVL_3520.Trans_Bandseite_steuern.speed := 40;
 	]]></ST>
       </Implementation>
     </Action>

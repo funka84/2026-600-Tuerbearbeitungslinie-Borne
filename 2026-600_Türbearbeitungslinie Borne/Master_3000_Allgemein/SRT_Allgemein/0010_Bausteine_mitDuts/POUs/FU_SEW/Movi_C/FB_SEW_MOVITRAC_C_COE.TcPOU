@@ -165,7 +165,7 @@ Betriebsart_zuruecksetzen();
 
 //---Geschwinidgkeit berechnen
 IF IN_OVERRIDE > 0 THEN
-	TEMP_DREHZAHL_SOLL:= REAL_TO_WORD((inout_steuern.speed / rkommastelle) * (IN_OVERRIDE/100));
+	TEMP_DREHZAHL_SOLL:= REAL_TO_WORD((inout_steuern.speed * rkommastelle) * (IN_OVERRIDE/100));
 ELSE
 	TEMP_DREHZAHL_SOLL := 0;
 END_IF
@@ -476,7 +476,7 @@ END_IF
 //---Geschwinidgkeit berechnen
 
 IF inout_visu.override > 0 THEN
-	TEMP_DREHZAHL_SOLL:= REAL_TO_WORD(((inout_Visu.Para.Speed_Hand / rkommastelle) * (inout_visu.override/100)));
+	TEMP_DREHZAHL_SOLL:= REAL_TO_WORD(((inout_Visu.Para.Speed_Hand * rkommastelle) * (inout_visu.override/100)));
 ELSE
 	TEMP_DREHZAHL_SOLL := 0;
 END_IF

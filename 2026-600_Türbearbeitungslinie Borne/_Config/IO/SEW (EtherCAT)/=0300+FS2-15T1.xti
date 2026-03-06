@@ -24,7 +24,7 @@
 			<SyncMan>001000042600010001000000000100040004001026010000</SyncMan>
 			<SyncMan>001400042200010002000000000100040004001422010000</SyncMan>
 			<SyncMan>00181c006400010003000000000000000000001864010000</SyncMan>
-			<SyncMan>001c14002000010004000000000000000000001c20010000</SyncMan>
+			<SyncMan>001c1c002000010004000000000000000000001c20010000</SyncMan>
 			<Fmmu>0000000000000000001800020100000001000000000000000000000000000000</Fmmu>
 			<Fmmu>0000000000000000001c00010100000002000000000000000000000000000000</Fmmu>
 			<Fmmu>00000000000000000d0800010100000003000000000000000000000000000000</Fmmu>
@@ -46,6 +46,9 @@
 				</Entry>
 				<Entry Name="Torque actual value" Index="#x6077" Flags="#x00001000">
 					<Type>INT</Type>
+				</Entry>
+				<Entry Name="Digital inputs actual value" Index="#x208e" Sub="#x01">
+					<Type>UDINT</Type>
 				</Entry>
 			</Pdo>
 			<Pdo Name="Outputs" Index="#x1600" InOut="1" Flags="#x0281" SyncMan="2">
@@ -83,6 +86,9 @@
 				</Entry>
 				<Entry Name="Torque actual value" Index="#x7077" Flags="#x00001000">
 					<Type>INT</Type>
+				</Entry>
+				<Entry Name="Digital inputs actual value" Index="#x308e" Sub="#x01">
+					<Type>UDINT</Type>
 				</Entry>
 			</Pdo>
 			<Pdo Name="Outputs" Index="#x1620" InOut="1" Flags="#x0281" SyncMan="2">

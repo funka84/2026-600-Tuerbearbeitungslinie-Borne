@@ -1579,6 +1579,9 @@ External Setpoint Generation:
 				<Link VarA="Enc^Inputs^In^nState4" VarB="WcState^InputToggle" Size="1" OffsA="1"/>
 				<Link VarA="Enc^Inputs^In^nState4" VarB="WcState^WcState" Size="1"/>
 			</OwnerB>
+			<OwnerB Name="TIID^SEW (EtherCAT)^=0300+FS2-18T1">
+				<Link VarA="Drive^Inputs^In^nState8" VarB="=3520+FS2-11M1 (Y-Achse Riemenförderer)^Inputs^Digital inputs actual value" Size="8"/>
+			</OwnerB>
 		</OwnerA>
 	</Mappings>
 </TcSmItem>

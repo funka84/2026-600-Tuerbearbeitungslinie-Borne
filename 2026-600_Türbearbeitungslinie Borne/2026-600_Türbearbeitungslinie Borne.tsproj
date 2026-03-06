@@ -31,9 +31,13 @@
 			<Device File="SEW (EtherCAT).xti" Id="3"/>
 			<Device File="Panel (USB).xti" Id="5"/>
 		</Io>
+		<SymbolWatch>
+			<Variable>TIID^SEW (EtherCAT)^=0300+FS2-13T1^=3100+FS2-12M1 (Y-Achse)^Inputs^Digital inputs actual value</Variable>
+		</SymbolWatch>
 	</Project>
 	<Mappings>
 		<MappingInfo Identifier="{00000000-2001-0850-0020-500821000403}" Id="#x02030070"/>
+		<MappingInfo Identifier="{00000000-2001-0850-0020-500842000403}" Id="#x02030090"/>
 		<MappingInfo Identifier="{00000000-2001-0850-0020-500880000403}" Id="#x02030080"/>
 		<MappingInfo Identifier="{00000000-0010-0304-3000-040310000403}" Id="#x02030010"/>
 		<MappingInfo Identifier="{00000000-0020-0304-2100-040350000403}" Id="#x02030030"/>

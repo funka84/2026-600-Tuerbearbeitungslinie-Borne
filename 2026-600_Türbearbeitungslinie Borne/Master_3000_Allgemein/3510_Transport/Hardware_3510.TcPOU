@@ -121,10 +121,11 @@ fbLaengsSchlossseite_Ref		(	in_Sensor:=,
 // ***** Frequenzumrichter ******************************************************
 // ******************************************************************************
 				
-	GVL_Visu_3510.Trans_Schlossseite	.Para.Speed_Hand		:= 0;
-	GVL_Visu_3510.Trans_Schlossseite	.Para.Beschleunigung 	:= 0;
-	GVL_Visu_3510.Trans_Schlossseite	.Para.Verzoegerung 		:= 0;
+	GVL_Visu_3510.Trans_Schlossseite	.Para.Speed_Hand		:= 20;
+	GVL_Visu_3510.Trans_Schlossseite	.Para.Beschleunigung 	:= 10000;
+	GVL_Visu_3510.Trans_Schlossseite	.Para.Verzoegerung 		:= 10000;
 	GVL_Visu_3510.Trans_Schlossseite	.Para.Einheit			:= 1;
+	GVL_Visu_3510.Trans_Schlossseite	.Para.Kommastelle		:= 1;
 
 	fbTrans_Schlossseite	(	PD_IN	:=EAs_3510.e_Trans_Schlossseite	,
 			IN_ReglerSperre			:=not GVL_3000.bAchsen_Reglersperre,
@@ -142,7 +143,7 @@ fbLaengsSchlossseite_Ref		(	in_Sensor:=,
 	
 			GVL_3510.Trans_Schlossseite_steuern.vor := FALSE;
 			GVL_3510.Trans_Schlossseite_steuern.zur := FALSE;
-			GVL_3510.Trans_Schlossseite_steuern.speed := 0;
+			GVL_3510.Trans_Schlossseite_steuern.speed := 40;
 	]]></ST>
       </Implementation>
     </Action>
