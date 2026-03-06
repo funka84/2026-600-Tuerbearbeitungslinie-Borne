@@ -235,13 +235,11 @@ fbStillBohraggr_Stulpfraes		(	in_Sensor:=,
 // ***** Frequenzumrichter ******************************************************
 // ******************************************************************************
 				
-	GVL_Visu_3200.Bohraggr_Stufenbohr	.Para.Speed_Hand		:= 0;
-	GVL_Visu_3200.Bohraggr_Stufenbohr	.Para.Beschleunigung 	:= 0;
-	GVL_Visu_3200.Bohraggr_Stufenbohr	.Para.Verzoegerung 		:= 0;
 	GVL_Visu_3200.Bohraggr_Stufenbohr	.Para.Einheit			:= 1;
+	GVL_Visu_3200.Bohraggr_Stufenbohr	.Para.Kommastelle		:= 0;
 
 	fbBohraggr_Stufenbohr	(	PD_IN	:=EAs_3200.e_Bohraggr_Stufenbohr	,
-			IN_ReglerSperre			:=GVL_3000.bAchsen_Reglersperre,
+			IN_ReglerSperre			:=NOT GVL_3000.bAchsen_Reglersperre,
 			IN_SteuerStatus			:=GVL_Visu_3200.SteuerStatus,
 			IN_Ethercat_Adresse		:=,
 			IN_Ethercat_Name		:='',
@@ -256,16 +254,14 @@ fbStillBohraggr_Stulpfraes		(	in_Sensor:=,
 	
 			GVL_3200.Bohraggr_Stufenbohr_steuern.vor := FALSE;
 			GVL_3200.Bohraggr_Stufenbohr_steuern.zur := FALSE;
-			GVL_3200.Bohraggr_Stufenbohr_steuern.speed := 0;
+			GVL_3200.Bohraggr_Stufenbohr_steuern.speed := GVL_Visu_3000.para_Fraeser_Speed_Auto;
 	//********************************************************************************
 				
-	GVL_Visu_3200.Bohraggr_Stulpfraes	.Para.Speed_Hand		:= 0;
-	GVL_Visu_3200.Bohraggr_Stulpfraes	.Para.Beschleunigung 	:= 0;
-	GVL_Visu_3200.Bohraggr_Stulpfraes	.Para.Verzoegerung 		:= 0;
 	GVL_Visu_3200.Bohraggr_Stulpfraes	.Para.Einheit			:= 1;
+	GVL_Visu_3200.Bohraggr_Stulpfraes	.Para.Kommastelle		:= 0;
 
 	fbBohraggr_Stulpfraes	(	PD_IN	:=EAs_3200.e_Bohraggr_Stulpfraes	,
-			IN_ReglerSperre			:=GVL_3000.bAchsen_Reglersperre,
+			IN_ReglerSperre			:=not GVL_3000.bAchsen_Reglersperre,
 			IN_SteuerStatus			:=GVL_Visu_3200.SteuerStatus,
 			IN_Ethercat_Adresse		:=,
 			IN_Ethercat_Name		:='',
@@ -280,7 +276,7 @@ fbStillBohraggr_Stulpfraes		(	in_Sensor:=,
 	
 			GVL_3200.Bohraggr_Stulpfraes_steuern.vor := FALSE;
 			GVL_3200.Bohraggr_Stulpfraes_steuern.zur := FALSE;
-			GVL_3200.Bohraggr_Stulpfraes_steuern.speed := 0;
+			GVL_3200.Bohraggr_Stulpfraes_steuern.speed := GVL_Visu_3000.para_Fraeser_Speed_Auto;
 	]]></ST>
       </Implementation>
     </Action>

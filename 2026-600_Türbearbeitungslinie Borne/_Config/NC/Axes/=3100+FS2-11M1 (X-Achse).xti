@@ -1427,12 +1427,16 @@ External Setpoint Generation:
 	<Axis Id="1" CreateSymbols="true" AxisType="1">
 		<Name>__FILENAME__</Name>
 		<AxisPara>
-			<Velo SlowManual="10" FastManual="60"/>
+			<General UnitName="m" UnitFlags="#x00000001"/>
+			<Dynamic Acceleration="500" Deceleration="500" Jerk="500"/>
+			<Velo RefSearch="50" RefSync="10" FastManual="250"/>
 			<OtherSettings AllowMotionCmdToSlave="true"/>
 		</AxisPara>
 		<Encoder Name="Enc" EncType="19">
 			<EncPara ScaleFactorNumerator="3.05176e-05" MaxCount="#xffffffff">
-				<SoftEndMaxControl Range="50"/>
+				<SoftEndMinControl Enable="true"/>
+				<SoftEndMaxControl Enable="true" Range="50"/>
+				<Inc RefSearchInverse="true" RefSyncInverse="false" HomingSensorSource="10"/>
 			</EncPara>
 			<Vars VarGrpType="1">
 				<Name>Eingänge</Name>
@@ -1576,6 +1580,7 @@ External Setpoint Generation:
 				<Link VarA="Drive^Inputs^In^nState4" VarB="WcState^InputToggle" Size="1" OffsA="1"/>
 				<Link VarA="Drive^Inputs^In^nState4" VarB="WcState^WcState" Size="1"/>
 				<Link VarA="Drive^Inputs^In^nState5" VarB="=3100+FS2-11M1 (X-Achse)^Inputs^Modes of operation display"/>
+				<Link VarA="Drive^Inputs^In^nState8" VarB="=3100+FS2-11M1 (X-Achse)^Inputs^Digital inputs actual value" Size="8"/>
 				<Link VarA="Drive^Outputs^Out^nCtrl1" VarB="=3100+FS2-11M1 (X-Achse)^Outputs^Control word" Size="8"/>
 				<Link VarA="Drive^Outputs^Out^nCtrl2" VarB="=3100+FS2-11M1 (X-Achse)^Outputs^Control word" Size="8" OffsB="8"/>
 				<Link VarA="Drive^Outputs^Out^nCtrl5" VarB="=3100+FS2-11M1 (X-Achse)^Outputs^Modes of operation"/>

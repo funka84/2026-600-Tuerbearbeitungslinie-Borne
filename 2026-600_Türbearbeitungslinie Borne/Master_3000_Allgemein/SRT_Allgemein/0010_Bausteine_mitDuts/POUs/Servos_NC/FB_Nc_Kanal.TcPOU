@@ -114,7 +114,7 @@ END_VAR]]></Declaration>
 			END_IF;
 		ELSE
 			IF NOT inout_NcStatus.AxToPTPOk
-			AND NOT AxToPTP.bErr
+			AND (NOT AxToPTP.bErr OR inout_NcReset)
 			THEN
 				AxToPTPLoad:= TRUE;
 				inout_NcStatus.AxTo3DOk:= FALSE;

@@ -16,7 +16,9 @@ VAR_GLOBAL
     //Achse                    : DUT_Achse_Service;      //#Tab: #Name: 
 
     // Ventile
-	 Niederhalter        		: DUT_Ventil_VISU;      //#Tab: 3530 Transport #Name: Schlossseite Längsanschlag
+	 Niederhalter        		: DUT_Ventil_VISU;      //#Tab: 3530 Niederhalter Schlossseite #Name: Schlossseite Längsanschlag
+
+	refresh2						: BOOL;
 
 END_VAR
 

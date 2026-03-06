@@ -5,13 +5,53 @@
 VAR
 	tof_Quittieren				: TOF;
 	ton_SEW_Einschalten			: TON;
-	tof_SEW_Ausschalten			: TOF;
+	ton_SEW_Ausschalten			: TON;
+	bSEW_Freigabe_Ein			: BOOL;
+	bSEW_Freigabe_Aus			: BOOL;
+	bSEW_Freigabe				: bool;
 END_VAR
 ]]></Declaration>
     <Implementation>
       <ST><![CDATA[
 A_USB_Panel();
 
+// ----------------------------------------------------------
+// Parameter verwalten
+// ----------------------------------------------------------
+	GVL_Visu_3000.para_Fraeser_Speed_Auto;
+	GVL_Visu_3000.para_Fraeser_Speed_Hand 	:= 17000;
+	GVL_Visu_3000.para_Fraeser_Rampe_Beschl := 7500;
+	GVL_Visu_3000.para_Fraeser_Rampe_Verz	:= 7500;
+
+	GVL_Visu_3100.Bohraggr_Schlosskast.Para.Speed_Hand			:= GVL_Visu_3000.para_Fraeser_Speed_Hand;
+	GVL_Visu_3100.Bohraggr_Schlosskast.Para.Beschleunigung 		:= GVL_Visu_3000.para_Fraeser_Rampe_Beschl;
+	GVL_Visu_3100.Bohraggr_Schlosskast.Para.Verzoegerung 		:= GVL_Visu_3000.para_Fraeser_Rampe_Verz;
+                                                            	
+	GVL_Visu_3100.Bohraggr_Vorbohren.Para.Speed_Hand			:= GVL_Visu_3000.para_Fraeser_Speed_Hand;
+	GVL_Visu_3100.Bohraggr_Vorbohren.Para.Beschleunigung 		:= GVL_Visu_3000.para_Fraeser_Rampe_Beschl;
+	GVL_Visu_3100.Bohraggr_Vorbohren.Para.Verzoegerung 			:= GVL_Visu_3000.para_Fraeser_Rampe_Verz;	
+                                                            	
+	GVL_Visu_3100.Bohraggr_Stulpfraes.Para.Speed_Hand			:= GVL_Visu_3000.para_Fraeser_Speed_Hand;
+	GVL_Visu_3100.Bohraggr_Stulpfraes.Para.Beschleunigung 		:= GVL_Visu_3000.para_Fraeser_Rampe_Beschl;
+	GVL_Visu_3100.Bohraggr_Stulpfraes.Para.Verzoegerung 		:= GVL_Visu_3000.para_Fraeser_Rampe_Verz;
+	                                                        	
+	GVL_Visu_3200.Bohraggr_Stufenbohr.Para.Speed_Hand			:= GVL_Visu_3000.para_Fraeser_Speed_Hand;
+	GVL_Visu_3200.Bohraggr_Stufenbohr.Para.Beschleunigung 		:= GVL_Visu_3000.para_Fraeser_Rampe_Beschl;
+	GVL_Visu_3200.Bohraggr_Stufenbohr.Para.Verzoegerung 		:= GVL_Visu_3000.para_Fraeser_Rampe_Verz;
+	                                                        	
+	GVL_Visu_3200.Bohraggr_Stulpfraes.Para.Speed_Hand			:= GVL_Visu_3000.para_Fraeser_Speed_Hand;
+	GVL_Visu_3200.Bohraggr_Stulpfraes.Para.Beschleunigung 		:= GVL_Visu_3000.para_Fraeser_Rampe_Beschl;
+	GVL_Visu_3200.Bohraggr_Stulpfraes.Para.Verzoegerung 		:= GVL_Visu_3000.para_Fraeser_Rampe_Verz;
+				
+	GVL_Visu_3300.Bohraggr_Schluessel_un.Para.Speed_Hand		:= GVL_Visu_3000.para_Fraeser_Speed_Hand;
+	GVL_Visu_3300.Bohraggr_Schluessel_un.Para.Beschleunigung 	:= GVL_Visu_3000.para_Fraeser_Rampe_Beschl;
+	GVL_Visu_3300.Bohraggr_Schluessel_un.Para.Verzoegerung 		:= GVL_Visu_3000.para_Fraeser_Rampe_Verz;
+				                        
+	GVL_Visu_3400.Bohraggr_Schluessel_ob.Para.Speed_Hand		:= GVL_Visu_3000.para_Fraeser_Speed_Hand;
+	GVL_Visu_3400.Bohraggr_Schluessel_ob.Para.Beschleunigung 	:= GVL_Visu_3000.para_Fraeser_Rampe_Beschl;
+	GVL_Visu_3400.Bohraggr_Schluessel_ob.Para.Verzoegerung 		:= GVL_Visu_3000.para_Fraeser_Rampe_Verz;
+	
+	
 // ----------------------------------------------------------
 // Signale weiterleiten
 // ----------------------------------------------------------
@@ -39,9 +79,15 @@ EAs_3000.a_Fehler := (GVL_Meldungen.Stoerung_0000 OR GVL_Meldungen.Stoerung_3000
 // SEW Versorgungsmodul
 // ----------------------------------------------------------
 
-ton_SEW_Einschalten(IN:= , PT:= , Q=> , ET=> );
-tof_SEW_Ausschalten(IN:= , PT:= , Q=> , ET=> );
+ton_SEW_Einschalten(IN:= GVL_Safety.in_State_FBrs_Steuerspannung.eState = enum_FB_RS.set, PT:= T#20S, Q=>bSEW_Freigabe_Ein , ET=> );
+ton_SEW_Ausschalten(IN:= GVL_Safety.in_State_FBrs_Steuerspannung.eState <> enum_FB_RS.set, PT:= T#5S, Q=>bSEW_Freigabe_Aus , ET=> );
 
+IF bSEW_Freigabe_Aus THEN
+	bSEW_Freigabe := FALSE;
+ELSIF bSEW_Freigabe_Ein THEN
+	bSEW_Freigabe := TRUE;
+END_IF
+EAs_3000.a_FR_0300_SEW_Netzschuetz_Versorgungsmodul_EIN_1Min_10sec_Ein_Ausschaltzeit := bSEW_Freigabe;
 
 // ----------------------------------------------------------
 // Freigabe für die Anlage
@@ -50,10 +96,11 @@ GVL_3000.bFreigabe := 	GVL_Safety.in_State_FBrs_Steuerspannung.eState = enum_FB_
 						AND GVL_3000.bDruckluft_Bereit
 						AND EAs_3000.e_FR_0300_SEW_Bremswiderstand_Versorgungsmodul_ist_OK
 						AND EAs_3000.a_FR_0300_SEW_Netzschuetz_Versorgungsmodul_EIN_1Min_10sec_Ein_Ausschaltzeit
-						AND EAs_3510.e_state_X_Achse.eState <> enum_State.STATE_OP
-						AND EAs_3520.e_state_X_Achse.eState <> enum_State.STATE_OP;
+						AND EAs_3510.e_state_X_Achse.eState = enum_State.STATE_OP
+						AND EAs_3520.e_state_X_Achse.eState = enum_State.STATE_OP;
 						
-]]></ST>
+GVL_3000.bAchsen_Reglersperre 	:= GVL_3000.bFreigabe;
+GVL_3000.bAchsen_Freigabe 		:= GVL_3000.bFreigabe;]]></ST>
     </Implementation>
     <Action Name="A_USB_Panel" Id="{0e863f73-6350-42e1-8bf4-50589a2aab1a}">
       <Implementation>

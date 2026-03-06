@@ -10,14 +10,16 @@ VAR_GLOBAL
     SteuerStatus               : DUT_Visu_SteuerStatus;
 
     // Frequenzumrichter
-	Trans_Schlossseite			: DUT_SEW_FU_Visu; 		//#Tab: 3510 Transport #Name: Transport Schlossseite X-Achse
+	Trans_Schlossseite			: DUT_SEW_FU_Visu; 		//#Tab: 3510 Transport Schlossseite #Name: Transport Schlossseite X-Achse
 
     // Servoregler
-	X_Achse						: DUT_Achse_Service;	//#Tab: 3510 Transport #Name: X-Achse Längsanschlag
+	X_Achse						: DUT_Achse_Service;	//#Tab: 3510 Transport Schlossseite #Name: X-Achse Längsanschlag
 
     // Ventile
-	 Laengsanschl        		: DUT_Ventil_VISU;      //#Tab: 3510 Transport #Name: Schlossseite Längsanschlag
-	 Schienenklemm        		: DUT_Ventil_VISU;      //#Tab: 3510 Transport #Name: Schienenklemmung
+	 Laengsanschl        		: DUT_Ventil_VISU;      //#Tab: 3510 Transport Schlossseite #Name: Schlossseite Längsanschlag
+	 Schienenklemm        		: DUT_Ventil_VISU;      //#Tab: 3510 Transport Schlossseite #Name: Schienenklemmung
+
+	refresh2						: BOOL;
 
 END_VAR
 

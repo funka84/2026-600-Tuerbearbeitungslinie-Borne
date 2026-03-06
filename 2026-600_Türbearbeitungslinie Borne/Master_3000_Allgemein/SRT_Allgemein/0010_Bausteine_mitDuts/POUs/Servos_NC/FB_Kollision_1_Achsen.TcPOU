@@ -52,8 +52,8 @@ END_VAR
 	IF NOT in_Active_Axis_1 THEN
 		tmp_min := in_min_1;
 		tmp_max := in_max_1;
-		fbWritePara_1_min.Execute := TRUE AND NOT RT_Error.Q;
-		fbWritePara_1_max.Execute := TRUE AND NOT RT_Error.Q;
+		fbWritePara_1_min.Execute := in_min_1 <> tmp_1 AND NOT RT_Error.Q;
+		fbWritePara_1_max.Execute := in_max_1 <> tmp_2 AND NOT RT_Error.Q;
 		fbWritePara_1_min_enb.Execute := TRUE AND NOT RT_Error.Q;
 		fbWritePara_1_max_enb.Execute := TRUE AND NOT RT_Error.Q;
 		tmp_1 := in_min_1;

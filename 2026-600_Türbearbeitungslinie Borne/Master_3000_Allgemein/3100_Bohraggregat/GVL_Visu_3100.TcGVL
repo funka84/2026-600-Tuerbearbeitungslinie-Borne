@@ -10,22 +10,23 @@ VAR_GLOBAL
     SteuerStatus               : DUT_Visu_SteuerStatus;
 
     // Frequenzumrichter
-	Bohraggr_Schlosskast		: DUT_SEW_FU_Visu; 		//#Tab: 3100 Bohraggregat #Name: Bohraggregat Schlosskasten
-	Bohraggr_Vorbohren			: DUT_SEW_FU_Visu; 		//#Tab: 3100 Bohraggregat #Name: Bohraggregat Vorbohren
-	Bohraggr_Stulpfraes			: DUT_SEW_FU_Visu; 		//#Tab: 3100 Bohraggregat #Name: Bohraggregat Stulpfräser
+	Bohraggr_Schlosskast		: DUT_SEW_FU_Visu; 		//#Tab: 3100 Bohraggregat Schlossseite #Name: Bohraggregat Schlosskasten
+	Bohraggr_Vorbohren			: DUT_SEW_FU_Visu; 		//#Tab: 3100 Bohraggregat Schlossseite #Name: Bohraggregat Vorbohren
+	Bohraggr_Stulpfraes			: DUT_SEW_FU_Visu; 		//#Tab: 3100 Bohraggregat Schlossseite #Name: Bohraggregat Stulpfräser
 
     // Servoregler
-	X_Achse						: DUT_Achse_Service;	//#Tab: 3100 Bohraggregat #Name: X-Achse 
-	Y_Achse						: DUT_Achse_Service;	//#Tab: 3100 Bohraggregat #Name: Y-Achse 
-	Z_Achse						: DUT_Achse_Service;	//#Tab: 3100 Bohraggregat #Name: Z-Achse 
+	X_Achse						: DUT_Achse_Service;	//#Tab: 3100 Bohraggregat Schlossseite #Name: X-Achse 
+	Y_Achse						: DUT_Achse_Service;	//#Tab: 3100 Bohraggregat Schlossseite #Name: Y-Achse 
+	Z_Achse						: DUT_Achse_Service;	//#Tab: 3100 Bohraggregat Schlossseite #Name: Z-Achse 
 
     // Ventile
-	Schlosskast_Vorlegehub     	: DUT_Ventil_VISU;    	//#Tab: 3100 Bohraggregat #Name: Schlosskasten Vorlegehub
-	Vorbohren_Bohrhub        	: DUT_Ventil_VISU;    	//#Tab: 3100 Bohraggregat #Name: Vorbohren Bohrhub
-	Stulpfraes_Vorlegehub 		: DUT_Ventil_VISU;    	//#Tab: 3100 Bohraggregat #Name: Stulpfräser Vorlegehub
-	Nullkante 					: DUT_Ventil_VISU;    	//#Tab: 3100 Bohraggregat #Name: Nullkante
-	Schienenklemm				: DUT_Ventil_VISU;    	//#Tab: 3100 Bohraggregat #Name: Schienenklemmung
+	Schlosskast_Vorlegehub     	: DUT_Ventil_VISU;    	//#Tab: 3100 Bohraggregat Schlossseite #Name: Schlosskasten Vorlegehub
+	Vorbohren_Bohrhub        	: DUT_Ventil_VISU;    	//#Tab: 3100 Bohraggregat Schlossseite #Name: Vorbohren Bohrhub
+	Stulpfraes_Vorlegehub 		: DUT_Ventil_VISU;    	//#Tab: 3100 Bohraggregat Schlossseite #Name: Stulpfräser Vorlegehub
+	Nullkante 					: DUT_Ventil_VISU;    	//#Tab: 3100 Bohraggregat Schlossseite #Name: Nullkante
+	Schienenklemm				: DUT_Ventil_VISU;    	//#Tab: 3100 Bohraggregat Schlossseite #Name: Schienenklemmung
 
+	refresh2					: BOOL;
 END_VAR
 
 VAR_GLOBAL PERSISTENT

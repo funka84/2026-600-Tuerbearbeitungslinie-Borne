@@ -12,7 +12,7 @@ STRUCT
 	Nr_005		:BOOL;// #MText: 3000 Fräse - Safety Funktionsstörung #HText: #Prio:1  #BMK: 
 	Nr_006		:BOOL;// #MText: 3000 Fräse - Safety Kommunikationsstörung #HText: #Prio:1  #BMK: 
 	Nr_007		:BOOL;// #MText: 3000 Fräse - Safety unbekannter Fehler #HText: #Prio:1  #BMK: 
-	Nr_008		:BOOL;// #MText: #HText: #Prio: #BMK: 
+	Nr_008		:BOOL;// #MText: 3000 Fräse - Safety Not-Aus muss quittiert werden #HText: #Prio: #BMK: 
 	Nr_009		:BOOL;// #MText: #HText: #Prio: #BMK: 
 	Nr_010		:BOOL;// #MText: 3000 Fräse - Lastüberwachung 24V hat gelöst #HText: #Prio: 1 #BMK: 
 	Nr_011		:BOOL;// #MText: 3000 Fräse - SEW Bremswiderstand Versorungsmodul nicht betriebsbereit #HText: #Prio: #BMK: 
@@ -25,8 +25,8 @@ STRUCT
 	Nr_018		:BOOL;// #MText: 3000 Fräse - Antrieb =3510+FS1-6T1 Kommunikation gestört #HText: #Prio:1 #BMK:  
 	Nr_019		:BOOL;// #MText: 3000 Fräse - Antrieb =3520+FS1-6T1 Kommunikation gestört, Steuerspannung einschalten #HText: #Prio:11 #BMK:  
 	Nr_020		:BOOL;// #MText: 3000 Fräse - Antrieb =3520+FS1-6T1 Kommunikation gestört #HText: #Prio:1 #BMK:  
-	Nr_021		:BOOL;// #MText: #HText: #Prio: #BMK:     
-	Nr_022		:BOOL;// #MText: #HText: #Prio: #BMK:     
+	Nr_021		:BOOL;// #MText: 3000 Fräse - SEW Versorgunsmodul Ausschaltzeit 10 Sekunden läuft, bitte warten #HText: #Prio:1 #BMK:     
+	Nr_022		:BOOL;// #MText: 3000 Fräse - SEW Versorgunsmodul Einschaltzeit 60 Sekunden läuft, bitte warten #HText: #Prio:11 #BMK:    
 	Nr_023		:BOOL;// #MText: #HText: #Prio: #BMK:      
 	Nr_024		:BOOL;// #MText: #HText: #Prio: #BMK:
 	Nr_025		:BOOL;// #MText: #HText: #Prio: #BMK:      

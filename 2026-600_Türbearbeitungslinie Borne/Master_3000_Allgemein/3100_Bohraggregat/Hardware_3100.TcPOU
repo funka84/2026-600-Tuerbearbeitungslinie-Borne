@@ -134,8 +134,8 @@ fbStillBohraggr_Stulpfraes		(	in_Sensor:=,
 	GVL_3100.X_Achse_steuern.Freigabe 		:= GVL_3000.bAchsen_Freigabe;
 	
 	fbX_Achse(
-	in_Reglersperre				:= GVL_3100.X_Achse_steuern.Reglersperre OR TRUE, 
-	in_Freigabe					:= GVL_3100.X_Achse_steuern.Freigabe OR TRUE,
+	in_Reglersperre				:= GVL_3100.X_Achse_steuern.Reglersperre, 
+	in_Freigabe					:= GVL_3100.X_Achse_steuern.Freigabe,
 	in_Reset					:= GVL_Visu_3100.SteuerStatus.reset   
 								OR GVL_3000.stoerung_quitt,                      
 	in_Hand						:= GVL_Visu_3100.SteuerStatus.hand,              
@@ -246,8 +246,8 @@ fbStillBohraggr_Stulpfraes		(	in_Sensor:=,
 	fbColl_X(
 		in_Active_Axis_1:= , 
 		in_Quittieren:= , 
-		in_max_1:= 100, 
-		in_min_1:= -100, 
+		in_max_1:= 2790, 
+		in_min_1:= -30, 
 		in_max_enb:= 90, 
 		in_min_enb:= -80, 
 		inout_Axis_1:= EAs_3100.ea_X_Achse, 
@@ -284,13 +284,11 @@ fbStillBohraggr_Stulpfraes		(	in_Sensor:=,
 // ***** Frequenzumrichter ******************************************************
 // ******************************************************************************
 				
-	GVL_Visu_3100.Bohraggr_Schlosskast.Para.Speed_Hand		:= 0;
-	GVL_Visu_3100.Bohraggr_Schlosskast.Para.Beschleunigung 	:= 0;
-	GVL_Visu_3100.Bohraggr_Schlosskast.Para.Verzoegerung 	:= 0;
 	GVL_Visu_3100.Bohraggr_Schlosskast.Para.Einheit			:= 1;
+	GVL_Visu_3100.Bohraggr_Schlosskast.Para.Kommastelle		:= 0;
 
 	fbBohraggr_Schlosskast(	PD_IN	:=EAs_3100.e_Bohraggr_Schlosskast,
-			IN_ReglerSperre			:=GVL_3000.bAchsen_Reglersperre,
+			IN_ReglerSperre			:=NOT GVL_3000.bAchsen_Reglersperre,
 			IN_SteuerStatus			:=GVL_Visu_3100.SteuerStatus,
 			IN_Ethercat_Adresse		:=,
 			IN_Ethercat_Name		:='',
@@ -305,16 +303,14 @@ fbStillBohraggr_Stulpfraes		(	in_Sensor:=,
 	
 			GVL_3100.Bohraggr_Schlosskast_steuern.vor := FALSE;
 			GVL_3100.Bohraggr_Schlosskast_steuern.zur := FALSE;
-			GVL_3100.Bohraggr_Schlosskast_steuern.speed := 0;
+			GVL_3100.Bohraggr_Schlosskast_steuern.speed := GVL_Visu_3000.para_Fraeser_Speed_Auto;
 	//********************************************************************************
 				
-	GVL_Visu_3100.Bohraggr_Vorbohren.Para.Speed_Hand		:= 0;
-	GVL_Visu_3100.Bohraggr_Vorbohren.Para.Beschleunigung 	:= 0;
-	GVL_Visu_3100.Bohraggr_Vorbohren.Para.Verzoegerung 		:= 0;
 	GVL_Visu_3100.Bohraggr_Vorbohren.Para.Einheit			:= 1;
+	GVL_Visu_3100.Bohraggr_Vorbohren.Para.Kommastelle		:= 0;
 
 	fbBohraggr_Vorbohren(	PD_IN	:=EAs_3100.e_Bohraggr_Vorbohren,
-			IN_ReglerSperre			:=GVL_3000.bAchsen_Reglersperre,
+			IN_ReglerSperre			:=NOT GVL_3000.bAchsen_Reglersperre,
 			IN_SteuerStatus			:=GVL_Visu_3100.SteuerStatus,
 			IN_Ethercat_Adresse		:=,
 			IN_Ethercat_Name		:='',
@@ -329,16 +325,14 @@ fbStillBohraggr_Stulpfraes		(	in_Sensor:=,
 	
 			GVL_3100.Bohraggr_Vorbohren_steuern.vor := FALSE;
 			GVL_3100.Bohraggr_Vorbohren_steuern.zur := FALSE;
-			GVL_3100.Bohraggr_Vorbohren_steuern.speed := 0;
+			GVL_3100.Bohraggr_Vorbohren_steuern.speed := GVL_Visu_3000.para_Fraeser_Speed_Auto;
 	//********************************************************************************
 				
-	GVL_Visu_3100.Bohraggr_Stulpfraes	.Para.Speed_Hand		:= 0;
-	GVL_Visu_3100.Bohraggr_Stulpfraes	.Para.Beschleunigung 	:= 0;
-	GVL_Visu_3100.Bohraggr_Stulpfraes	.Para.Verzoegerung 		:= 0;
-	GVL_Visu_3100.Bohraggr_Stulpfraes	.Para.Einheit			:= 1;
+	GVL_Visu_3100.Bohraggr_Stulpfraes.Para.Einheit			:= 1;
+	GVL_Visu_3100.Bohraggr_Stulpfraes.Para.Kommastelle		:= 0;
 
 	fbBohraggr_Stulpfraes(	PD_IN	:=EAs_3100.e_Bohraggr_Stulpfraes	,
-			IN_ReglerSperre			:=GVL_3000.bAchsen_Reglersperre,
+			IN_ReglerSperre			:=NOT GVL_3000.bAchsen_Reglersperre,
 			IN_SteuerStatus			:=GVL_Visu_3100.SteuerStatus,
 			IN_Ethercat_Adresse		:=,
 			IN_Ethercat_Name		:='',
@@ -353,7 +347,7 @@ fbStillBohraggr_Stulpfraes		(	in_Sensor:=,
 	
 			GVL_3100.Bohraggr_Stulpfraes_steuern.vor := FALSE;
 			GVL_3100.Bohraggr_Stulpfraes_steuern.zur := FALSE;
-			GVL_3100.Bohraggr_Stulpfraes_steuern.speed := 0;
+			GVL_3100.Bohraggr_Stulpfraes_steuern.speed := GVL_Visu_3000.para_Fraeser_Speed_Auto;
 ]]></ST>
       </Implementation>
     </Action>

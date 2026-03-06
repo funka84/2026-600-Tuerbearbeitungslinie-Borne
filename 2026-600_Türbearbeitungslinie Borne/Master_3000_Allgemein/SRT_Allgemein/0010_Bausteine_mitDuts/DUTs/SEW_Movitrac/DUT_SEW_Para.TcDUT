@@ -15,6 +15,9 @@ Verzoegerung				:INT;	// Verzögerungsrampe in Anwendereinheit
 Einheit						:INT;	// 0 = mm/s , 1 = m/min	
 //Sonstiges
 Drehtausch					:BOOL;	// Motordrehsinn invertieren
+
+// Kommastellen
+Kommastelle					: INT;	// 0 = keine Kommastelle, 1 = eine Stelle ...
 END_STRUCT
 END_TYPE]]></Declaration>
   </DUT>

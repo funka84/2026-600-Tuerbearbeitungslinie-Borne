@@ -127,7 +127,7 @@ fbLaengsSchlossseite_Ref		(	in_Sensor:=,
 	GVL_Visu_3510.Trans_Schlossseite	.Para.Einheit			:= 1;
 
 	fbTrans_Schlossseite	(	PD_IN	:=EAs_3510.e_Trans_Schlossseite	,
-			IN_ReglerSperre			:=GVL_3000.bAchsen_Reglersperre,
+			IN_ReglerSperre			:=not GVL_3000.bAchsen_Reglersperre,
 			IN_SteuerStatus			:=GVL_Visu_3510.SteuerStatus,
 			IN_Ethercat_Adresse		:=,
 			IN_Ethercat_Name		:='',

@@ -394,7 +394,8 @@ FB_PosOffset(Axis:=inout_NC,
 // ***** Handbetrieb - Achse tippen ******************************************************************************************
 	//************************************************************************************************************************
 	bLimit_InActive := Achsparameter.fEncSoftEndMax = 0 AND Achsparameter.fEncSoftEndMin = 0;
-
+	bLimit_InActive := TRUE;
+	
 	IF in_Hand
 		AND inout_service.betriebsart=1
 		AND NOT FB_Jog.CommandAborted

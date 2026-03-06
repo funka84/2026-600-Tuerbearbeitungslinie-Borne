@@ -10,14 +10,16 @@ VAR_GLOBAL
     SteuerStatus               : DUT_Visu_SteuerStatus;
 
     // Frequenzumrichter
-	Bohraggr_Schluessel_un		: DUT_SEW_FU_Visu; 		//#Tab: 3300 Bohraggregat #Name: Bohraggregat Schlüsselkasten unten
+	Bohraggr_Schluessel_un		: DUT_SEW_FU_Visu; 		//#Tab: 3300 Bohraggregat Unten #Name: Bohraggregat Schlüsselkasten unten
 
     // Servoregler
-	X_Achse						: DUT_Achse_Service;	//#Tab: 3300 Bohraggregat #Name: X-Achse 
-	Y_Achse						: DUT_Achse_Service;	//#Tab: 3300 Bohraggregat #Name: Y-Achse 
+	X_Achse						: DUT_Achse_Service;	//#Tab: 3300 Bohraggregat Unten #Name: X-Achse 
+	Y_Achse						: DUT_Achse_Service;	//#Tab: 3300 Bohraggregat Unten #Name: Y-Achse 
 
     // Ventile
-	 Schluessel_un_Bohrhub       : DUT_Ventil_VISU;     //#Tab: 3300 Bohraggregat #Name: Schlüsselkasten unten Bohrhub 
+	 Schluessel_un_Bohrhub       : DUT_Ventil_VISU;     //#Tab: 3300 Bohraggregat Unten #Name: Schlüsselkasten unten Bohrhub 
+
+	refresh2						: BOOL;
 
 END_VAR
 

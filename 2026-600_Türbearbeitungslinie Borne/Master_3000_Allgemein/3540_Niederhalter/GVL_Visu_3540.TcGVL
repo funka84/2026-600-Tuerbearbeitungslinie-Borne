@@ -13,10 +13,12 @@ VAR_GLOBAL
     //transport                : DUT_SEW_FU_Visu;       //#Tab:  #Name: 
 
     // Servoregler
-	Y_Achse						: DUT_Achse_Service;	//#Tab: 3540 Transport #Name: Y-Achse 
+	Y_Achse						: DUT_Achse_Service;	//#Tab: 3540 Niederhalter Bandseite #Name: Y-Achse 
 
     // Ventile
-	 Niederhalter        		: DUT_Ventil_VISU;      //#Tab: 3540 Transport #Name: Bandseite Längsanschlag
+	 Niederhalter        		: DUT_Ventil_VISU;      //#Tab: 3540 Niederhalter Bandseite #Name: Bandseite Längsanschlag
+
+	refresh2						: BOOL;
 
 END_VAR
 

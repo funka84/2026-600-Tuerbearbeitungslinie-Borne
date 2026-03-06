@@ -10,15 +10,17 @@ VAR_GLOBAL
     SteuerStatus               : DUT_Visu_SteuerStatus;
 
     // Frequenzumrichter
-	Trans_Bandseite				: DUT_SEW_FU_Visu; 		//#Tab: 3520 Transport #Name: Transport Bandseite X-Achse
+	Trans_Bandseite				: DUT_SEW_FU_Visu; 		//#Tab: 3520 Transport Bandseite #Name: Transport Bandseite X-Achse
 
     // Servoregler
-	Y_Achse						: DUT_Achse_Service;	//#Tab: 3520 Transport #Name: Y-Achse 
-	X_Achse						: DUT_Achse_Service;	//#Tab: 3520 Transport #Name: X-Achse Längsanschlag
+	Y_Achse						: DUT_Achse_Service;	//#Tab: 3520 Transport Bandseite #Name: Y-Achse 
+	X_Achse						: DUT_Achse_Service;	//#Tab: 3520 Transport Bandseite #Name: X-Achse Längsanschlag
 
     // Ventile
-	 Laengsanschl        		: DUT_Ventil_VISU;      //#Tab: 3520 Transport #Name: Bandseite Längsanschlag
-	 Schienenklemm        		: DUT_Ventil_VISU;      //#Tab: 3520 Transport #Name: Schienenklemmung
+	 Laengsanschl        		: DUT_Ventil_VISU;      //#Tab: 3520 Transport Bandseite #Name: Bandseite Längsanschlag
+	 Schienenklemm        		: DUT_Ventil_VISU;      //#Tab: 3520 Transport Bandseite #Name: Schienenklemmung
+
+	refresh2					: BOOL;
 
 END_VAR
 

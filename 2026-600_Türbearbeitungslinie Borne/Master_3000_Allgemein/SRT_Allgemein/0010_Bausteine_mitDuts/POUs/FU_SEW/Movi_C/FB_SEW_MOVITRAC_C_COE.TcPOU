@@ -95,10 +95,26 @@ VAR
 	SchreibenFehlgeschlagen		:BOOL;
 	keinTimerAktiv				:BOOL;
 	
+	ikommastelle				: INT;
+	rkommastelle				: real;
 	
 END_VAR]]></Declaration>
     <Implementation>
-      <ST><![CDATA[
+      <ST><![CDATA[//Kommastelle festlegen
+	IF inout_Visu.Para.Kommastelle = 0 THEN
+		ikommastelle := 1;
+		rkommastelle := 1.0;
+	ELSIF inout_Visu.Para.Kommastelle = 1 THEN
+		ikommastelle := 10;
+		rkommastelle := 10.0;
+	ELSIF inout_Visu.Para.Kommastelle = 2 THEN
+		ikommastelle := 100;
+		rkommastelle := 100.0;
+	ELSIF inout_Visu.Para.Kommastelle = 3 THEN
+		ikommastelle := 1000;
+		rkommastelle := 1000.0;
+	END_IF
+
 //---Aufruf Statuswort auslesen
 Read_Statuswort();
 
@@ -148,8 +164,11 @@ Betriebsart_zuruecksetzen();
 
 
 //---Geschwinidgkeit berechnen
-
-TEMP_DREHZAHL_SOLL:= REAL_TO_WORD(inout_steuern.speed / 10 * IN_OVERRIDE);
+IF IN_OVERRIDE > 0 THEN
+	TEMP_DREHZAHL_SOLL:= REAL_TO_WORD((inout_steuern.speed / rkommastelle) * (IN_OVERRIDE/100));
+ELSE
+	TEMP_DREHZAHL_SOLL := 0;
+END_IF
 
 //---PD-Sollgeschwinidgkeit beschreiben---
 
@@ -456,9 +475,13 @@ END_IF
 
 //---Geschwinidgkeit berechnen
 
-TEMP_DREHZAHL_SOLL:= REAL_TO_WORD(inout_Visu.Para.Speed_Hand / 10 * inout_visu.override);
+IF inout_visu.override > 0 THEN
+	TEMP_DREHZAHL_SOLL:= REAL_TO_WORD(((inout_Visu.Para.Speed_Hand / rkommastelle) * (inout_visu.override/100)));
+ELSE
+	TEMP_DREHZAHL_SOLL := 0;
+END_IF
 
-inout_Visu.istdrehzahl:=INT_TO_REAL(WORD_TO_INT(PD_in.PD_2_IST_DREHZAHL))/10.0;
+inout_Visu.istdrehzahl:=INT_TO_REAL(WORD_TO_INT(PD_in.PD_2_IST_DREHZAHL))/rkommastelle;
 
 //---PD-Sollgeschwinidgkeit beschreiben---
 IF in_Steuerstatus.hand

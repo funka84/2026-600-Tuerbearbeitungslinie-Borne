@@ -186,14 +186,11 @@ fbStillBohraggr_Schluessel_un	(	in_Sensor:=,
         <ST><![CDATA[	
 // ***** Frequenzumrichter ******************************************************
 // ******************************************************************************
-				
-	GVL_Visu_3300.Bohraggr_Schluessel_un	.Para.Speed_Hand		:= 0;
-	GVL_Visu_3300.Bohraggr_Schluessel_un	.Para.Beschleunigung 	:= 0;
-	GVL_Visu_3300.Bohraggr_Schluessel_un	.Para.Verzoegerung 		:= 0;
 	GVL_Visu_3300.Bohraggr_Schluessel_un	.Para.Einheit			:= 1;
+	GVL_Visu_3300.Bohraggr_Schluessel_un	.Para.Kommastelle		:= 0;
 
 	fbBohraggr_Schluessel_un	(	PD_IN	:=EAs_3300.e_Bohraggr_Schluessel_un	,
-			IN_ReglerSperre			:=GVL_3000.bAchsen_Reglersperre,
+			IN_ReglerSperre			:=NOT GVL_3000.bAchsen_Reglersperre,
 			IN_SteuerStatus			:=GVL_Visu_3300.SteuerStatus,
 			IN_Ethercat_Adresse		:=,
 			IN_Ethercat_Name		:='',
@@ -208,7 +205,7 @@ fbStillBohraggr_Schluessel_un	(	in_Sensor:=,
 	
 			GVL_3300.Bohraggr_Schluessel_un_steuern.vor := FALSE;
 			GVL_3300.Bohraggr_Schluessel_un_steuern.zur := FALSE;
-			GVL_3300.Bohraggr_Schluessel_un_steuern.speed := 0;
+			GVL_3300.Bohraggr_Schluessel_un_steuern.speed := GVL_Visu_3000.para_Fraeser_Speed_Auto;
 ]]></ST>
       </Implementation>
     </Action>
