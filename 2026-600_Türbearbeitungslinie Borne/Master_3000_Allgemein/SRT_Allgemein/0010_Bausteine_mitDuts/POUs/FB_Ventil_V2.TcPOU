@@ -390,7 +390,7 @@ END_IF
     <Method Name="M_AutoZur" Id="{de0082b1-1f35-41ae-b4e2-a9c264968b6c}">
       <Declaration><![CDATA[METHOD M_AutoZur : BOOL
 VAR_INPUT
-	Active		: BOOL;
+	Active		: BOOL := TRUE;
 END_VAR
 ]]></Declaration>
       <Implementation>

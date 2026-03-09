@@ -6,6 +6,7 @@ PROGRAM Hardware_3510
 VAR
     // Servos *********************************************************************
 	fbX_Achse										: FB_Achse_NC_PTP_Beckhoff_V2;  
+	fbColl_X										: FB_Kollision_1_Achsen;
 
     // Frequenzumrichter **********************************************************
 	fbTrans_Schlossseite							: FB_SEW_MOVITRAC_C_CoE;
@@ -78,7 +79,7 @@ fbLaengsSchlossseite_Ref		(	in_Sensor:=,
 	//********************************************************************************
 								
 	GVL_3510.X_Achse_steuern.Reglersperre	:= GVL_3000.bAchsen_Reglersperre;
-	GVL_3510.X_Achse_steuern.Freigabe 		:= GVL_3000.bAchsen_Freigabe;
+	GVL_3510.X_Achse_steuern.Freigabe 		:= GVL_3000.bAchsen_Freigabe ;
 	
 	fbX_Achse(
 	in_Reglersperre				:= GVL_3510.X_Achse_steuern.Reglersperre, 
@@ -93,7 +94,8 @@ fbLaengsSchlossseite_Ref		(	in_Sensor:=,
 	in_PosFenster				:= 0.05, 
 	in_Ref_pos					:= 0.0, 
 	in_HomingOption				:= , 
-	in_EndlageRef				:= , 
+	in_EndlageRef				:= not EAs_3510.e_FR_3510_Transport_Schlossseite_X_Achse_Laengsanschlag_Referenz, 
+	in_UseEndlageRef			:= TRUE,
 	in_DirRef					:= , 
 	in_PosEa					:= ,                                       
 	out_ist_pos					=> GVL_3510.X_Achse_status.ist_pos, 
@@ -105,6 +107,7 @@ fbLaengsSchlossseite_Ref		(	in_Sensor:=,
 	inout_NC					:= EAs_3510.ea_X_Achse, 
 	inout_service				:= GVL_Visu_3510.X_Achse, 
 	inout_Ref_start				:= GVL_3510.X_Achse_steuern.Ref_start, 
+	inout_Ref_OK				:= GVL_3510.X_Achse_steuern.Ref_ok, 
 	inout_Auto_start			:= GVL_3510.X_Achse_steuern.Auto_start, 
 	inout_Auto_stop				:= GVL_3510.X_Achse_steuern.Auto_stop);
 	
@@ -112,7 +115,17 @@ fbLaengsSchlossseite_Ref		(	in_Sensor:=,
 	GVL_Meldungen.Meldungen_3000.Nr_104 := fbX_Achse.out_Achs_Error OR fbX_Achse.out_FB_Error OR fbX_Achse.out_Achs_ErrorID <> 0;		
 	GVL_Meldungen.Meldungen_3000.Nr_105 := FALSE;
 	GVL_Meldungen.Meldungen_3000.Nr_106 := FALSE;
-]]></ST>
+	
+	fbColl_X(
+		in_Enable := GVL_3000.bAchsen_Freigabe,
+		in_Active_Axis_1:= , 
+		in_Quittieren:= , 
+		in_max_1:= 510, 
+		in_min_1:= -5, 
+		in_max_enb:= 90, 
+		in_min_enb:= -80, 
+		inout_Axis_1:= EAs_3510.ea_X_Achse, 
+		out_bError=> );]]></ST>
       </Implementation>
     </Action>
     <Action Name="A_Umrichter" Id="{1e7dffa0-b942-4a9e-be76-2daa42d15cf9}">
@@ -159,17 +172,17 @@ fbLaengsSchlossseite_Ref		(	in_Sensor:=,
 	GVL_Visu_3510.Laengsanschl.para.ausgang_zur_halten:=TRUE;	
 	GVL_Visu_3510.Laengsanschl.para.ueberwachung_vor_aktiv:=TRUE;	
 	GVL_Visu_3510.Laengsanschl.para.ueberwachung_zur_aktiv:=TRUE;	
-	GVL_Visu_3510.Laengsanschl.para.entprellungszeit_vor:=T#50S;	
+	GVL_Visu_3510.Laengsanschl.para.entprellungszeit_vor:=T#50MS;	
 	GVL_Visu_3510.Laengsanschl.para.entprellungszeit_zur:=T#50MS;	
-	fbLaengsanschl (		in_endlage_vor:= ,
-							in_endlage_zur:= ,
+	fbLaengsanschl (		in_endlage_vor:= EAs_3510.e_FR_3510_Transport_Schlossseite_Laengsanschlag_ist_oben,
+							in_endlage_zur:= EAs_3510.e_FR_3510_Transport_Schlossseite_Laengsanschlag_ist_unten,
 							in_hand:=GVL_Visu_3510.SteuerStatus.hand,
 							in_auto:=GVL_Visu_3510.SteuerStatus.auto,
 								in_simu :=GVL_3000.bMode_Sim_Ventile,
 							in_quit:=GVL_Visu_3510.SteuerStatus.reset 
 							OR GVL_3000.stoerung_quitt,
-							out_vor=>,
-							out_zur=>,
+							out_vor=>EAs_3510.a_FR_3510_Transport_Schlossseite_Laengsanschlag_heben,
+							out_zur=>EAs_3510.a_FR_3510_Transport_Schlossseite_Laengsanschlag_senken,
 							out_stoerung_vor=> GVL_Meldungen.Meldungen_3000.Nr_073,
 							out_stoerung_zur=> GVL_Meldungen.Meldungen_3000.Nr_074,
 							out_stoerung_vorzur=> GVL_Meldungen.Meldungen_3000.Nr_075,

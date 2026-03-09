@@ -5,10 +5,11 @@
 VAR
 	tof_Quittieren				: TOF;
 	ton_SEW_Einschalten			: TON;
-	ton_SEW_Ausschalten			: TON;
+	ton_SEW_WiederEinschalten	: TON;
 	bSEW_Freigabe_Ein			: BOOL;
 	bSEW_Freigabe_Aus			: BOOL;
-	bSEW_Freigabe				: bool;
+	bSEW_Freigabe				: BOOL;
+	iSEW						: INT;
 END_VAR
 ]]></Declaration>
     <Implementation>
@@ -56,11 +57,11 @@ A_USB_Panel();
 // Signale weiterleiten
 // ----------------------------------------------------------
 GVL_Visu_3000.override 						:= GVL_Visu_0000.override;
-GVL_Visu_3000.SteuerStatus.reset 			:= GVL_Visu_0000.SteuerStatus.reset;
-GVL_Visu_3000.SteuerStatus.auto_pause 		:= GVL_Visu_0000.SteuerStatus.auto_pause;
-GVL_Visu_3000.SteuerStatus.auto_start 		:= GVL_Visu_0000.SteuerStatus.auto_start;
-GVL_Visu_3000.SteuerStatus.auto_stop 		:= GVL_Visu_0000.SteuerStatus.auto_stop;
-GVL_Visu_3000.SteuerStatus.grundstellung 	:= GVL_Visu_0000.SteuerStatus.grundstellung;
+GVL_Visu_3000.SteuerStatus.reset 			:= GVL_Visu_3000.SteuerStatus.reset  OR GVL_Visu_0000.SteuerStatus.reset;
+GVL_Visu_3000.SteuerStatus.auto_pause 		:= GVL_Visu_3000.SteuerStatus.auto_pause OR GVL_Visu_0000.SteuerStatus.auto_pause;
+GVL_Visu_3000.SteuerStatus.auto_start 		:= GVL_Visu_3000.SteuerStatus.auto_start OR GVL_Visu_0000.SteuerStatus.auto_start;
+GVL_Visu_3000.SteuerStatus.auto_stop 		:= GVL_Visu_3000.SteuerStatus.auto_stop OR GVL_Visu_0000.SteuerStatus.auto_stop;
+GVL_Visu_3000.SteuerStatus.grundstellung 	:= GVL_Visu_3000.SteuerStatus.grundstellung OR GVL_Visu_0000.SteuerStatus.grundstellung;
 
 tof_Quittieren(IN:= GVL_Visu_0000.quittieren OR EAs_3000.e_Quittieren, PT:= T#750MS, Q=> GVL_Visu_3000.quittieren, ET=> );
 	
@@ -79,14 +80,37 @@ EAs_3000.a_Fehler := (GVL_Meldungen.Stoerung_0000 OR GVL_Meldungen.Stoerung_3000
 // SEW Versorgungsmodul
 // ----------------------------------------------------------
 
-ton_SEW_Einschalten(IN:= GVL_Safety.in_State_FBrs_Steuerspannung.eState = enum_FB_RS.set, PT:= T#20S, Q=>bSEW_Freigabe_Ein , ET=> );
-ton_SEW_Ausschalten(IN:= GVL_Safety.in_State_FBrs_Steuerspannung.eState <> enum_FB_RS.set, PT:= T#5S, Q=>bSEW_Freigabe_Aus , ET=> );
 
-IF bSEW_Freigabe_Aus THEN
-	bSEW_Freigabe := FALSE;
-ELSIF bSEW_Freigabe_Ein THEN
-	bSEW_Freigabe := TRUE;
-END_IF
+ton_SEW_Einschalten			(IN:= , PT:= T#10S, Q=>bSEW_Freigabe_Ein , ET=> );
+ton_SEW_WiederEinschalten	(IN:= , PT:= T#60S, Q=>bSEW_Freigabe_Aus , ET=> );
+
+CASE iSEW OF
+	0:	// Erstes einschalten direkt möglich
+		IF GVL_Safety.in_State_FBrs_Steuerspannung.eState = enum_FB_RS.set THEN
+			bSEW_Freigabe := TRUE;
+			iSEW := 10;
+		END_IF
+		
+	10: // Wenn Eingeschaltet wird dann mindestens 60sekunden warten
+		ton_SEW_WiederEinschalten.IN := TRUE;
+		IF GVL_Safety.in_State_FBrs_Steuerspannung.eState <> enum_FB_RS.set OR NOT bSEW_Freigabe THEN
+			bSEW_Freigabe := FALSE;
+			IF ton_SEW_WiederEinschalten.Q THEN
+				iSEW := 20;
+				ton_SEW_WiederEinschalten.IN := FALSE;
+			END_IF
+		END_IF
+		
+	20:	// Wieder einschalten nach 10 Sekunden möglich
+		ton_SEW_Einschalten.IN := TRUE;
+		IF ton_SEW_Einschalten.Q AND GVL_Safety.in_State_FBrs_Steuerspannung.eState = enum_FB_RS.set THEN
+			ton_SEW_Einschalten.IN := FALSE;
+			bSEW_Freigabe := TRUE;
+			iSEW := 10;
+		END_IF
+		 
+END_CASE
+
 EAs_3000.a_FR_0300_SEW_Netzschuetz_Versorgungsmodul_EIN_1Min_10sec_Ein_Ausschaltzeit := bSEW_Freigabe;
 
 // ----------------------------------------------------------

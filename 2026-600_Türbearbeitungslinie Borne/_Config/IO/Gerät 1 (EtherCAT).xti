@@ -18,14 +18,15 @@
 		<Box File="+FS1-2K1 (CU1128).xti" Id="38">
 			<EtherCAT PortABoxInfo="#x00ffffff"/>
 		</Box>
+		<Box File="=3510+FS1-6T1.xti" Id="36">
+			<EtherCAT PortABoxInfo="#xffffffff"/>
+		</Box>
 		<Box File="=3520+FS1-6T1.xti" Id="37">
 			<EtherCAT PortABoxInfo="#xffffffff"/>
 		</Box>
-		<Box File="=3510+FS1-6T1.xti" Id="36">
-			<EtherCAT PortABoxInfo="#x01000025"/>
-		</Box>
 		<EtherCAT EpMacAddr="020105100000" DcSyncMode="3" EpIpAddr="-1062726402" EpMaxCon="64" EpFirstConAddr="57344" EnableVirtualSwitch="true" MaxSwitchPorts="2" MaxSwitchFrames="120" MaxSwitchMACs="100">
-			<SyncUnit Name="Drives [HotConnect]" HcName="HotConnect"/>
+			<SyncUnit Name="Drives [=3510+FS1-6T1]" HcName="=3510+FS1-6T1"/>
+			<SyncUnit Name="Drives [=3520+FS1-6T1]" HcName="=3520+FS1-6T1"/>
 		</EtherCAT>
 	</Device>
 	<Mappings>

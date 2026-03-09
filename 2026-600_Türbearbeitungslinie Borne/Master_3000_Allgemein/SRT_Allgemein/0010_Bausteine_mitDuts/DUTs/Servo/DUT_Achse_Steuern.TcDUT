@@ -18,7 +18,7 @@ STRUCT
 	in_Ref_pos			:REAL;		(*  Referenz-Wert der gesetzt werden soll  *)
 	
 	Bremsentest_start 	:BOOL;		(* Bremsentest starten - nur bei Z-Achsen relevant *)
-	
+	Ref_ok				:BOOL;	
 END_STRUCT
 END_TYPE
 ]]></Declaration>

@@ -6,6 +6,7 @@ PROGRAM Hardware_3540
 VAR
     // Servos *********************************************************************
 	fbY_Achse										: FB_Achse_NC_PTP_Beckhoff_V2; 
+	fbColl_Y										: FB_Kollision_1_Achsen;
 
     // Frequenzumrichter **********************************************************
     //fbTransport                					: FB_SEW_MOVITRAC_C_CoE;
@@ -85,6 +86,7 @@ END_VAR
 	inout_NC					:= EAs_3540.ea_Y_Achse, 
 	inout_service				:= GVL_Visu_3540.Y_Achse, 
 	inout_Ref_start				:= GVL_3540.Y_Achse_steuern.Ref_start, 
+	inout_Ref_OK				:= GVL_3540.Y_Achse_steuern.Ref_ok, 
 	inout_Auto_start			:= GVL_3540.Y_Achse_steuern.Auto_start, 
 	inout_Auto_stop				:= GVL_3540.Y_Achse_steuern.Auto_stop);
 	
@@ -92,7 +94,17 @@ END_VAR
 	GVL_Meldungen.Meldungen_3000.Nr_043 := fbY_Achse.out_Achs_Error OR fbY_Achse.out_FB_Error OR fbY_Achse.out_Achs_ErrorID <> 0;		
 	GVL_Meldungen.Meldungen_3000.Nr_044 := FALSE;
 	GVL_Meldungen.Meldungen_3000.Nr_045 := FALSE;
-	]]></ST>
+		
+	fbColl_Y(
+		in_Enable := GVL_3000.bAchsen_Freigabe,
+		in_Active_Axis_1:= , 
+		in_Quittieren:= , 
+		in_max_1:= 520, 
+		in_min_1:= -5, 
+		in_max_enb:= 90, 
+		in_min_enb:= -80, 
+		inout_Axis_1:= EAs_3540.ea_Y_Achse, 
+		out_bError=> );]]></ST>
       </Implementation>
     </Action>
     <Action Name="A_Umrichter" Id="{a5590549-6dfd-4d9b-833d-d4f3c2ed87fa}">
@@ -112,19 +124,19 @@ END_VAR
 	GVL_Visu_3540.Niederhalter.para.ausgang_zur_halten:=TRUE;	
 	GVL_Visu_3540.Niederhalter.para.ueberwachung_vor_aktiv:=TRUE;	
 	GVL_Visu_3540.Niederhalter.para.ueberwachung_zur_aktiv:=TRUE;	
-	GVL_Visu_3540.Niederhalter.para.entprellungszeit_vor:=T#50S;	
+	GVL_Visu_3540.Niederhalter.para.entprellungszeit_vor:=T#50MS;	
 	GVL_Visu_3540.Niederhalter.para.entprellungszeit_zur:=T#50MS;	
-	fbNiederhalter (		in_endlage_vor:= EAs_3540.e_FR_3540_Niederhalter_Bandseite_Niederhalter_Einlauf_ist_oben
+	fbNiederhalter (		in_endlage_zur:= EAs_3540.e_FR_3540_Niederhalter_Bandseite_Niederhalter_Einlauf_ist_oben
 							AND EAs_3540.e_FR_3540_Niederhalter_Bandseite_Niederhalter_Auslauf_ist_oben,
-							in_endlage_zur:= EAs_3540.e_FR_3540_Niederhalter_Bandseite_Niederhalter_Einlauf_ist_unten
+							in_endlage_vor:= EAs_3540.e_FR_3540_Niederhalter_Bandseite_Niederhalter_Einlauf_ist_unten
 							AND EAs_3540.e_FR_3540_Niederhalter_Bandseite_Niederhalter_Auslauf_ist_unten,
 							in_hand:=GVL_Visu_3540.SteuerStatus.hand,
 							in_auto:=GVL_Visu_3540.SteuerStatus.auto,
 							in_simu :=GVL_3000.bMode_Sim_Ventile,
 							in_quit:=GVL_Visu_3540.SteuerStatus.reset 
 							OR GVL_3000.stoerung_quitt,
-							out_vor=>EAs_3540.a_FR_3540_Niederhalter_Bandseite_Niederhalter_heben,
-							out_zur=>EAs_3540.a_FR_3540_Niederhalter_Bandseite_Niederhalter_senken,
+							out_zur=>EAs_3540.a_FR_3540_Niederhalter_Bandseite_Niederhalter_heben,
+							out_vor=>EAs_3540.a_FR_3540_Niederhalter_Bandseite_Niederhalter_senken,
 							out_stoerung_vor=> GVL_Meldungen.Meldungen_3000.Nr_079,
 							out_stoerung_zur=> GVL_Meldungen.Meldungen_3000.Nr_080,
 							out_stoerung_vorzur=> GVL_Meldungen.Meldungen_3000.Nr_081,

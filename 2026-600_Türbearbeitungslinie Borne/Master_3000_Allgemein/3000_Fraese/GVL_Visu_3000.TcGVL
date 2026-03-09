@@ -11,16 +11,10 @@ VAR_GLOBAL
     SteuerStatus              	: DUT_Visu_SteuerStatus;
 	quittieren					: BOOL;
 	override 					: INT;
-	Connect						: bool;
-    // Frequenzumrichter
-    //transport                : DUT_SEW_FU_Visu;       //#Tab:  #Name: 
-
-    // Servoregler
-    //Achse                    : DUT_Achse_Service;      //#Tab: #Name: 
-
-    // Ventile
-    //Ventil                   : DUT_Ventil_VISU;        //#Tab: #Name: 
-
+	Connect						: BOOL;
+	
+	refresh						: BOOL;
+	refresh2					: BOOL;
 END_VAR
 
 VAR_GLOBAL PERSISTENT
@@ -30,7 +24,6 @@ VAR_GLOBAL PERSISTENT
     //Jobdaten                 : DUT_Jobdaten;
     //Jobdaten_default         : DUT_Jobdaten;
 
-    //para_Vorlage             : REAL := 0.0; //#Typ: VParam #Tab:  #Name:  #Einheit:mm #Min: 1 #Max: 100 #Format:F1
 	para_Fraeser_Speed_Hand		: REAL;
 	para_Fraeser_Speed_Auto		: REAL;
 	para_Fraeser_Rampe_Beschl	: INT;

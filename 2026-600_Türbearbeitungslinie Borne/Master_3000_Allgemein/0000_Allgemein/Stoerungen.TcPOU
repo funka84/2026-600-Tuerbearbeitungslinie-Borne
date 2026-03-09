@@ -150,10 +150,10 @@ GVL_Meldungen.Meldungen_0000.Nr_019 := EAs_3520.e_state_X_Achse.eState <> enum_S
 GVL_Meldungen.Meldungen_0000.Nr_020 := EAs_3520.e_state_X_Achse.eState <> enum_State.STATE_OP AND  GVL_Safety.in_State_FBrs_Steuerspannung.eState = enum_FB_RS.set;
 
 // Störung 21 - SEW Versorgunsmodul Ausschaltzeit 10 Sekunden läuft, bitte warten
-GVL_Meldungen.Meldungen_0000.Nr_021 := NOT Allgemein_0000.bSEW_Freigabe_Aus AND GVL_Safety.in_State_FBrs_Steuerspannung.eState <> enum_FB_RS.set;
+GVL_Meldungen.Meldungen_0000.Nr_021 := NOT Allgemein_0000.bSEW_Freigabe AND GVL_Safety.in_State_FBrs_Steuerspannung.eState = enum_FB_RS.set;
 
 // Störung 22 - SEW Versorgunsmodul Einschaltzeit 60 Sekunden läuft, bitte warten
-GVL_Meldungen.Meldungen_0000.Nr_022 := NOT Allgemein_0000.bSEW_Freigabe_Ein AND GVL_Safety.in_State_FBrs_Steuerspannung.eState = enum_FB_RS.set;]]></ST>
+GVL_Meldungen.Meldungen_0000.Nr_022 := NOT Allgemein_0000.ton_SEW_WiederEinschalten.Q AND GVL_Safety.in_State_FBrs_Steuerspannung.eState <> enum_FB_RS.set;]]></ST>
       </Implementation>
     </Action>
     <Action Name="A_Warnung" Id="{094dfd80-9bcc-4a7e-8fb2-ccd6aa5493be}">

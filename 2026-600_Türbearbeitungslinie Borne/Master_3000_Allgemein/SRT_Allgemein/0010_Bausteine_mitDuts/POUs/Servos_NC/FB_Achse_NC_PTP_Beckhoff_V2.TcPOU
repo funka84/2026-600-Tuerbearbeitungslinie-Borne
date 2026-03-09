@@ -23,9 +23,10 @@ VAR_INPUT
 	in_Ref_pos				: REAL;						(*  Referenz-Wert der gesetzt werden soll  *)
 	in_HomingOption			:ST_HomingOptions;
 	in_EndlageRef			: BOOL;
+	in_UseEndlageRef		: bool;
 	in_DirRef				:INT;						//1=Positiv 2=Negativ
 	in_Pos_Coll_Pos			:REAL;
-	in_PosEa: LREAL;
+	in_PosEa				: LREAL;
 END_VAR
 VAR_OUTPUT
 	out_ist_pos					: REAL;						(*  aktuelle ist Position  *)
@@ -44,6 +45,7 @@ VAR_IN_OUT
 	inout_NC				: AXIS_REF;					(*  Schnittstelle zwischen der SPS und der NC  *)												
 	inout_service			: DUT_Achse_Service;		(*  Eingangs-Variablen für den Servicebetrieb	 *)
 	inout_Ref_start			: BOOL;						(*  Achse start referenzieren  *)
+	inout_Ref_OK			: BOOL;
 	inout_Auto_start		: BOOL;						(*  Achse start Positionieren *)
 	inout_Auto_stop			: BOOL;						(*  Achse stopp Positionieren *)
 END_VAR
@@ -93,7 +95,9 @@ VAR
 	
 	ton_Freigabe			:ton;
 	bLimit_InActive			: BOOL;
-	bRefPOsRead				: bool;
+	bRefPOsRead				: BOOL;
+	bHomed					: BOOL;
+	bForceHome				: BOOL;
 END_VAR
 ]]></Declaration>
     <Implementation>
@@ -285,13 +289,13 @@ FB_PosOffset(Axis:=inout_NC,
 
 	
 	IF  in_Reglersperre
-		AND (in_Hand
-		AND inout_service.betriebsart=4)
+		AND ((in_Hand AND inout_service.betriebsart=4 )
+		OR ( in_Auto AND inout_Ref_start))
 	THEN
 	CASE sk_ref OF 
 	 
 	 0:// Refernzieren starten
-		IF rTrig_StartRef.Q
+		IF rTrig_StartRef.Q OR ( in_Auto AND inout_Ref_start)
 		THEN 
 			IF in_DirRef <>0
 			THEN
@@ -302,6 +306,10 @@ FB_PosOffset(Axis:=inout_NC,
 			sk_ref:=200;
 			inout_service.plus_start := FALSE;				
 			inout_service.minus_stop := FALSE;		
+			
+			IF bForceHome THEN
+				inout_Ref_OK := FALSE;
+			end_if
 		END_IF	
 		
 	10:// Prüfen ob Endlage erreicht und startbutton zurücksetzen
@@ -359,6 +367,7 @@ FB_PosOffset(Axis:=inout_NC,
 	//###################################################################
 	100: // MC_Home starten
 		FB_Homing.Execute := NOT FB_Homing.Busy;
+		FB_Homing.HomingMode := MC_HomingMode.MC_DefaultHoming;
 		sk_ref:=110;
 		
 	110: // MC_Home warte auf Done
@@ -391,21 +400,27 @@ FB_PosOffset(Axis:=inout_NC,
 		
 	300: // MC_Home starten
 		FB_Homing.Execute := NOT FB_Homing.Busy;
+		FB_Homing.HomingMode := MC_HomingMode.MC_DefaultHoming;
 		sk_ref:=310;
 		
 	310: // MC_Home warte auf Done
 		IF FB_Homing.Done THEN
+			inout_Ref_start := FALSE;
 			FB_Homing.Execute := FALSE;
+			inout_Ref_OK := TRUE;
 			sk_ref:=0;
 		ELSIF FB_Homing.Error THEN
+			inout_Ref_start := FALSE;
 			FB_Homing.Execute := FALSE;
 			sk_ref:=0;
 		END_IF
 			
 	//###################################################################
-			
-	
-	END_CASE;
+		END_CASE;
+	ELSE
+		inout_Ref_start := FALSE;
+		FB_Homing.Execute := FALSE;
+		sk_ref:=0;
 	END_IF;
 	
 	IF inout_service.minus_stop THEN
@@ -647,10 +662,10 @@ FB_PosOffset(Axis:=inout_NC,
 		Axis:= inout_NC, 
 		Execute:= , 
 		Position:= in_Ref_pos, 
-		HomingMode:= MC_HomingMode.MC_DefaultHoming, 
+		HomingMode:= , 
 		BufferMode:= MC_BufferMode.MC_Aborting, 
 		Options:= in_HomingOption, 
-		bCalibrationCam:= , 
+		bCalibrationCam:= in_EndlageRef, 
 		Done=> , 
 		Busy=> , 
 		Active=> , 
@@ -761,5 +776,18 @@ FB_DriveOperationMode(
 	ErrorID=> );]]></ST>
       </Implementation>
     </Action>
+    <Method Name="M_HOME" Id="{caa39924-81c7-4e85-ad23-f889d546b8e2}">
+      <Declaration><![CDATA[METHOD M_HOME : BOOL
+VAR_INPUT
+	bForceHoming : BOOL := FALSE;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+	inout_Ref_start := NOT inout_Ref_OK;
+	M_HOME :=  inout_Ref_OK ;
+	
+	]]></ST>
+      </Implementation>
+    </Method>
   </POU>
 </TcPlcObject>

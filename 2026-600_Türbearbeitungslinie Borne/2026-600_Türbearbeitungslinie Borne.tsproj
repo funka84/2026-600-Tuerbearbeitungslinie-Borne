@@ -33,6 +33,7 @@
 		</Io>
 		<SymbolWatch>
 			<Variable>TIID^SEW (EtherCAT)^=0300+FS2-13T1^=3100+FS2-12M1 (Y-Achse)^Inputs^Digital inputs actual value</Variable>
+			<Variable>TIID^SEW (EtherCAT)^=0300+FS2-18T1^=3520+FS2-11M1 (Y-Achse Riemenförderer)^Inputs^Digital inputs actual value</Variable>
 		</SymbolWatch>
 	</Project>
 	<Mappings>

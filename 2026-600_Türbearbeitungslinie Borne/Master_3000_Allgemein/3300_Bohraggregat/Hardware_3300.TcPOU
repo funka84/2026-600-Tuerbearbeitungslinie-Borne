@@ -9,6 +9,9 @@ VAR
 	fbY_Achse										: FB_Achse_NC_PTP_Beckhoff_V2; 
 
 	fbNCI_Channel									: FB_Nc_Kanal;
+	
+	fbColl_X										: FB_Kollision_1_Achsen;
+	fbColl_Y										: FB_Kollision_1_Achsen;
 
     // Frequenzumrichter **********************************************************
 	fbBohraggr_Schluessel_un						: FB_SEW_MOVITRAC_C_CoE;
@@ -132,6 +135,7 @@ fbStillBohraggr_Schluessel_un	(	in_Sensor:=,
 	inout_NC					:= EAs_3300.ea_X_Achse, 
 	inout_service				:= GVL_Visu_3300.X_Achse, 
 	inout_Ref_start				:= GVL_3300.X_Achse_steuern.Ref_start, 
+	inout_Ref_OK				:= GVL_3300.X_Achse_steuern.Ref_ok, 
 	inout_Auto_start			:= GVL_3300.X_Achse_steuern.Auto_start, 
 	inout_Auto_stop				:= GVL_3300.X_Achse_steuern.Auto_stop);
 	
@@ -170,6 +174,7 @@ fbStillBohraggr_Schluessel_un	(	in_Sensor:=,
 	inout_NC					:= EAs_3300.ea_Y_Achse, 
 	inout_service				:= GVL_Visu_3300.Y_Achse, 
 	inout_Ref_start				:= GVL_3300.Y_Achse_steuern.Ref_start, 
+	inout_Ref_OK				:= GVL_3300.Y_Achse_steuern.Ref_ok, 
 	inout_Auto_start			:= GVL_3300.Y_Achse_steuern.Auto_start, 
 	inout_Auto_stop				:= GVL_3300.Y_Achse_steuern.Auto_stop);
 	
@@ -178,7 +183,28 @@ fbStillBohraggr_Schluessel_un	(	in_Sensor:=,
 	GVL_Meldungen.Meldungen_3000.Nr_032 := FALSE;
 	GVL_Meldungen.Meldungen_3000.Nr_033 := FALSE;
 
-]]></ST>
+		
+	fbColl_X(
+		in_Enable := GVL_3000.bAchsen_Freigabe,
+		in_Active_Axis_1:= , 
+		in_Quittieren:= , 
+		in_max_1:= 2790, 
+		in_min_1:= -10, 
+		in_max_enb:= 90, 
+		in_min_enb:= -80, 
+		inout_Axis_1:= EAs_3300.ea_X_Achse, 
+		out_bError=> );
+	
+	fbColl_Y(
+		in_Enable := GVL_3000.bAchsen_Freigabe,
+		in_Active_Axis_1:= , 
+		in_Quittieren:= , 
+		in_max_1:= 265, 
+		in_min_1:= -2, 
+		in_max_enb:= 90, 
+		in_min_enb:= -80, 
+		inout_Axis_1:= EAs_3300.ea_Y_Achse, 
+		out_bError=> );]]></ST>
       </Implementation>
     </Action>
     <Action Name="A_Umrichter" Id="{76dc17e2-a269-4655-bcc1-2e0c4a948b33}">
@@ -221,7 +247,7 @@ fbStillBohraggr_Schluessel_un	(	in_Sensor:=,
 	GVL_Visu_3300.Schluessel_un_Bohrhub.para.ausgang_zur_halten:=TRUE;	
 	GVL_Visu_3300.Schluessel_un_Bohrhub.para.ueberwachung_vor_aktiv:=TRUE;	
 	GVL_Visu_3300.Schluessel_un_Bohrhub.para.ueberwachung_zur_aktiv:=TRUE;	
-	GVL_Visu_3300.Schluessel_un_Bohrhub.para.entprellungszeit_vor:=T#50S;	
+	GVL_Visu_3300.Schluessel_un_Bohrhub.para.entprellungszeit_vor:=T#50mS;	
 	GVL_Visu_3300.Schluessel_un_Bohrhub.para.entprellungszeit_zur:=T#50MS;	
 	fbSchluessel_un_Bohrhub (	in_endlage_vor:= EAs_3300.e_FR_3300_Druecker_Schluesselloch_unten_Bohraggregat_6_Bohrhub_ist_oben,
 								in_endlage_zur:= EAs_3300.e_FR_3300_Druecker_Schluesselloch_unten_Bohraggregat_6_Bohrhub_ist_unten,

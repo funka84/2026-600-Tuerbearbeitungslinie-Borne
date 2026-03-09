@@ -134,9 +134,10 @@ STRUCT
 	Nr_108		:BOOL;// #MText: 3520 Transport - Achse =FR.3520+FS1-6T1 (X-Laengsanschlag) Endlage MIN angefahren 						#HText: #Prio: #BMK: =3540+FS2-11M1  
 	Nr_109		:BOOL;// #MText: 3520 Transport - Achse =FR.3520+FS1-6T1 (X-Laengsanschlag) Endlage MAX angefahren 		
 	
-	Nr_110		:BOOL;// #MText: #HText: #Prio: #BMK:
-	Nr_111		:BOOL;// #MText: #HText: #Prio: #BMK:
-	Nr_112		:BOOL;// #MText: #HText: #Prio: #BMK:
+	Nr_110		:BOOL;// #MText: 3100 Bohraggregat - Ventil Absaughaube Endlage vor nicht erreicht 					#HText: #Prio: #BMK: =FR.3520+M-22B1
+	Nr_111		:BOOL;// #MText: 3100 Bohraggregat - Ventil Absaughaube Endlage zur nicht erreicht 					#HText: #Prio: #BMK: =FR.3520+M-22B2
+	Nr_112		:BOOL;// #MText: 3100 Bohraggregat - Ventil Absaughaube Endlage vor / zur nicht erreicht 				#HText: #Prio: #BMK: =FR.3520+M-22B2
+	
 	Nr_113		:BOOL;// #MText: #HText: #Prio: #BMK:
 	Nr_114		:BOOL;// #MText: #HText: #Prio: #BMK:
 	Nr_115		:BOOL;// #MText: #HText: #Prio: #BMK:

@@ -28,6 +28,7 @@ VAR_GLOBAL
     Stulpfraes_Vorlegehub      			: DUT_Ventil_sps;
     Nullkante	             			: DUT_Ventil_sps;
     Schienenklemm             			: DUT_Ventil_sps;
+    Absaughaube             			: DUT_Ventil_sps;
 
     // interne Variablen ****************************************
     sk_Freigabe                         : BOOL;

@@ -86,6 +86,7 @@
 				<Link VarA="PlcTask Inputs^EAs_3530.e_FR_3530_Niederhalter_Schlossseite_Niederhalter_Einlauf_ist_unten" VarB="Channel 4^Input" AutoLink="true" Size="1"/>
 			</OwnerB>
 			<OwnerB Name="TIID^Device 1 (EtherCAT)^+FS1-2K1 (CU1128)^+FS1-2K1 (CU1128-C)^+K110-1K1 (EK1100)^+K110-1K6 (EL1104)">
+				<Link VarA="PlcTask Inputs^EAs_3100.e_FR_3100_Schlossbearbeitung_Absaughaube_ist_zurueck" VarB="Channel 3^Input" AutoLink="true" Size="1"/>
 				<Link VarA="PlcTask Inputs^EAs_3530.e_FR_3530_Niederhalter_Schlossseite_Niederhalter_Auslauf_ist_oben" VarB="Channel 1^Input" AutoLink="true" Size="1"/>
 				<Link VarA="PlcTask Inputs^EAs_3530.e_FR_3530_Niederhalter_Schlossseite_Niederhalter_Auslauf_ist_unten" VarB="Channel 2^Input" AutoLink="true" Size="1"/>
 			</OwnerB>
@@ -108,14 +109,14 @@
 				<Link VarA="PlcTask Outputs^EAs_3400.a_FR_3400_Druecker_Schluesselloch_oben_Bohraggregat_7_Bohrhub_senken" VarB="Channel 16^Output" AutoLink="true" Size="1"/>
 			</OwnerB>
 			<OwnerB Name="TIID^Device 1 (EtherCAT)^+FS1-2K1 (CU1128)^+FS1-2K1 (CU1128-C)^+K110-1K1 (EK1100)^+K110-2K2 (EL2809)">
-				<Link VarA="PlcTask Outputs^EAs_3000.a_K110_2K2_Channel_10" VarB="Channel 10^Output" AutoLink="true" Size="1"/>
 				<Link VarA="PlcTask Outputs^EAs_3000.a_K110_2K2_Channel_11" VarB="Channel 11^Output" AutoLink="true" Size="1"/>
 				<Link VarA="PlcTask Outputs^EAs_3000.a_K110_2K2_Channel_12" VarB="Channel 12^Output" AutoLink="true" Size="1"/>
 				<Link VarA="PlcTask Outputs^EAs_3000.a_K110_2K2_Channel_13" VarB="Channel 13^Output" AutoLink="true" Size="1"/>
 				<Link VarA="PlcTask Outputs^EAs_3000.a_K110_2K2_Channel_14" VarB="Channel 14^Output" AutoLink="true" Size="1"/>
 				<Link VarA="PlcTask Outputs^EAs_3000.a_K110_2K2_Channel_15" VarB="Channel 15^Output" AutoLink="true" Size="1"/>
 				<Link VarA="PlcTask Outputs^EAs_3000.a_K110_2K2_Channel_16" VarB="Channel 16^Output" AutoLink="true" Size="1"/>
-				<Link VarA="PlcTask Outputs^EAs_3000.a_K110_2K2_Channel_9" VarB="Channel 9^Output" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^EAs_3100.a_FR_3100_Schlossbearbeitung_Absaughaube_vor" VarB="Channel 9^Output" AutoLink="true" Size="1"/>
+				<Link VarA="PlcTask Outputs^EAs_3100.a_FR_3100_Schlossbearbeitung_Absaughaube_zurueck" VarB="Channel 10^Output" AutoLink="true" Size="1"/>
 				<Link VarA="PlcTask Outputs^EAs_3510.a_FR_3510_Transport_Schlossseite_Laengsanschlag_heben" VarB="Channel 2^Output" AutoLink="true" Size="1"/>
 				<Link VarA="PlcTask Outputs^EAs_3510.a_FR_3510_Transport_Schlossseite_Laengsanschlag_senken" VarB="Channel 3^Output" AutoLink="true" Size="1"/>
 				<Link VarA="PlcTask Outputs^EAs_3510.a_FR_3510_Transport_Schlossseite_X_Achse_Laengsanschlag_Schienenklemmung_klemmen" VarB="Channel 1^Output" AutoLink="true" Size="1"/>

@@ -4,7 +4,12 @@
     <Declaration><![CDATA[
 PROGRAM Ablauf_3000
 VAR
-	i							: int; // Ablaufkontrolle	
+	i						: INT ;		// Ablaufkontrolle;
+	Schritt_Freigabe		: BOOL;		// Einzelschrittbetrieb ermöglichen
+	ton_Schritt_Freigabe	: ton;		// Timeout Schritt wird nicht beendet
+	nReturn					: INT;		// Visu Ergebnisnummer 
+	RT_TeilGebucht			: R_trig;
+	FT_TeilGebucht			: F_trig;
 
     // TODO: lokale Variablen hook test
 	ton_Druckluft_Bereit		: TON;
@@ -20,23 +25,230 @@ END_VAR
     ]]></Declaration>
     <Implementation>
       <ST><![CDATA[i := i + 10;
+// Aktion aufrufen
+//________________________________________________________________________________________
+	A_SteuerStatus();
+	A_Automatik();
 
 // Fehlerhandling
-tof_Quittieren(IN:= GVL_Visu_3000.quittieren, PT:=T#250MS , Q=> GVL_3000.stoerung_quitt, ET=> );
-GVL_Visu_3000.quittieren := FALSE;
+	tof_Quittieren(IN:= GVL_Visu_3000.quittieren, PT:=T#250MS , Q=> GVL_3000.stoerung_quitt, ET=> );
+	GVL_Visu_3000.quittieren := FALSE;
+	
+	
+	// Druckluft Bereit, Fehler EIN, Fehler AUS
+	ton_Druckluft_Bereit(		IN:= 	GVL_Safety.in_State_FBand_Druckluft.eState = enum_FB_AND.run 
+										AND EAs_3000.e_FR_1000_Allgemein_Druckluft_OK, PT:= T#500MS, Q=> GVL_3000.bDruckluft_Bereit, ET=> );
+	
+	ton_Druckluft_Fehler_Ein(	IN:= 	GVL_Safety.in_State_FBand_Druckluft.eState = enum_FB_AND.run 
+										AND NOT EAs_3000.e_FR_1000_Allgemein_Druckluft_OK, PT:= T#5000MS, Q=> , ET=> );
+								
+	ton_Druckluft_Fehler_Aus(	IN:= 	GVL_Safety.in_State_FBand_Druckluft.eState <> enum_FB_AND.run 
+										AND EAs_3000.e_FR_1000_Allgemein_Druckluft_OK, PT:= T#3000MS, Q=> , ET=> );
 
 
-// Druckluft Bereit, Fehler EIN, Fehler AUS
-ton_Druckluft_Bereit(		IN:= 	GVL_Safety.in_State_FBand_Druckluft.eState = enum_FB_AND.run 
-									AND EAs_3000.e_FR_1000_Allgemein_Druckluft_OK, PT:= T#500MS, Q=> GVL_3000.bDruckluft_Bereit, ET=> );
+	
+// Zuweisungen
+//________________________________________________________________________________________
+GVL_Visu_3000.Schrittnummer := GVL_3000.sk;
+				
+// Freigabe Ablauf
+//________________________________________________________________________________________
+//Schritt_Freigabe := FALSE;
+GVL_3000.sk_Freigabe := GVL_Visu_3000.SteuerStatus.auto_aktiv AND NOT GVL_Meldungen.Stoerung_0000;	
+GVL_3000.Tuer_Freigabe := GVL_3000.Tuer_Anwahl AND NOT Schritt_Freigabe;
 
-ton_Druckluft_Fehler_Ein(	IN:= 	GVL_Safety.in_State_FBand_Druckluft.eState = enum_FB_AND.run 
-									AND NOT EAs_3000.e_FR_1000_Allgemein_Druckluft_OK, PT:= T#5000MS, Q=> , ET=> );
-							
-ton_Druckluft_Fehler_Aus(	IN:= 	GVL_Safety.in_State_FBand_Druckluft.eState <> enum_FB_AND.run 
-									AND EAs_3000.e_FR_1000_Allgemein_Druckluft_OK, PT:= T#3000MS, Q=> , ET=> );
+IF GVL_3000.sk_Freigabe 
+AND NOT GVL_3000.Tuer_Anwahl
+AND NOT GVL_Visu_3000.SteuerStatus.auto_pause THEN
+	Schritt_Freigabe := TRUE;
+	ton_Schritt_Freigabe.IN := FALSE;
+ELSE
+	ton_Schritt_Freigabe.IN := TRUE;
+	IF ton_Schritt_Freigabe.Q THEN
+		ton_Schritt_Freigabe.IN := FALSE;
+		Schritt_Freigabe := FALSE;
+	END_IF	
+END_IF
 
+// Timer und Flanken
+//________________________________________________________________________________________
+ton_Schritt_Freigabe(IN:= , PT:= GVL_3000.ctime_TimeoutSchrittFreigabe , Q=> , ET=> );
 
+RT_TeilGebucht(CLK:= GVL_Visu_3000.Daten_gebucht, Q=> );
+FT_TeilGebucht(CLK:= GVL_Visu_3000.Daten_gebucht, Q=> );
+
+// Schrittkette
+//________________________________________________________________________________________
+IF GVL_3000.sk_Freigabe
+THEN
+	CASE gvl_3000.sk OF
+		
+	// Grundstellungsfahrt
+	//________________________________________________________________________________________
+	0: //Reset - Warte auf Automatik Start
+		IF Schritt_Freigabe THEN
+			gvl_3000.sk := 10;		
+			Schritt_Freigabe := FALSE;
+		END_IF
+	
+	10: // Zylinder in Grundstellung fahren
+		IF Hardware_3100.fbSchlosskast_Vorlegehub.M_AutoZur()  
+		AND Hardware_3100.fbVorbohren_Bohrhub.M_AutoZur()          
+		AND Hardware_3100.fbStulpfraes_Vorlegehub.M_AutoZur()      
+		AND Hardware_3100.fbNullkante.M_AutoZur()  	             
+		and Hardware_3100.fbSchienenklemm.M_AutoZur()              
+		AND Hardware_3100.fbAbsaughaube.M_AutoZur()             
+		AND Hardware_3200.fbVorbohren_Bohrhub.M_AutoZur()             
+		AND Hardware_3200.fbStulpfraes_Vorlegehub.M_AutoZur()             
+		AND Hardware_3200.fbPusher.M_AutoZur()             
+		AND Hardware_3200.fbSchienenklemm.M_AutoZur() 
+		AND Hardware_3300.fbSchluessel_un_Bohrhub.M_AutoZur() 
+		AND Hardware_3400.fbSchluessel_ob_Bohrhub.M_AutoZur() 
+		AND Hardware_3510.fbLaengsanschl.M_AutoZur() 
+		AND Hardware_3510.fbSchienenklemm.M_AutoZur() 
+		AND Hardware_3520.fbLaengsanschl.M_AutoZur() 
+		AND Hardware_3520.fbSchienenklemm.M_AutoZur() 
+		AND Hardware_3530.fbNiederhalter.M_AutoZur() 
+		AND Hardware_3540.fbNiederhalter.M_AutoZur() 
+		THEN
+			gvl_3000.sk := 20;		
+		END_IF
+		Schritt_Freigabe := FALSE;
+		   
+		   
+	20: // Achsen referenzieren wenn nicht refenziert ist 
+		GVL_3100.X_Achse_steuern.Ref_ok		:= FALSE;
+		GVL_3100.y_Achse_steuern.Ref_ok		:= FALSE;
+		GVL_3100.Z_Achse_steuern.Ref_ok		:= FALSE;
+		  
+		GVL_3200.X_Achse_steuern.Ref_ok		:= FALSE;
+		GVL_3200.y_Achse_steuern.Ref_ok		:= FALSE;
+		GVL_3200.Z_Achse_steuern.Ref_ok		:= FALSE;
+		  
+		GVL_3300.X_Achse_steuern.Ref_ok		:= FALSE;
+		GVL_3300.y_Achse_steuern.Ref_ok		:= FALSE;
+		  
+		GVL_3400.X_Achse_steuern.Ref_ok		:= FALSE;
+		GVL_3400.y_Achse_steuern.Ref_ok		:= FALSE;
+		  
+		GVL_3510.X_Achse_steuern.Ref_ok		:= FALSE;
+		  
+		GVL_3520.X_Achse_steuern.Ref_ok		:= FALSE;
+		GVL_3520.y_Achse_steuern.Ref_ok		:= FALSE;
+		
+		GVL_3540.Y_Achse_steuern.Ref_ok		:= FALSE;
+		
+		gvl_3000.sk := 30;		
+			
+	30: // Achsen referenzieren wenn nicht refenziert ist 
+		IF Hardware_3100.fbX_Achse.M_HOME() 
+		AND	Hardware_3100.fbY_Achse.M_HOME() 
+		AND	Hardware_3100.fbZ_Achse.M_HOME() 
+		AND Hardware_3200.fbX_Achse.M_HOME() 
+		AND	Hardware_3200.fbY_Achse.M_HOME() 
+		AND	Hardware_3200.fbZ_Achse.M_HOME() 
+		AND Hardware_3300.fbX_Achse.M_HOME() 
+		AND	Hardware_3300.fbY_Achse.M_HOME() 
+		AND Hardware_3400.fbX_Achse.M_HOME() 
+		AND	Hardware_3400.fbY_Achse.M_HOME() 
+		AND Hardware_3510.fbX_Achse.M_HOME() 
+		AND Hardware_3520.fbX_Achse.M_HOME() 
+		AND	Hardware_3520.fbY_Achse.M_HOME() 
+		AND	Hardware_3540.fbY_Achse.M_HOME() 
+		THEN
+			gvl_3000.sk := 40;		
+ 		END_IF;
+						
+						
+						
+	// Ablauf starten 
+	//________________________________________________________________________________________
+	100: // Daten anfordern und auf 5 = Daten okay warten
+		IF M_VisuKomm(Nr:=10 , anVisu:= GVL_Visu_3000.KommAnVisu, vonVisu:=GVL_Visu_3000.KommVonVisu, Sperre := FALSE) THEN
+			gvl_3000.sk := 110;	
+		END_IF
+		IF GVL_Visu_3000.KommAnVisu = 0
+		AND GVL_Visu_3000.KommVonVisu = 0
+		THEN
+			Schritt_Freigabe := FALSE;
+		END_IF	
+	101: // Daten anfordern und jede Antwort auswerten
+		nReturn := M_VisuKomm_Int(Nr:=10 , anVisu:= GVL_Visu_3000.KommAnVisu, vonVisu:=GVL_Visu_3000.KommVonVisu, Sperre := FALSE);
+		IF nReturn = 5 THEN
+			gvl_3000.sk := 110;	
+		END_IF
+		IF GVL_Visu_3000.KommAnVisu = 0
+		AND GVL_Visu_3000.KommVonVisu = 0
+		THEN
+			Schritt_Freigabe := FALSE;
+		END_IF			
+
+	END_CASE
+END_IF
+	]]></ST>
+    </Implementation>
+    <Action Name="A_Automatik" Id="{1158e71b-7868-4adc-a31b-5cfa0992dc53}">
+      <Implementation>
+        <ST><![CDATA[
+// Automatik handeln
+	IF GVL_Visu_3000.SteuerStatus.auto THEN
+		IF GVL_Visu_3000.SteuerStatus.auto_start 
+		THEN
+			GVL_Visu_3000.SteuerStatus.auto_aktiv := TRUE;
+			GVL_Visu_3000.SteuerStatus.auto_start := FALSE;
+			GVL_Visu_3000.SteuerStatus.auto_stop := FALSE;
+		ELSIF GVL_Visu_3000.SteuerStatus.auto_stop 
+		THEN
+			GVL_Visu_3000.SteuerStatus.auto_aktiv := FALSE;
+			GVL_Visu_3000.SteuerStatus.auto_start := FALSE;
+			GVL_Visu_3000.SteuerStatus.auto_stop := FALSE;
+		END_IF
+	END_IF
+
+// Wenn Automatik nicht angewählt ist dann Zustände löschen
+	IF NOT  GVL_Visu_3000.SteuerStatus.auto THEN
+		GVL_Visu_3000.SteuerStatus.auto_aktiv := FALSE;
+		GVL_Visu_3000.SteuerStatus.auto_start := FALSE;
+		GVL_Visu_3000.SteuerStatus.auto_stop := FALSE;
+	END_IF
+	
+// Wenn Fehler dann Station aus der Automatik kicken
+	IF GVL_Meldungen.Stoerung_0000 
+	AND NOT Schritt_Freigabe
+	THEN
+		GVL_Visu_3000.SteuerStatus.auto_start := FALSE;
+		GVL_Visu_3000.SteuerStatus.auto_aktiv := FALSE;
+	END_IF
+	
+// Reset handlen
+	IF GVL_Visu_3000.SteuerStatus.reset THEN
+		GVL_3000.sk := 0;
+		Schritt_Freigabe := FALSE;	
+		GVL_Visu_3000.KommAnVisu := 0;
+		GVL_Visu_3000.KommVonVisu := 0;
+		GVL_3100.X_Achse_steuern.Ref_start		:= FALSE;
+		GVL_3100.y_Achse_steuern.Ref_start		:= FALSE;
+		GVL_3100.Z_Achse_steuern.Ref_start		:= FALSE;
+		GVL_3200.X_Achse_steuern.Ref_start		:= FALSE;
+		GVL_3200.y_Achse_steuern.Ref_start		:= FALSE;
+		GVL_3200.Z_Achse_steuern.Ref_start		:= FALSE;
+		GVL_3300.X_Achse_steuern.Ref_start		:= FALSE;
+		GVL_3300.y_Achse_steuern.Ref_start		:= FALSE;
+		GVL_3400.X_Achse_steuern.Ref_start		:= FALSE;
+		GVL_3400.y_Achse_steuern.Ref_start		:= FALSE;
+		GVL_3510.X_Achse_steuern.Ref_start		:= FALSE;
+		GVL_3520.X_Achse_steuern.Ref_start		:= FALSE;
+		GVL_3520.y_Achse_steuern.Ref_start		:= FALSE;
+		GVL_3540.Y_Achse_steuern.Ref_start		:= FALSE;
+	END_IF
+	
+	
+	]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="A_SteuerStatus" Id="{5469413d-59b3-481d-bae0-ec4372351da2}">
+      <Implementation>
+        <ST><![CDATA[
 // Steuerstatus
 RT_Auto_Start(CLK:= GVL_Visu_3000.SteuerStatus.auto_start, Q=> );
 RT_Auto_Stop(CLK:= GVL_Visu_3000.SteuerStatus.auto_stop, Q=> );
@@ -148,139 +360,125 @@ GVL_Visu_3000.SteuerStatus.auto_aktiv := 	GVL_Visu_3100.SteuerStatus.auto_aktiv
 											OR GVL_Visu_3520.SteuerStatus.auto_aktiv
 											OR GVL_Visu_3530.SteuerStatus.auto_aktiv
 											OR GVL_Visu_3540.SteuerStatus.auto_aktiv;]]></ST>
-    </Implementation>
-    <Method Name="M_VisuKomm" Id="{3bd020ec-9635-409f-b1d7-663929ec8626}">
-      <Declaration><![CDATA[
-METHOD M_VisuKomm : BOOL
+      </Implementation>
+    </Action>
+    <Method Name="M_VisuKomm" Id="{8035e0e1-5949-40a4-88df-28129d464be2}">
+      <Declaration><![CDATA[METHOD M_VisuKomm : BOOL
 VAR_INPUT
-    Nr          : INT;
+	
+	Nr			: INT;
+	Sperre		: BOOL := FALSE;
 END_VAR
 VAR_IN_OUT
-    anVisu      : INT;
-    vonVisu     : INT;
+	anVisu		: INT;
+	vonVisu		: INT;
 END_VAR
 
 VAR_INST
-    result                  : INT;
-    ton_DatenUngueltig      : TON;
-    ton_DatenTimeout        : TON;
-    sc                      : INT;
+	result					: INT;
+	ton_DatenUngueltig		: TON;
+	ton_DatenTimeout		: ton;
+	sc						: INT;
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[
-// Schnistelle zur VISU Kommunikation
+        <ST><![CDATA[// Schnistelle zur VISU Kommunikation
 // Starttrigger belegen als Antwort wird auf die 5= gut oder 9=schlecht gewartet.
 // Kommunikationstimeout nach 5 Sekunden und wird automatisch wieder neugestartet
 
-ton_DatenTimeout(IN:= anVisu <> 0 AND vonVisu = 0, PT:=T#3S);
-ton_DatenUngueltig(IN:= sc = 20, PT:=T#500MS);
+ton_DatenTimeout(IN:= anVisu <> 0 AND vonVisu = 0 AND NOT Sperre, PT:=GVL_3000.ctime_TimeoutVisuKomm);	
+ton_DatenUngueltig(IN:= sc = 20, PT:=GVL_3000.ctime_RetryVisuKomm);	
 
 CASE sc OF
-    0:  // Anfrage starten und auf Antwort warten
-        anVisu := Nr;
-        result := 0;
-        IF vonVisu <> 0 THEN
-            IF (vonVisu MOD Nr) = 5 THEN
-                sc := 10;
-            ELSIF (vonVisu MOD Nr) = 9 THEN
-                sc := 20;
-            END_IF
-        ELSIF ton_DatenTimeout.Q THEN
-            sc := 20;
-        END_IF
+	0: 	// Anfrage starten und auf Antwort warten
+		anVisu := SEL(Sperre, nr, 0);
+		result := 0;
+		IF vonVisu <> 0 THEN
+            IF (vonVisu MOD nr) = 5 THEN
+				sc := 10;
+            ELSIF (vonVisu MOD nr) = 9 THEN
+				sc := 20;
+			END_IF
+		ELSIF ton_DatenTimeout.Q THEN
+			sc := 20;
+		END_IF
 
-    10: // Antwort 5 erhalten
-        anVisu := 0;
-        IF vonVisu = 0 THEN
-            M_VisuKomm := TRUE;
-            result := 1;
-            sc := 0;
-        END_IF
-
-    20: // Timeout, 1 Sekunde warten und erneut antriggern
-        IF ton_DatenUngueltig.Q THEN
-            anVisu := 0;
-            IF vonVisu = 0 THEN
-                result := -1;
-                sc := 0;
-            END_IF
-        END_IF
-
-END_CASE
-
-        ]]></ST>
+	10: // Antwort 5 erhalten
+		anVisu := 0;
+		IF vonVisu = 0 THEN
+			M_VisuKomm := TRUE;
+			result := 1;
+			sc := 0;
+		END_IF
+		
+	20: // Timeout, 1 Sekunde warten und erneut antriggern
+		IF ton_DatenUngueltig.Q THEN
+			anVisu := 0;
+			IF vonVisu = 0 THEN
+				result := -1;
+					sc := 0;
+			END_IF
+		END_IF
+		
+END_CASE]]></ST>
       </Implementation>
     </Method>
-    <Method Name="M_VisuKommInt" Id="{5f341f47-3c34-497b-a5a6-a09cb570b497}">
-      <Declaration><![CDATA[
-METHOD M_VisuKommInt : INT
+    <Method Name="M_VisuKomm_Int" Id="{3e780f8e-e6da-4722-9056-4d128d5ea233}">
+      <Declaration><![CDATA[METHOD M_VisuKomm_Int : INT
 VAR_INPUT
-    Nr          : INT;
+	
+	Nr			: INT;
+	Sperre		: BOOL := FALSE;
 END_VAR
 VAR_IN_OUT
-    anVisu      : INT;
-    vonVisu     : INT;
+	anVisu		: INT;
+	vonVisu		: INT;
 END_VAR
 
 VAR_INST
-    result                  : INT;
-    ton_DatenUngueltig      : TON;
-    ton_DatenTimeout        : TON;
-    sc                      : INT;
+	result					: INT;
+	ton_DatenUngueltig		: TON;
+	ton_DatenTimeout		: ton;
+	sc						: INT;
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[
-// Schnistelle zur VISU Kommunikation
+        <ST><![CDATA[// Schnistelle zur VISU Kommunikation
 // Starttrigger belegen als Antwort wird auf die 5= gut oder 9=schlecht gewartet.
 // Kommunikationstimeout nach 5 Sekunden und wird automatisch wieder neugestartet
 
-ton_DatenTimeout(IN:= anVisu <> 0 AND vonVisu = 0, PT:=T#3S);
-ton_DatenUngueltig(IN:= anVisu = 0 AND vonVisu = 0, PT:=T#500MS);
+ton_DatenTimeout(IN:= anVisu <> 0 AND vonVisu = 0 AND NOT Sperre, PT:=GVL_3000.ctime_TimeoutVisuKomm);	
+ton_DatenUngueltig(IN:= sc = 20, PT:=GVL_3000.ctime_RetryVisuKomm);	
 
 CASE sc OF
-    0:  // Anfrage starten und auf Antwort warten
-        anVisu := Nr;
-        result := 0;
-        IF vonVisu <> 0 THEN
-            IF (vonVisu MOD Nr) = 5 THEN
-                sc := 10;
-            ELSIF (vonVisu MOD Nr) = 9 THEN
-                sc := 15;
-            END_IF
-        ELSIF ton_DatenTimeout.Q THEN
-            sc := 20;
-        END_IF
+	0: 	// Anfrage starten und auf Antwort warten
+		anVisu := SEL(Sperre, nr, 0);
+		result := 0;
+		IF vonVisu <> 0 THEN
+			result := (vonVisu MOD nr);
+			sc := 10;
+		ELSIF ton_DatenTimeout.Q THEN
+			sc := 20;
+		END_IF
 
-    10: // Antwort 5 erhalten (OK)
-        anVisu := 0;
-        IF vonVisu = 0 THEN
-            M_VisuKommInt := 1;
-            result := 1;
-            sc := 0;
-        END_IF
-
-    15: // Antwort 9 erhalten (Fehler)
-        anVisu := 0;
-        IF vonVisu = 0 THEN
-            M_VisuKommInt := -1;
-            result := 1;
-            sc := 0;
-        END_IF
-
-    20: // Timeout, 1 Sekunde warten und erneut antriggern
-        anVisu := 0;
-        IF vonVisu = 0 THEN
-            result := -1;
-            IF ton_DatenUngueltig.Q THEN
-                sc := 0;
-            END_IF
-        END_IF
-
-END_CASE
-
-        ]]></ST>
+	10: // Antwort 5 erhalten
+		anVisu := 0;
+		IF vonVisu = 0 THEN
+			M_VisuKomm_Int := result;
+			result := 0;
+			sc := 0;
+		END_IF
+		
+	20: // Timeout, 1 Sekunde warten und erneut antriggern
+		IF ton_DatenUngueltig.Q THEN
+			anVisu := 0;
+			IF vonVisu = 0 THEN
+				result := -1;
+					sc := 0;
+			END_IF
+		END_IF
+		
+END_CASE]]></ST>
       </Implementation>
     </Method>
   </POU>

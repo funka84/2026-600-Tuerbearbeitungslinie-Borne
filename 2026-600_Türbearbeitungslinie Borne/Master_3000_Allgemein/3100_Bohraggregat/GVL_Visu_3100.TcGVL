@@ -25,7 +25,7 @@ VAR_GLOBAL
 	Stulpfraes_Vorlegehub 		: DUT_Ventil_VISU;    	//#Tab: 3100 Bohraggregat Schlossseite #Name: Stulpfräser Vorlegehub
 	Nullkante 					: DUT_Ventil_VISU;    	//#Tab: 3100 Bohraggregat Schlossseite #Name: Nullkante
 	Schienenklemm				: DUT_Ventil_VISU;    	//#Tab: 3100 Bohraggregat Schlossseite #Name: Schienenklemmung
-
+	Absaughaube					: DUT_Ventil_VISU;    	//#Tab: 3100 Bohraggregat Schlossseite #Name: Absaughaube
 	refresh2					: BOOL;
 END_VAR
 

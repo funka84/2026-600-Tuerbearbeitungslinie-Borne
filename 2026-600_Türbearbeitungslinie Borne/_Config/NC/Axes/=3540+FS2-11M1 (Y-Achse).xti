@@ -1427,10 +1427,13 @@ External Setpoint Generation:
 	<Axis Id="12" CreateSymbols="true" AxisType="1">
 		<Name>__FILENAME__</Name>
 		<AxisPara>
+			<Velo RefSearch="50" RefSync="10"/>
 			<OtherSettings AllowMotionCmdToSlave="true"/>
 		</AxisPara>
 		<Encoder Name="Enc" EncType="19">
-			<EncPara ScaleFactorNumerator="3.05176e-05" MaxCount="#xffffffff"/>
+			<EncPara ScaleFactorNumerator="3.05176e-05" MaxCount="#xffffffff">
+				<Inc RefSearchInverse="true" RefSyncInverse="false" HomingSensorSource="10"/>
+			</EncPara>
 			<Vars VarGrpType="1">
 				<Name>Eingänge</Name>
 				<Var>
@@ -1573,6 +1576,7 @@ External Setpoint Generation:
 				<Link VarA="Drive^Inputs^In^nState4" VarB="WcState^InputToggle" Size="1" OffsA="1"/>
 				<Link VarA="Drive^Inputs^In^nState4" VarB="WcState^WcState" Size="1"/>
 				<Link VarA="Drive^Inputs^In^nState5" VarB="=3540+FS2-11M1 (Y-Achse)^Inputs^Modes of operation display"/>
+				<Link VarA="Drive^Inputs^In^nState8" VarB="=3540+FS2-11M1 (Y-Achse)^Inputs^Digital inputs actual value" Size="8"/>
 				<Link VarA="Drive^Outputs^Out^nCtrl1" VarB="=3540+FS2-11M1 (Y-Achse)^Outputs^Control word" Size="8"/>
 				<Link VarA="Drive^Outputs^Out^nCtrl2" VarB="=3540+FS2-11M1 (Y-Achse)^Outputs^Control word" Size="8" OffsB="8"/>
 				<Link VarA="Drive^Outputs^Out^nCtrl5" VarB="=3540+FS2-11M1 (Y-Achse)^Outputs^Modes of operation"/>

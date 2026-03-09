@@ -55,6 +55,13 @@ GVL_Visu_0000.SteuerStatus.auto_pause:=FALSE;
 GVL_Visu_0000.SteuerStatus.grundstellung:=FALSE;
 GVL_Visu_0000.quittieren := FALSE;
 	
+GVL_Visu_3000.SteuerStatus.reset:=FALSE;
+GVL_Visu_3000.SteuerStatus.auto_start:=FALSE;
+GVL_Visu_3000.SteuerStatus.auto_stop:=FALSE;
+GVL_Visu_3000.SteuerStatus.auto_pause:=FALSE;
+GVL_Visu_3000.SteuerStatus.grundstellung:=FALSE;
+GVL_Visu_3000.quittieren := FALSE;
+	
       ]]></ST>
     </Implementation>
   </POU>

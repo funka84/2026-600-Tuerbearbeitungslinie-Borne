@@ -188,11 +188,6 @@ VAR_GLOBAL
         a_FS1_3K6_Channel_16 AT %Q* : BOOL;
 
     // +K110-2K2
-        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+FS1-2K1 (CU1128)^+FS1-2K1 (CU1128-C)^+K110-1K1 (EK1100)^+K110-2K2 (EL2809)^Channel 9^Output'}
-        a_K110_2K2_Channel_9 AT %Q* : BOOL;
-
-        {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+FS1-2K1 (CU1128)^+FS1-2K1 (CU1128-C)^+K110-1K1 (EK1100)^+K110-2K2 (EL2809)^Channel 10^Output'}
-        a_K110_2K2_Channel_10 AT %Q* : BOOL;
 
         {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^+FS1-2K1 (CU1128)^+FS1-2K1 (CU1128-C)^+K110-1K1 (EK1100)^+K110-2K2 (EL2809)^Channel 11^Output'}
         a_K110_2K2_Channel_11 AT %Q* : BOOL;

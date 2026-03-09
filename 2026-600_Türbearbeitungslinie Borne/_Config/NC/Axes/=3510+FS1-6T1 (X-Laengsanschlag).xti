@@ -1427,10 +1427,13 @@ External Setpoint Generation:
 	<Axis Id="13" CreateSymbols="true" AxisType="1" GroupId="17">
 		<Name>__FILENAME__</Name>
 		<AxisPara>
+			<Velo RefSearch="25" RefSync="5"/>
 			<OtherSettings AllowMotionCmdToSlave="true"/>
 		</AxisPara>
 		<Encoder Name="Enc" EncType="19">
-			<EncPara MaxCount="#xffffffff"/>
+			<EncPara ScaleFactorNumerator="0.000347" Inverse="true" MaxCount="#xffffffff">
+				<Inc RefSearchInverse="true" RefSyncInverse="false"/>
+			</EncPara>
 			<Vars VarGrpType="1">
 				<Name>Eingänge</Name>
 				<Var>
@@ -1488,7 +1491,7 @@ External Setpoint Generation:
 			</Vars>
 		</Encoder>
 		<Drive Name="Drive" DrvType="16">
-			<DrvPara MaxCount="#xffffffff" DriveControlDWord="#x00020000">
+			<DrvPara Inverse="true" MaxCount="#xffffffff" DriveControlDWord="#x00020000">
 				<Analog TorqueSetpointScale="10" ScaleFactorActTorque="0.1"/>
 				<TimeComp TaskDelayCycles="1"/>
 			</DrvPara>
@@ -1578,9 +1581,6 @@ External Setpoint Generation:
 				<Link VarA="Enc^Inputs^In^nDataIn1" VarB="Transmit PDO 2 Mapping Parameter^Position actual value"/>
 				<Link VarA="Enc^Inputs^In^nState4" VarB="WcState^InputToggle" Size="1" OffsA="1"/>
 				<Link VarA="Enc^Inputs^In^nState4" VarB="WcState^WcState" Size="1"/>
-			</OwnerB>
-			<OwnerB Name="TIID^SEW (EtherCAT)^=0300+FS2-18T1">
-				<Link VarA="Drive^Inputs^In^nState8" VarB="=3520+FS2-11M1 (Y-Achse Riemenförderer)^Inputs^Digital inputs actual value" Size="8"/>
 			</OwnerB>
 		</OwnerA>
 	</Mappings>

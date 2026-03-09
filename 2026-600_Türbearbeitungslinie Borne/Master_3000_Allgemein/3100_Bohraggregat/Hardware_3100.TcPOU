@@ -34,6 +34,7 @@ VAR
     fbStulpfraes_Vorlegehub            				: FB_Ventil_V2;
     fbNullkante	                    				: FB_Ventil_V2;
     fbSchienenklemm                    				: FB_Ventil_V2;
+    fbAbsaughaube                   				: FB_Ventil_V2;
 
     // ***** Hilfsmerker***********************************************************
     (*
@@ -159,6 +160,7 @@ fbStillBohraggr_Stulpfraes		(	in_Sensor:=,
 	inout_NC					:= EAs_3100.ea_X_Achse, 
 	inout_service				:= GVL_Visu_3100.X_Achse, 
 	inout_Ref_start				:= GVL_3100.X_Achse_steuern.Ref_start, 
+	inout_Ref_OK				:= GVL_3100.X_Achse_steuern.Ref_ok, 
 	inout_Auto_start			:= GVL_3100.X_Achse_steuern.Auto_start, 
 	inout_Auto_stop				:= GVL_3100.X_Achse_steuern.Auto_stop);
 	
@@ -197,6 +199,7 @@ fbStillBohraggr_Stulpfraes		(	in_Sensor:=,
 	inout_NC					:= EAs_3100.ea_Y_Achse, 
 	inout_service				:= GVL_Visu_3100.Y_Achse, 
 	inout_Ref_start				:= GVL_3100.Y_Achse_steuern.Ref_start, 
+	inout_Ref_OK				:= GVL_3100.Y_Achse_steuern.Ref_ok, 
 	inout_Auto_start			:= GVL_3100.Y_Achse_steuern.Auto_start, 
 	inout_Auto_stop				:= GVL_3100.Y_Achse_steuern.Auto_stop);
 	
@@ -219,7 +222,7 @@ fbStillBohraggr_Stulpfraes		(	in_Sensor:=,
 	in_Auto						:= GVL_Visu_3100.SteuerStatus.auto,                 
 	in_Auto_Override			:= GVL_Visu_3000.override,    
 	in_Auto_pos					:= , 
-	in_max_Velo					:= 6 ,
+	in_max_Velo					:= 10 ,
 	in_PosFenster				:= 0.05, 
 	in_Ref_pos					:= 0.0, 
 	in_HomingOption				:= , 
@@ -235,6 +238,7 @@ fbStillBohraggr_Stulpfraes		(	in_Sensor:=,
 	inout_NC					:= EAs_3100.ea_Z_Achse, 
 	inout_service				:= GVL_Visu_3100.Z_Achse, 
 	inout_Ref_start				:= GVL_3100.Z_Achse_steuern.Ref_start, 
+	inout_Ref_OK				:= GVL_3100.Z_Achse_steuern.Ref_ok, 
 	inout_Auto_start			:= GVL_3100.Z_Achse_steuern.Auto_start, 
 	inout_Auto_stop				:= GVL_3100.Z_Achse_steuern.Auto_stop);
 	
@@ -478,7 +482,32 @@ fbStillBohraggr_Stulpfraes		(	in_Sensor:=,
 								out_stoerung_zur=> GVL_Meldungen.Meldungen_3000.Nr_083,
 								out_stoerung_vorzur=> GVL_Meldungen.Meldungen_3000.Nr_084,
 								inout_ansteuerung:=GVL_3100.Schienenklemm,
-								inout_visu:=GVL_Visu_3100.Schienenklemm);]]></ST>
+								inout_visu:=GVL_Visu_3100.Schienenklemm);
+								
+								
+	
+	GVL_3100.Absaughaube.in_freigabe_vor := GVL_3000.bDruckluft_Bereit;
+	GVL_3100.Absaughaube.in_freigabe_zur := GVL_3000.bDruckluft_Bereit;
+	GVL_Visu_3100.Absaughaube.para.ausgang_vor_halten:=TRUE;	
+	GVL_Visu_3100.Absaughaube.para.ausgang_zur_halten:=TRUE;	
+	GVL_Visu_3100.Absaughaube.para.ueberwachung_vor_aktiv:=TRUE;	
+	GVL_Visu_3100.Absaughaube.para.ueberwachung_zur_aktiv:=TRUE;	
+	GVL_Visu_3100.Absaughaube.para.entprellungszeit_vor:=T#500MS;	
+	GVL_Visu_3100.Absaughaube.para.entprellungszeit_zur:=T#500MS;	
+	fbAbsaughaube(			in_endlage_vor:= NOT EAs_3100.e_FR_3100_Schlossbearbeitung_Absaughaube_ist_zurueck, 
+								in_endlage_zur:=  EAs_3100.e_FR_3100_Schlossbearbeitung_Absaughaube_ist_zurueck,
+								in_hand:=GVL_Visu_3100.SteuerStatus.hand,
+								in_auto:=GVL_Visu_3100.SteuerStatus.auto,
+								in_simu :=GVL_3000.bMode_Sim_Ventile,
+								in_quit:=GVL_Visu_3100.SteuerStatus.reset 
+								OR GVL_3000.stoerung_quitt,
+								out_vor=>EAs_3100.a_FR_3100_Schlossbearbeitung_Absaughaube_vor,
+								out_zur=>EAs_3100.a_FR_3100_Schlossbearbeitung_Absaughaube_zurueck,
+								out_stoerung_vor=> GVL_Meldungen.Meldungen_3000.Nr_110,
+								out_stoerung_zur=> GVL_Meldungen.Meldungen_3000.Nr_111,
+								out_stoerung_vorzur=> GVL_Meldungen.Meldungen_3000.Nr_112,
+								inout_ansteuerung:=GVL_3100.Absaughaube,
+								inout_visu:=GVL_Visu_3100.Absaughaube);]]></ST>
       </Implementation>
     </Action>
   </POU>

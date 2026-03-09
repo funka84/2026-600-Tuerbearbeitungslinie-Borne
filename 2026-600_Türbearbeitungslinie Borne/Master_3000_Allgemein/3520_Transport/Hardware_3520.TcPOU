@@ -7,6 +7,8 @@ VAR
     // Servos *********************************************************************
 	fbY_Achse										: FB_Achse_NC_PTP_Beckhoff_V2; 
 	fbX_Achse										: FB_Achse_NC_PTP_Beckhoff_V2; 
+	fbColl_X										: FB_Kollision_1_Achsen;
+	fbColl_Y										: FB_Kollision_1_Achsen;
 
     // Frequenzumrichter **********************************************************
 	fbTrans_Bandseite								: FB_SEW_MOVITRAC_C_CoE;
@@ -83,6 +85,7 @@ fbLaengsBandseite_Ref			(	in_Sensor:=,
 	in_Ref_pos					:= 0.0, 
 	in_HomingOption				:= , 
 	in_EndlageRef				:= , 
+	in_UseEndlageRef			:= FALSE,
 	in_DirRef					:= , 
 	in_PosEa					:= ,                                       
 	out_ist_pos					=> GVL_3520.Y_Achse_status.ist_pos, 
@@ -94,6 +97,7 @@ fbLaengsBandseite_Ref			(	in_Sensor:=,
 	inout_NC					:= EAs_3520.ea_Y_Achse, 
 	inout_service				:= GVL_Visu_3520.Y_Achse, 
 	inout_Ref_start				:= GVL_3520.Y_Achse_steuern.Ref_start, 
+	inout_Ref_OK				:= GVL_3520.Y_Achse_steuern.Ref_ok, 
 	inout_Auto_start			:= GVL_3520.Y_Achse_steuern.Auto_start, 
 	inout_Auto_stop				:= GVL_3520.Y_Achse_steuern.Auto_stop);
 	
@@ -118,7 +122,8 @@ fbLaengsBandseite_Ref			(	in_Sensor:=,
 	in_max_Velo					:= 100 ,
 	in_PosFenster				:= 0.05, 
 	in_Ref_pos					:= 0.0, 
-	in_HomingOption				:= , 
+	in_EndlageRef				:= NOT EAs_3520.e_FR_3520_Transport_Bandseite_X_Achse_Laengsanschlag_Referenz, 
+	in_UseEndlageRef			:= TRUE,
 	in_EndlageRef				:= , 
 	in_DirRef					:= , 
 	in_PosEa					:= ,                                       
@@ -131,6 +136,7 @@ fbLaengsBandseite_Ref			(	in_Sensor:=,
 	inout_NC					:= EAs_3520.ea_X_Achse, 
 	inout_service				:= GVL_Visu_3520.X_Achse, 
 	inout_Ref_start				:= GVL_3520.X_Achse_steuern.Ref_start, 
+	inout_Ref_OK				:= GVL_3520.X_Achse_steuern.Ref_ok, 
 	inout_Auto_start			:= GVL_3520.X_Achse_steuern.Auto_start, 
 	inout_Auto_stop				:= GVL_3520.X_Achse_steuern.Auto_stop);
 	
@@ -138,7 +144,28 @@ fbLaengsBandseite_Ref			(	in_Sensor:=,
 	GVL_Meldungen.Meldungen_3000.Nr_107 := fbX_Achse.out_Achs_Error OR fbX_Achse.out_FB_Error OR fbX_Achse.out_Achs_ErrorID <> 0;		
 	GVL_Meldungen.Meldungen_3000.Nr_108 := FALSE;
 	GVL_Meldungen.Meldungen_3000.Nr_109 := FALSE;
-]]></ST>
+	
+	fbColl_X(
+		in_Enable := GVL_3000.bAchsen_Freigabe,
+		in_Active_Axis_1:= , 
+		in_Quittieren:= , 
+		in_max_1:= 510, 
+		in_min_1:= -5, 
+		in_max_enb:= 90, 
+		in_min_enb:= -80, 
+		inout_Axis_1:= EAs_3520.ea_X_Achse, 
+		out_bError=> );
+	
+	fbColl_Y(
+		in_Enable := GVL_3000.bAchsen_Freigabe,
+		in_Active_Axis_1:= , 
+		in_Quittieren:= , 
+		in_max_1:= 520, 
+		in_min_1:= -5, 
+		in_max_enb:= 90, 
+		in_min_enb:= -80, 
+		inout_Axis_1:= EAs_3520.ea_Y_Achse, 
+		out_bError=> );]]></ST>
       </Implementation>
     </Action>
     <Action Name="A_Umrichter" Id="{522fece5-80e5-48ed-8290-1abc930881e5}">
@@ -185,7 +212,7 @@ fbLaengsBandseite_Ref			(	in_Sensor:=,
 	GVL_Visu_3520.Laengsanschl.para.ausgang_zur_halten:=TRUE;	
 	GVL_Visu_3520.Laengsanschl.para.ueberwachung_vor_aktiv:=TRUE;	
 	GVL_Visu_3520.Laengsanschl.para.ueberwachung_zur_aktiv:=TRUE;	
-	GVL_Visu_3520.Laengsanschl.para.entprellungszeit_vor:=T#50S;	
+	GVL_Visu_3520.Laengsanschl.para.entprellungszeit_vor:=T#50mS;	
 	GVL_Visu_3520.Laengsanschl.para.entprellungszeit_zur:=T#50MS;	
 	fbLaengsanschl (		in_endlage_vor:= EAs_3520.e_FR_3520_Transport_Bandseite_Laengsanschlag_oben,
 							in_endlage_zur:= EAs_3520.e_FR_3520_Transport_Bandseite_Laengsanschlag_unten,
